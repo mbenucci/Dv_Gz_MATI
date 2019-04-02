@@ -789,8 +789,6 @@ metaMDS(as.matrix(vegdist(guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id
 
 anosim(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], guts.melt$site, distance="euclid")
 metaMDS(as.matrix(vegdist(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], distance="euclid")), distance="euclid", trymax = 10000)
-
-
 ```
 
 ## OLD SCRIPT
