@@ -28,7 +28,7 @@ ls()
 
 ## Setting working directory and packages
 
-The analysis was done on R (R Core Team, 2018) using the following environment and packages.
+The analysis was done in R (R Core Team, 2018) using the following environment and packages as specified below and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
 pack.list = c("AED","aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","UpSetR","vegan","zoo")
@@ -583,7 +583,14 @@ plotweb(niche.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lableng
 ```
 
 
+```{r end}
+sink("log_session_packages.txt")
+sessionInfo()
+citation()
+sink()
+```
 
+## END
 
 
 
