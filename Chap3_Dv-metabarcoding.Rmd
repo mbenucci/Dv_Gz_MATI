@@ -81,12 +81,15 @@ write.csv(taxa.split.may, "R/CO1DvMay17_taxonomy.csv")
 write.csv(taxa.split.oct, "R/CO1DvOct17_taxonomy.csv")
 ```
 
-Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - updated at early September 2018). Each operation generated two separate files which were then merged. The following step is to remove potential duplicate taxa records that would prevent R from definying the row names as the taxa names. Because we removed the last column with the taxonomy information, we can use the whole frame; otherwise we would have needed to avoid the last column in each frame.
+Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - version of early September 2018).
+Each operation generated two separate files which were then merged. The following step is to remove potential duplicate taxa records that would prevent R from definying the row names with the taxa names. Because we removed the last column with the taxonomy information, we can use the whole frame; otherwise we would have needed to avoid the last column in each frame.
 
 ```{r removing duplicates}
 dv.may17 = as.data.frame(infile_may17 %>% group_by(X.OTU.ID) %>% summarise_all(funs(sum)))
 dv.oct17 = as.data.frame(infile_oct17 %>% group_by(X.OTU.ID) %>% summarise_all(funs(sum)))
 ```
+
+Considering the sequencing runs included different experiments, we exclude the columns containing headers belonging to other experiments. In this case `CH`,`Dv5`,`Ha`, and `pl4`.
 
 ```{r extracting_Dv-samples}
 rownames(dv.may17) = dv.may17$X.OTU.ID
@@ -102,16 +105,49 @@ to_remove2 = grep("pl4|CH", colnames(dv.oct17))
 dv.oct17 = dv.oct17[,-to_remove2]
 ```
 
-```{r read_depth, include=TRUE, echo=FALSE}
+# 1. Initial Quality Control
+
+Calculating sample read depth for both input files, in order to quality check the overall sequencing.
+
+```{r initial read depth, include=TRUE}
+may.read.depth = as.data.frame(dv.may17)
+oct.read.depth = as.data.frame(dv.oct17)
+
+may.read.depth$taxa = rownames(may.read.depth)
+oct.read.depth$taxa = rownames(oct.read.depth)
+may.read.depth$time = "May"
+oct.read.depth$time = "Oct"
+
+may.read.depth = melt(may.read.depth)
+
+# Sum of DNA reads by samples to calculate the sample read depth
+
+may.read.depth = may.read.depth[,!c(colnames(may.read.depth) %in% "taxa")] %>% group_by(time, variable) %>% summarise_all(funs(sum))
+
+oct.read.depth = melt(oct.read.depth)
+oct.read.depth = oct.read.depth[,!c(colnames(oct.read.depth) %in% "taxa")] %>% group_by(time, variable) %>% summarise_all(funs(sum))
+
+# Joining both frames and plot
+
+full.read.depth = rbind(may.read.depth, oct.read.depth)
+
+ggplot(full.read.depth, aes(time, value)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_jitter()
+```
+
+Calculating mean and standard deviation (sd) of the samples read depth in each frame.
+
+```{r}
 # Removing samples and species that are empty
-dv.may17 = subset(dv.may17, select = colSums(dv.may17) > 0)
-dv.may17 = subset(dv.may17, subset = rowSums(dv.may17) > 0)
+#dv.may17 = subset(dv.may17, select = colSums(dv.may17) > 0)
+#dv.may17 = subset(dv.may17, subset = rowSums(dv.may17) > 0)
 
-dv.oct17 = subset(dv.oct17, select = colSums(dv.oct17) > 0)
-dv.oct17 = subset(dv.oct17, subset = rowSums(dv.oct17) > 0)
+#dv.oct17 = subset(dv.oct17, select = colSums(dv.oct17) > 0)
+#dv.oct17 = subset(dv.oct17, subset = rowSums(dv.oct17) > 0)
 
-mean(log10(colSums(dv.may17)))
-mean(log10(colSums(dv.oct17)))
+mean(colSums(dv.may17))
+mean(colSums(dv.oct17))
 
 sd(log10(colSums(dv.may17)))
 sd(log10(colSums(dv.oct17)))
