@@ -135,7 +135,7 @@ full.read.depth = rbind(may.read.depth, oct.read.depth)
 
 ggplot(full.read.depth, aes(time, value)) +
   geom_boxplot(outlier.shape = NA) +
-  geom_jitter() +
+  geom_jitter(color=c("gray30"), alpha=0.5) +
   theme_bw() + labs(x="Data sets", y="Sample read depth (N reads)")
 ```
 
@@ -157,40 +157,37 @@ The filter coverage for all samples that are equal and greater than mean-2sd of 
 
 ```{r test_coverage, include=TRUE, echo=FALSE}
 # Applying the threshold
-
-clean.may17 = subset(dv.may17, select = log10(colSums(dv.may17)) >= may.depth.thre)
-clean.oct17 = subset(dv.oct17, select = log10(colSums(dv.oct17)) >= oct.depth.thre)
+reads.may17 = subset(dv.may17, select = log10(colSums(dv.may17)) >= may.depth.thre)
+reads.oct17 = subset(dv.oct17, select = log10(colSums(dv.oct17)) >= oct.depth.thre)
 
 # Checking N samples retained
-
 count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]
 count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]
 count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]/(count(log10(colSums(dv.may17)) > 0)[,2])
 count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]/(count(log10(colSums(dv.oct17)) > 0)[,2])
 ```
 
-Removal of unwanted taxa before continuing with contamination
+Unwanted taxa will now need to be removed before the contamination control.
 
 ```{r cleaning_frames}
 # Cleaning empty taxa
-cov.may17 = subset(cov.may17, subset = rowSums(dv.may17) > 0)
-cov.oct17 = subset(cov.oct17, subset = rowSums(dv.oct17) > 0)
+reads.may17 = subset(reads.may17, subset = rowSums(dv.may17) > 0)
+reads.oct17 = subset(reads.oct17, subset = rowSums(dv.oct17) > 0)
 
 disc.may = c("Abramis_brama","Anser","Aphanomyces","Arthropoda_environmental_sample","Chromulinales","Cyclostephanos_dubius","Cyclostephanos_invisitatus","Cyclostephanos_sp._WTC16","Didymella_pinodes","Dinophyceae","Encyonema","Eukaryota","Fistulifera_solaris","Fusarium","Gomphonema_parvulum","Gymnocephalus","Hominidae","Homo_sapiens","Ilyonectria_destructans","invertebrate_environmental_sample","Lagenidium","Leptolegnia_sp._BOLD:AAX5717","Mallomonas_sp.","Melosira_ambiqua","Metazoa","Mus_musculus","Oncorhynchus_mykiss","Oomycetes","Paraphysomonas_sp.","Penicillium_sclerotiorum","Phytophthora","Pinnularia_neomajor","Pseudorasbora_parva","Pythium","Pythium_marsipium","Saprolegnia_delica","Saprolegniaceae","Sellaphora_obesa","Skeletonema_potamos","Sordariomycetes","Stephanodiscus","Stephanodiscus_cf._minutulus","Sus_scrofa","Tetracladium","Tetradesmus_obliquus","Thalassiosira_pseudonana","unassigned","Yamagishiella_unicocca","zooplankton_environmental_sample")
 
-dvmay.clean = cov.may17[!(rownames(cov.may17)%in% disc.may),]
+clean.may = reads.may17[!(rownames(reads.may17) %in% disc.may),]
 
 disc.oct = c("Abramis_brama","Achlya","Actinopteri","Albugo_candida","Anatidae","Anser_anser","Aphanomyces","Apoikiospumella_mondseeiensis","Ascomycota","Aves","Batrachospermaceae","Batrachospermum_gelatinosum","Bodo_saltans","Branta_canadensis","Chlorella_sp._ArM0029B","Chroicocephalus_ridibundus","Chromulinales","Chrysochromulina","Chrysochromulina_parva","Chrysophyceae_sp.","Cochliopodium","Colletotrichum","Cordylophora_sp._IM1","Cordylophora_sp._NFR3","Cristatella_mucedo","Cyclostephanos_dubius","Cyclostephanos_invisitatus","Cyclostephanos_sp._WTC16","Cygnus_olor","Cylindrodendrum_hubeiense","Didymella_pinodes","Didymium_minus","Dinobryon","Dinobryon_pediforme","Dinophyceae","Emericellopsis","Eukaryota","Fistulifera_solaris","Fulica_atra","Fungi","Fusarium","Gomphonema_parvulum","Gymnocephalus_cernua","Heterolepidoderma_macrops","Homo_sapiens","Hypocreales","Ilyonectria_destructans","invertebrate_environmental_sample","Mallomonas_sp.","Melampsora","Melosira_ambiqua","Mesostigma_viride","Metazoa","Microcystis","Microcystis_aeruginosa","Mucorales","Myodes_glareolus","Nitzschia_palea","Nusuttodinium","Oncorhynchus_mykiss","Oomycetes","Ostreopsis","Paraphysomonas_sp.","Pedospumella","Penicillium","Percidae","Phytophthora","Phytophthora_gallica","Phytophthora_plurivora","Plumatella_fungosa","Podiceps_cristatus","Prunella_modularis","Pseudomuriella","Pseudoperonospora_humuli","Pycnococcaceae","Pythiaceae","Pythium","Pythium_marsipium","Pythium_phragmitis","Pythium_sp._JN-1","Ripella","Rutilus_rutilus","Salmo_trutta","Saprolegnia_delica","Scardinius","Segregatospumella_dracosaxi","Sellaphora_bacillum","Sellaphora_lanceolata","Sellaphora_obesa","Sellaphora_pupula","Sheathia_arcuata","Skeletonema","Spumella_sp.","Spumella_sp._LG-2014b","Stephanodiscus","Streptophyta","Tetracladium","Tetracladium_setigerum","Tetradesmus_obliquus","Thalassiosira_pseudonana","Thelonectria_discophora","Thelonectria_veuillotiana","Turdus_merula","unassigned","uncultured_Jaminaea","uncultured_Philodina","uncultured_Pythium","Vermamoeba_vermiformis","Verticillium","Verticillium_dahliae","zooplankton_environmental_sample","Zymoseptoria_tritici")
 
-dvoct.clean = cov.oct17[!(rownames(cov.oct17)%in% disc.oct),]
+clean.oct = reads.oct17[!(rownames(reads.oct17) %in% disc.oct),]
 ```
 
-```{r}
-posmay = grep("POS", colnames(dvmay.clean))
-pos.may = dvmay.clean[,posmay]
+The contamination control is based maninly on the `POSITIVE` samples. Those included single-specie tissue DNA of _Osmia bicornis_ (Megachilidae); and the proportion of other taxa detected in those single-specie samples will be the base on which the contamination threshold will be calculated.
 
-posoct = grep("POS", colnames(dvoct.clean))
-pos.oct = dvoct.clean[,posoct]
+```{r contamination control}
+pos.may = clean.may[,grep("POS", colnames(clean.may))]
+pos.oct = clean.oct[,grep("POS", colnames(clean.oct))]
 
 colSums(pos.may)
 colSums(pos.oct)
@@ -214,7 +211,17 @@ colSums(pos.oct)-colSums(pos.oct[c("Osmia_bicornis","Hymenoptera"),])
 (colSums(pos.oct)-colSums(pos.oct[c("Osmia_bicornis","Hymenoptera"),]))/colSums(pos.oct)
 ```
 
-Two of the positive samples in the October data frame contained high amount of contamination of _Crangonyx floridanus_ (648 reads over a total of 1399) and _Dikerogammarus villosus_ (2106 and 2681 reads over a total of respectively 3082 and 3746). In both cases of these taxa the threshold would be too high to obtain any information regarding the prey items. We decide 0.03% and 0.6% filters respectively for May and October. We apply the threshold to both data frames, the one transformed with the ratios and the one with cleaned number of reads.
+Three of the positive samples in the October data set contained high amount of contamination from _Crangonyx floridanus_, and _Dikerogammarus villosus_ DNA. 
+Specifically 648 reads (46.3%) belonging to _C. floridanus_ were present in a single positive sample; and 2106 reads (68.3%) and 2681 reads (71.6%) belonging to _D. villosus_ in two separate positive samples. In all these cases the proportion of reads was going to be too high to be used as threshold. The decision taken was then to exclude those three samples before calculating the contamination threshold for the October data set.
+
+```{r}
+pos.oct["Crangonyx_floridanus",]
+pos.oct["Crangonyx_floridanus",]/colSums(pos.oct)
+pos.oct["Dikerogammarus_villosus",]
+pos.oct["Dikerogammarus_villosus",]/colSums(pos.oct)
+```
+
+The threshold level was then decided to be 0.03% (May data set) and 0.6% (October data set).
 
 ```{r}
 dvmay.clean = as.data.frame(t(dvmay.clean))
