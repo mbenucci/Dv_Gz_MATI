@@ -280,40 +280,31 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
 # Remaining known contaminations
 
-Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples only (RB501) at a ratio of 0.0392 (approx. 4%) corresponding to 7 reads. Similarly _Osmia bicornis_ Despite the contamination filter didn't manage to exclude these contaminations, we can feel confident in removing these taxa without major changes in the final output.
+Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output.
 Lastly we checked and remove any contamination samples. We have only `cont13` (lab contamination) which contains only 6 redas of _Dikerogammarus villosus_.
 
 
 ```{r remaining contaminations May}
-# Harmonia axyridis contamination
-
+# Checking in which sample(s) _Harmonia axyridis_ contamination is still present
 count(filter.may$Harmonia_axyridis > 0)
 rownames(filter.may)[filter.may$Harmonia_axyridis > 0]
+
+# Checking N reads of _H. axyridis_ 
 clean.may$Harmonia_axyridis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Harmonia_axyridis > 0]]
 
+# Removing _H. axyridis_ without need of further filtration
 clean.may = clean.may[,!(colnames(clean.may) %in% "Harmonia_axyridis")]
 filter.may = filter.may[,!(colnames(filter.may) %in% "Harmonia_axyridis")]
 
-# Osmia bicornis contamination
-
+# Checking in which sample(s) _Osmia bicornis_ contamination is still present
 count(filter.may$Osmia_bicornis > 0)
 rownames(filter.may)[filter.may$Osmia_bicornis > 0]
+
+# Checking N reads of _O. bicornis_
 clean.may$Osmia_bicornis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Osmia_bicornis > 0]]
 
 clean.may = clean.may[,!(colnames(clean.may) %in% "Osmia_bicornis")]
 filter.may = filter.may[,!(colnames(filter.may) %in% "Osmia_bicornis")]
-
-# cleaning contamination samples
-
-sum(clean.may["cont13",])
-clean.may = clean.may[!(rownames(clean.may) %in% "cont13"),]
-filter.may = filter.may[!(rownames(filter.may) %in% "cont13"),]
-
-clean.may = subset(clean.may, select = colSums(clean.may) > 0)
-filter.may = subset(filter.may, select = colSums(filter.may) > 0)
-
-clean.may = subset(clean.may, subset = rowSums(clean.may) > 0)
-filter.may = subset(filter.may, subset = rowSums(filter.may) > 0)
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold. _Osmia bicornis_ instead remained in only one samples (eGW4) at a ratio of 0.0188 (approx. 2%) corresponding to 28 reads. The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted containing lot of DNA reads:
