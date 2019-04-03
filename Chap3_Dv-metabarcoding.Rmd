@@ -28,7 +28,7 @@ ls()
 
 ## Setting working directory and packages
 
-The analysis was done in R (R Core Team, 2018) using the following environment and packages as specified below and in `log_session_packages.txt`.
+The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
 pack.list = c("AED","aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","UpSetR","vegan","zoo")
@@ -41,12 +41,14 @@ lapply(pack.list, require, character.only=T)
 sessionInfo()
 ```
 
+The data used in this analysis were generated across 2 separate sequencing runs; one containing gut contentns and eDNA samples collected in May 2017, the second with samples collected in October 2017. Despite the date of the sequencing, all data frames and variable will be named after the month of collection for practicality.
+
 ```{r input_files}
 infile_may17 = read.csv("data/CO1Aug17-merge-forwonly-nonchimera-c97-cov2_id97-by-taxonomy-readcounts.blast.csv", header=T)
 infile_oct17 = read.csv("data/CO1DvAug18-merged-forwonly_nonchimera-c97-cov2-id97_by-taxonomy-readcounts.csv", header=T)
 ```
 
-We remove the taxonomy column from each input files and save them into separate files.
+Removing the taxonomy column from each input files and saving them into separate files.
 
 ```{r removing_taxonomy}
 ## Custom function to format the taxonomy column
@@ -81,7 +83,7 @@ write.csv(taxa.split.may, "R/CO1DvMay17_taxonomy.csv")
 write.csv(taxa.split.oct, "R/CO1DvOct17_taxonomy.csv")
 ```
 
-Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - version of early September 2018).
+Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - updated to early September 2018).
 Each operation generated two separate files which were then merged. The following step is to remove potential duplicate taxa records that would prevent R from definying the row names with the taxa names. Because we removed the last column with the taxonomy information, we can use the whole frame; otherwise we would have needed to avoid the last column in each frame.
 
 ```{r removing duplicates}
@@ -107,79 +109,69 @@ dv.oct17 = dv.oct17[,-to_remove2]
 
 # 1. Initial Quality Control
 
-Calculating sample read depth for both input files, in order to quality check the overall sequencing.
+To calculate sample read depth for both input files, in order to quality check the overall sequencing, first all samples that didn't sequence at all (sample N read equal to 0) need to be removed. Then the mean and standard deviation for each data set can be calculated, and quality check of the samples read depth applied. 
 
 ```{r initial read depth, include=TRUE}
+dv.may17 = subset(dv.may17, select = colSums(dv.may17) > 0)
+dv.oct17 = subset(dv.oct17, select = colSums(dv.oct17) > 0)
+
 may.read.depth = as.data.frame(dv.may17)
 oct.read.depth = as.data.frame(dv.oct17)
 
-may.read.depth$taxa = rownames(may.read.depth)
-oct.read.depth$taxa = rownames(oct.read.depth)
 may.read.depth$time = "May"
 oct.read.depth$time = "Oct"
 
+# Sum of DNA reads by samples to plot the sample read depth
+
 may.read.depth = melt(may.read.depth)
-
-# Sum of DNA reads by samples to calculate the sample read depth
-
-may.read.depth = may.read.depth[,!c(colnames(may.read.depth) %in% "taxa")] %>% group_by(time, variable) %>% summarise_all(funs(sum))
+may.read.depth = may.read.depth %>% group_by(time, variable) %>% summarise_all(funs(sum))
 
 oct.read.depth = melt(oct.read.depth)
-oct.read.depth = oct.read.depth[,!c(colnames(oct.read.depth) %in% "taxa")] %>% group_by(time, variable) %>% summarise_all(funs(sum))
+oct.read.depth = oct.read.depth %>% group_by(time, variable) %>% summarise_all(funs(sum))
 
-# Joining both frames and plot
+# Joining both frames, then plotting
 
 full.read.depth = rbind(may.read.depth, oct.read.depth)
 
 ggplot(full.read.depth, aes(time, value)) +
   geom_boxplot(outlier.shape = NA) +
-  geom_jitter()
+  geom_jitter() +
+  theme_bw() + labs(x="Data sets", y="Sample read depth (N reads)")
 ```
 
-Calculating mean and standard deviation (sd) of the samples read depth in each frame.
+The sample N reads appear to be highly dispersed, this causes the mean-sd values to result negative. After checking for normality and log-transforming the data sets, the read depth threshold could be applied.
 
-```{r}
-# Removing samples and species that are empty
-#dv.may17 = subset(dv.may17, select = colSums(dv.may17) > 0)
-#dv.may17 = subset(dv.may17, subset = rowSums(dv.may17) > 0)
 
-#dv.oct17 = subset(dv.oct17, select = colSums(dv.oct17) > 0)
-#dv.oct17 = subset(dv.oct17, subset = rowSums(dv.oct17) > 0)
+```{r mean and sd calculation}
+mean(colSums(dv.may17))-sd(colSums(dv.may17))
+mean(colSums(dv.oct17))-sd(colSums(dv.oct17))
 
-mean(colSums(dv.may17))
-mean(colSums(dv.oct17))
+shapiro.test(colSums(dv.may17))
+shapiro.test(colSums(dv.oct17))
 
-sd(log10(colSums(dv.may17)))
-sd(log10(colSums(dv.oct17)))
-
-mean(log10(colSums(dv.may17)))-sd(log10(colSums(dv.may17)))
-mean(log10(colSums(dv.oct17)))-sd(log10(colSums(dv.oct17)))
-
-hist(log10(colSums(dv.may17)))
-hist(log10(colSums(dv.oct17)))
-shapiro.test(log10(colSums(dv.may17)))
-shapiro.test(log10(colSums(dv.oct17)))
-
-boxplot(log10(colSums(dv.may17)), log10(colSums(dv.oct17)), names=c("May 2017","Oct 2017"), ylab="N reads (log10)")
+may.depth.thre = mean(log10(colSums(dv.may17)))-2*sd(log10(colSums(dv.may17)))
+oct.depth.thre = mean(log10(colSums(dv.oct17)))-2*sd(log10(colSums(dv.oct17)))
 ```
 
-We calculate the filter coverage for all samples that are equale and greater than mean-2sd of the log10-transformed coverage per samples. We obtain that in both May and Oct 93% of the samples will pass the initial coverage filter.
+The filter coverage for all samples that are equal and greater than mean-2sd of the log10-transformed coverage per samples were retained. The survival of the N samples was quite high in both data sets, with respectivelty 202 samples (93.5%) passing the read depth filter in May data set; and 186 samples (93.9%) in October data set.
 
-```{r test_coverage, include=TRUE, echo=FALSE, fig.cap="coverage"}
-m2sd.may = mean(log10(colSums(dv.may17)))-2*sd(log10(colSums(dv.may17)))
-m2sd.oct = mean(log10(colSums(dv.oct17)))-2*sd(log10(colSums(dv.oct17)))
+```{r test_coverage, include=TRUE, echo=FALSE}
+# Applying the threshold
 
-m2sd.may
-m2sd.oct  
+clean.may17 = subset(dv.may17, select = log10(colSums(dv.may17)) >= may.depth.thre)
+clean.oct17 = subset(dv.oct17, select = log10(colSums(dv.oct17)) >= oct.depth.thre)
 
-count(log10(colSums(dv.may17)) <= m2sd.may)[,2]/(count(log10(colSums(dv.may17)) > 0)[,2])
-count(log10(colSums(dv.oct17)) <= m2sd.oct)[,2]/(count(log10(colSums(dv.oct17)) > 0)[,2])
+# Checking N samples retained
+
+count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]
+count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]
+count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]/(count(log10(colSums(dv.may17)) > 0)[,2])
+count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]/(count(log10(colSums(dv.oct17)) > 0)[,2])
 ```
+
+Removal of unwanted taxa before continuing with contamination
 
 ```{r cleaning_frames}
-cov.may17 = subset(dv.may17, select = log10(colSums(dv.may17)) >= m2sd.may)
-cov.oct17 = subset(dv.oct17, select = log10(colSums(dv.oct17)) >= m2sd.oct)
-
 # Cleaning empty taxa
 cov.may17 = subset(cov.may17, subset = rowSums(dv.may17) > 0)
 cov.oct17 = subset(cov.oct17, subset = rowSums(dv.oct17) > 0)
