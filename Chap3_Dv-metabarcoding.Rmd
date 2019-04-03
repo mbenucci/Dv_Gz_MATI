@@ -214,58 +214,62 @@ colSums(pos.oct)-colSums(pos.oct[c("Osmia_bicornis","Hymenoptera"),])
 Three of the positive samples in the October data set contained high amount of contamination from _Crangonyx floridanus_, and _Dikerogammarus villosus_ DNA. 
 Specifically 648 reads (46.3%) belonging to _C. floridanus_ were present in a single positive sample; and 2106 reads (68.3%) and 2681 reads (71.6%) belonging to _D. villosus_ in two separate positive samples. In all these cases the proportion of reads was going to be too high to be used as threshold. The decision taken was then to exclude those three samples before calculating the contamination threshold for the October data set.
 
-```{r}
+```{r high levels taxa}
 pos.oct["Crangonyx_floridanus",]
 pos.oct["Crangonyx_floridanus",]/colSums(pos.oct)
 pos.oct["Dikerogammarus_villosus",]
 pos.oct["Dikerogammarus_villosus",]/colSums(pos.oct)
+
+# Removing the high contaminated positive samples
+pos.oct = pos.oct[,-c(1:3)]
 ```
 
-The threshold level was then decided to be 0.03% (May data set) and 0.6% (October data set).
+Based on the levels of contamination in the Positive samples, the threshold levels were decided to be respectively 0.03% (May data set) and 0.5% (October data set).
 
-```{r}
-dvmay.clean = as.data.frame(t(dvmay.clean))
+```{r threshold}
+# Transposing the data frames and copying them to carry them over as N reads and ratios.
+clean.may = as.data.frame(t(clean.may))
 
-dvmay.filter = as.data.frame(dvmay.clean)
-dvmay.filter = dvmay.filter[,]/rowSums(dvmay.filter)
-dvmay.filter[is.na(dvmay.filter)] <- 0
+filter.may = as.data.frame(clean.may)
+filter.may = filter.may[,]/rowSums(filter.may)
+filter.may[is.na(filter.may)] <- 0
 
-dvmay.filter[][dvmay.filter <= 0.0003] <- 0
-dvmay.clean[][dvmay.clean[,]/rowSums(dvmay.clean) <= 0.0003] <- 0
+filter.may[][filter.may <= 0.0003] <- 0
+clean.may[][clean.may[,]/rowSums(clean.may) <= 0.0003] <- 0
 
-dvoct.clean = as.data.frame(t(dvoct.clean))
+clean.oct = as.data.frame(t(clean.oct))
 
-dvoct.filter = as.data.frame(dvoct.clean)
-dvoct.filter = dvoct.filter[,]/rowSums(dvoct.filter)
-dvoct.filter[is.na(dvoct.filter)] <- 0
+filter.oct = as.data.frame(clean.oct)
+filter.oct = filter.oct[,]/rowSums(filter.oct)
+filter.oct[is.na(filter.oct)] <- 0
 
-dvoct.filter[][dvoct.filter <= 0.006] <- 0
-dvoct.clean[][dvoct.clean[,]/rowSums(dvoct.clean) <= 0.006] <- 0
+filter.oct[][filter.oct <= 0.005] <- 0
+clean.oct[][clean.oct[,]/rowSums(clean.oct) <= 0.005] <- 0
 
 # Removing empty taxa
 
-dvmay.clean = subset(dvmay.clean, select = colSums(dvmay.clean) > 0)
-dvmay.filter = subset(dvmay.filter, select = colSums(dvmay.filter) > 0)
+clean.may = subset(clean.may, select = colSums(clean.may) > 0)
+filter.may = subset(filter.may, select = colSums(filter.may) > 0)
 
-dvoct.clean = subset(dvoct.clean, select = colSums(dvoct.clean) > 0)
-dvoct.filter = subset(dvoct.filter, select = colSums(dvoct.filter) > 0)
+clean.oct = subset(clean.oct, select = colSums(clean.oct) > 0)
+filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 ```
 
 
 ```{r test}
-pnmay = grep("POS|NEG", rownames(dvmay.filter), ignore.case=T)
-dvmay.filter = dvmay.filter[-pnmay,]
-dvmay.clean = dvmay.clean[-pnmay,]
+#pnmay = grep("POS|NEG", rownames(dvmay.filter), ignore.case=T)
+#dvmay.filter = dvmay.filter[-pnmay,]
+#dvmay.clean = dvmay.clean[-pnmay,]
 
-pnoct = grep("POS|NEG", rownames(dvoct.filter), ignore.case=T)
-dvoct.filter = dvoct.filter[-pnoct,]
-dvoct.clean = dvoct.clean[-pnoct,]
+#pnoct = grep("POS|NEG", rownames(dvoct.filter), ignore.case=T)
+#dvoct.filter = dvoct.filter[-pnoct,]
+#dvoct.clean = dvoct.clean[-pnoct,]
 
-rownames(dvmay.clean) = gsub("[.]{1}", "", rownames(dvmay.clean))
-rownames(dvmay.filter) = gsub("[.]{1}", "", rownames(dvmay.filter))
+#rownames(dvmay.clean) = gsub("[.]{1}", "", rownames(dvmay.clean))
+#rownames(dvmay.filter) = gsub("[.]{1}", "", rownames(dvmay.filter))
 
-rownames(dvoct.clean) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.clean))
-rownames(dvoct.filter) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.filter))
+#rownames(dvoct.clean) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.clean))
+#rownames(dvoct.filter) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.filter))
 
 #dvmay.clean = subset(dvmay.clean, subset = rowSums(dvmay.clean) > 0)
 #dvmay.filter = subset(dvmay.filter, subset = rowSums(dvmay.filter) > 0)
@@ -274,42 +278,42 @@ rownames(dvoct.filter) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.
 #dvoct.filter = subset(dvoct.filter, subset = rowSums(dvoct.filter) > 0)
 ```
 
-# checking for remaining known contaminations
+# Remaining known contaminations
 
-_Harmonia axyridis_ is still present in one samples only (RB501) at a ratio of 0.0392 (approx. 4%) corresponding to 7 reads. Similarly _Osmia bicornis_ Despite the contamination filter didn't manage to exclude these contaminations, we can feel confident in removing these taxa without major changes in the final output.
+Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples only (RB501) at a ratio of 0.0392 (approx. 4%) corresponding to 7 reads. Similarly _Osmia bicornis_ Despite the contamination filter didn't manage to exclude these contaminations, we can feel confident in removing these taxa without major changes in the final output.
 Lastly we checked and remove any contamination samples. We have only `cont13` (lab contamination) which contains only 6 redas of _Dikerogammarus villosus_.
 
 
 ```{r remaining contaminations May}
 # Harmonia axyridis contamination
 
-count(dvmay.filter$Harmonia_axyridis > 0)
-rownames(dvmay.filter)[dvmay.filter$Harmonia_axyridis > 0]
-dvmay.clean$Harmonia_axyridis[rownames(dvmay.clean) %in% rownames(dvmay.filter)[dvmay.filter$Harmonia_axyridis > 0]]
+count(filter.may$Harmonia_axyridis > 0)
+rownames(filter.may)[filter.may$Harmonia_axyridis > 0]
+clean.may$Harmonia_axyridis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Harmonia_axyridis > 0]]
 
-dvmay.clean = dvmay.clean[,!(colnames(dvmay.clean) %in% "Harmonia_axyridis")]
-dvmay.filter = dvmay.filter[,!(colnames(dvmay.filter) %in% "Harmonia_axyridis")]
+clean.may = clean.may[,!(colnames(clean.may) %in% "Harmonia_axyridis")]
+filter.may = filter.may[,!(colnames(filter.may) %in% "Harmonia_axyridis")]
 
 # Osmia bicornis contamination
 
-count(dvmay.filter$Osmia_bicornis > 0)
-rownames(dvmay.filter)[dvmay.filter$Osmia_bicornis > 0]
-dvmay.clean$Osmia_bicornis[rownames(dvmay.clean) %in% rownames(dvmay.filter)[dvmay.filter$Osmia_bicornis > 0]]
+count(filter.may$Osmia_bicornis > 0)
+rownames(filter.may)[filter.may$Osmia_bicornis > 0]
+clean.may$Osmia_bicornis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Osmia_bicornis > 0]]
 
-dvmay.clean = dvmay.clean[,!(colnames(dvmay.clean) %in% "Osmia_bicornis")]
-dvmay.filter = dvmay.filter[,!(colnames(dvmay.filter) %in% "Osmia_bicornis")]
+clean.may = clean.may[,!(colnames(clean.may) %in% "Osmia_bicornis")]
+filter.may = filter.may[,!(colnames(filter.may) %in% "Osmia_bicornis")]
 
 # cleaning contamination samples
 
-sum(dvmay.clean["cont13",])
-dvmay.clean = dvmay.clean[!(rownames(dvmay.clean) %in% "cont13"),]
-dvmay.filter = dvmay.filter[!(rownames(dvmay.filter) %in% "cont13"),]
+sum(clean.may["cont13",])
+clean.may = clean.may[!(rownames(clean.may) %in% "cont13"),]
+filter.may = filter.may[!(rownames(filter.may) %in% "cont13"),]
 
-dvmay.clean = subset(dvmay.clean, select = colSums(dvmay.clean) > 0)
-dvmay.filter = subset(dvmay.filter, select = colSums(dvmay.filter) > 0)
+clean.may = subset(clean.may, select = colSums(clean.may) > 0)
+filter.may = subset(filter.may, select = colSums(filter.may) > 0)
 
-dvmay.clean = subset(dvmay.clean, subset = rowSums(dvmay.clean) > 0)
-dvmay.filter = subset(dvmay.filter, subset = rowSums(dvmay.filter) > 0)
+clean.may = subset(clean.may, subset = rowSums(clean.may) > 0)
+filter.may = subset(filter.may, subset = rowSums(filter.may) > 0)
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold. _Osmia bicornis_ instead remained in only one samples (eGW4) at a ratio of 0.0188 (approx. 2%) corresponding to 28 reads. The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted containing lot of DNA reads:
@@ -323,35 +327,35 @@ Exploring these samples show that the only species contained in these samples is
 ```{r remaining contaminations Oct}
 # Osmia bicornis contamination
 
-count(dvoct.filter$Osmia_bicornis > 0)
-rownames(dvoct.filter)[dvoct.filter$Osmia_bicornis > 0]
-dvoct.clean$Osmia_bicornis[rownames(dvoct.clean) %in% rownames(dvoct.filter)[dvoct.filter$Osmia_bicornis > 0]]
+count(filter.oct$Osmia_bicornis > 0)
+rownames(filter.oct)[filter.oct$Osmia_bicornis > 0]
+clean.oct$Osmia_bicornis[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Osmia_bicornis > 0]]
 
-colnames(dvoct.clean)
+colnames(clean.oct)
 
-dvoct.clean = dvoct.clean[,!(colnames(dvoct.clean) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
-dvoct.filter = dvoct.filter[,!(colnames(dvoct.filter) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
+clean.oct = clean.oct[,!(colnames(clean.oct) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
+filter.oct = filter.oct[,!(colnames(filter.oct) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
 
-dvoct.clean = subset(dvoct.clean, select = colSums(dvoct.clean) > 0)
-dvoct.filter = subset(dvoct.filter, select = colSums(dvoct.filter) > 0)
+clean.oct = subset(clean.oct, select = colSums(clean.oct) > 0)
+filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
-dvoct.clean = subset(dvoct.clean, subset = rowSums(dvoct.clean) > 0)
-dvoct.filter = subset(dvoct.filter, subset = rowSums(dvoct.filter) > 0)
+clean.oct = subset(clean.oct, subset = rowSums(clean.oct) > 0)
+filter.oct = subset(filter.oct, subset = rowSums(filter.oct) > 0)
 
 # cleaning contamination samples
 
-bloct = grep("BL", rownames(dvoct.filter))
-dvoct.clean[grep("BL", rownames(dvoct.filter)),]
-dvoct.clean[grep("RB", rownames(dvoct.filter)),"Dikerogammarus_villosus"]
+bloct = grep("BL", rownames(filter.oct))
+clean.oct[grep("BL", rownames(filter.oct)),]
+clean.oct[grep("RB", rownames(filter.oct)),"Dikerogammarus_villosus"]
 
-dvoct.clean = dvoct.clean[-bloct,]
-dvoct.filter = dvoct.filter[-bloct,]
+clean.oct = clean.oct[-bloct,]
+filter.oct = filter.oct[-bloct,]
 
-dvoct.clean = subset(dvoct.clean, select = colSums(dvoct.clean) > 0)
-dvoct.filter = subset(dvoct.filter, select = colSums(dvoct.filter) > 0)
+clean.oct = subset(clean.oct, select = colSums(clean.oct) > 0)
+filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
-dvoct.clean = subset(dvoct.clean, subset = rowSums(dvoct.clean) > 0)
-dvoct.filter = subset(dvoct.filter, subset = rowSums(dvoct.filter) > 0)
+clean.oct = subset(clean.oct, subset = rowSums(clean.oct) > 0)
+filter.oct = subset(filter.oct, subset = rowSums(filter.oct) > 0)
 ```
 
 We need to add other variables to the data frames; specifically the sampling season, the samples ID, the lake ID, and the predator ID (eDNA samples were labeled as "water"). We then split the frames into gut contents and eDNA samples.
