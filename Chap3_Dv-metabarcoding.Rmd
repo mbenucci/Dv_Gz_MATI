@@ -44,10 +44,9 @@ sessionInfo()
 ```{r input_files}
 infile_may17 = read.csv("data/CO1Aug17-merge-forwonly-nonchimera-c97-cov2_id97-by-taxonomy-readcounts.blast.csv", header=T)
 infile_oct17 = read.csv("data/CO1DvAug18-merged-forwonly_nonchimera-c97-cov2-id97_by-taxonomy-readcounts.csv", header=T)
-
-#head(infile_may17)
-#head(infile_oct17)
 ```
+
+We remove the taxonomy column from each input files and save them into separate files.
 
 ```{r removing_taxonomy}
 ## Custom function to format the taxonomy column
@@ -69,7 +68,6 @@ taxa.split.may = format_taxonomy(taxa.may17)
 taxa.split.may = data.frame(taxa.split.may)
 
 # Second input file
-
 taxa.oct17 = infile_oct17$taxomomy
 infile_oct17 = infile_oct17[,!(colnames(infile_oct17)%in% 'taxomomy')]
 
@@ -83,12 +81,7 @@ write.csv(taxa.split.may, "R/CO1DvMay17_taxonomy.csv")
 write.csv(taxa.split.oct, "R/CO1DvOct17_taxonomy.csv")
 ```
 
-
-```{r clean, include=FALSE}
-rm(taxa.may17,taxa.oct17,taxa.split.may,taxa.split.oct)
-```
-
-Each initial input file was generated as the result of two separate operations. First DNA centroids were assigned against reference database, the reads that resulted unassigned were then assigned against the NCBI nt database. Each operation generated two separate files which were then merged. The following step is to remove potential duplicate taxa records that would prevent R from definying the row names as the taxa names. Because we removed the last column with the taxonomy information, we can use the whole frame; otherwise we would have needed to avoid the last column in each frame.
+Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - updated at early September 2018). Each operation generated two separate files which were then merged. The following step is to remove potential duplicate taxa records that would prevent R from definying the row names as the taxa names. Because we removed the last column with the taxonomy information, we can use the whole frame; otherwise we would have needed to avoid the last column in each frame.
 
 ```{r removing duplicates}
 dv.may17 = as.data.frame(infile_may17 %>% group_by(X.OTU.ID) %>% summarise_all(funs(sum)))
