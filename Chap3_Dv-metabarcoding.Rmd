@@ -353,13 +353,11 @@ The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted co
 * `WB.BL1` = 6338, `WB.BL2` = 863
 * `RB.BL1` = 1818, `RB.BL2` = 2002
 
-Of these, between 99.4% and 100% belonged to _Dikerogamamrus villosus_. This is far less than ideal considering those are meant to be dissection and extraction blanks; and also in the perspective that the rest of the non-invaded Rockland Broad (RB) gut content samples presented very low _D. villosus_ contamination.
+Of these, between 99.4% and 100% belonged to _Dikerogamamrus villosus_. This is far less than ideal considering those are meant to be dissection and extraction blanks; however the rest of the non-invaded Rockland Broad (RB) gut content samples presented very low _D. villosus_ contamination. In this perspective the decision was made not to act upon these levels of contamination also considering that _D. villosus_ is the main target taxa and overall in high concentration.
 
-```{r}
+```{r extraction blanks}
 # cleaning contamination in extraction blank samples
 rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
-colSums(clean.oct[grep("BL", rownames(filter.oct)),])
-
 clean.oct[grep("BL", rownames(filter.oct)),"Dikerogammarus_villosus"]/rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
 
 clean.oct[grep("RB", rownames(filter.oct)),"Dikerogammarus_villosus"]
@@ -374,74 +372,75 @@ clean.oct = subset(clean.oct, subset = rowSums(clean.oct) > 0)
 filter.oct = subset(filter.oct, subset = rowSums(filter.oct) > 0)
 ```
 
-We need to add other variables to the data frames; specifically the sampling season, the samples ID, the lake ID, and the predator ID (eDNA samples were labeled as "water"). We then split the frames into gut contents and eDNA samples.
-For the `predator_ID`, we used different ration to calculate the ID. May we could use the taxa with ratio greater or equal to 50% within each samples, for October instead we could use only ID with ratio greater or equal to 90% before getting miss-assignment. The samples where the chances of miss-assignment was too high were added manually.
+Other variables need to be added to the data frames; specifically the sampling season, the gut contents samples ID, the site ID, and the predator ID (eDNA samples were labeled as "water"). Then the frames can be divided between gut contents and eDNA samples.
 
 ```{r adding variables}
-dvmay.filter$time = "May"
-dvoct.filter$time = "Oct"
+# Adding time variable
+filter.may$time = "May"
+filter.oct$time = "Oct"
 
-dvmay.filter$sample_id = rownames(dvmay.filter)
-dvoct.filter$sample_id = rownames(dvoct.filter)
+# Adding sample ID from rownames
+filter.may$sample_id = gsub("[.]", "", rownames(filter.may))
+filter.oct$sample_id = gsub("[.]pl[0-9]{1}.{5,6}nc.blast", "", rownames(filter.oct))
 
-# Nested gsub to keep only the 2 letter from each sample ID referring to the lake ID.
-
-dvmay.filter$site = gsub("BL{1}$","",gsub("R{1}$","",gsub("[0-9]{1,3}","", gsub("e?","", dvmay.filter$sample_id))))
-dvoct.filter$site = gsub("[.]BL{1}$","",gsub("R{1}$","",gsub("[0-9]{1,3}","", gsub("e?","", dvoct.filter$sample_id))))
+# Nested gsub to keep only the 2 letter from each sample ID referring to the lake ID
+filter.may$site = gsub("BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", filter.may$sample_id))))
+filter.oct$site = gsub("[.]BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", filter.oct$sample_id))))
 
 # Adding the sample type (eDNA or gut contents)
+ednamay = grep("e", filter.may$sample_id)
+filter.may$sample_type = "NA"
+filter.may[ednamay,"sample_type"] = "eDNA"
+filter.may[-ednamay,"sample_type"] = "gut"
 
-ednamay = grep("e", dvmay.filter$sample_id)
-dvmay.filter$sample_type = "NA"
-dvmay.filter[ednamay,"sample_type"] = "eDNA"
-dvmay.filter[-ednamay,"sample_type"] = "gut"
+ednaoct = grep("e", filter.oct$sample_id)
+filter.oct$sample_type = "NA"
+filter.oct[ednaoct, "sample_type"] = "eDNA"
+filter.oct[-ednaoct, "sample_type"] = "gut"
+```
 
-ednaoct = grep("e", dvoct.filter$sample_id)
-dvoct.filter$sample_type = "NA"
-dvoct.filter[ednaoct, "sample_type"] = "eDNA"
-dvoct.filter[-ednaoct, "sample_type"] = "gut"
+For the `predator_ID`, we used different ration to calculate the ID. May we could use the taxa with ratio greater or equal to 50% within each samples, for October instead we could use only ID with ratio greater or equal to 90% before getting miss-assignment. The samples where the chances of miss-assignment was too high were added manually.
 
+```{r}
 # Adding predator ID base on DNA ratio greater than 0.5 and 0.9
-
-ednamay = grep("e", rownames(dvmay.filter))
-#ednamay
-predmay = which(dvmay.filter[-ednamay,1:87] >= 0.5, arr.ind=T)
+ednamay = grep("e", rownames(filter.may))
+predmay = which(filter.may[-ednamay,1:87] >= 0.5, arr.ind=T)
 rownames(predmay)
-colnames(dvmay.filter[rownames(predmay),as.vector(predmay[,2])])
+colnames(filter.may[rownames(predmay),as.vector(predmay[,2])])
 
-dvmay.filter$predator_ID = "NA"
-dvmay.filter[ednamay,"predator_ID"] = "water"
-dvmay.filter[rownames(predmay),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(dvmay.filter[rownames(predmay),as.vector(predmay[,2])]))
+filter.may$predator_ID = "NA"
+filter.may[ednamay,"predator_ID"] = "water"
+filter.may[rownames(predmay),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.may[rownames(predmay),as.vector(predmay[,2])]))
 
-ednaoct = grep("e", rownames(dvoct.filter))
+ednaoct = grep("e", rownames(filter.oct))
 #ednaoct
-predoct = which(dvoct.filter[-ednaoct,1:74] >= 0.8, arr.ind=T)
+predoct = which(filter.oct[-ednaoct,1:74] >= 0.8, arr.ind=T)
 rownames(predoct)
-colnames(dvoct.filter[rownames(predoct),as.vector(predoct[,2])])
+colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])])
 
-dvoct.filter$predator_ID = "NA"
-dvoct.filter[ednaoct,"predator_ID"] = "water"
-dvoct.filter[rownames(predoct),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(dvoct.filter[rownames(predoct),as.vector(predoct[,2])]))
+filter.oct$predator_ID = "NA"
+filter.oct[ednaoct,"predator_ID"] = "water"
+filter.oct[rownames(predoct),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])]))
 
 # Adding missing predators
 
-count(dvmay.filter$predator_ID == "NA")
-miss.may = rownames(dvmay.filter[dvmay.filter$predator_ID == "NA",])
-dvmay.filter[rownames(dvmay.filter) %in% miss.may,]
+count(filter.may$predator_ID == "NA")
+miss.may = rownames(filter.may[filter.may$predator_ID == "NA",])
+filter.may[rownames(filter.may) %in% miss.may,]
 
-dvmay.filter$predator_ID[rownames(dvmay.filter) == "RB303"] = "Corophium_multisetosum"
-dvmay.filter$predator_ID[rownames(dvmay.filter) == "RB603"] = "Gammarus_zaddachi"
-dvmay.filter$predator_ID[rownames(dvmay.filter) == "RB608"] = "Gammarus_zaddachi"
+filter.may$predator_ID[rownames(filter.may) == "RB303"] = "Corophium_multisetosum"
+filter.may$predator_ID[rownames(filter.may) == "RB603"] = "Gammarus_zaddachi"
+filter.may$predator_ID[rownames(filter.may) == "RB608"] = "Gammarus_zaddachi"
 
-count(dvoct.filter$predator_ID == "NA")
-miss.oct = rownames(dvoct.filter[dvoct.filter$predator_ID == "NA",])
-dvoct.filter[rownames(dvoct.filter) %in% miss.oct,]
-apply(dvoct.filter[rownames(dvoct.filter) %in% miss.oct,1:74],1,max)
+count(filter.oct$predator_ID == "NA")
+miss.oct = rownames(filter.oct[filter.oct$predator_ID == "NA",])
+filter.oct[rownames(filter.oct) %in% miss.oct,]
+apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74],1,max)
 
-dvoct.filter$predator_ID[rownames(dvoct.filter) == "GW401"] = "Dikerogammarus_villosus"
-dvoct.filter$predator_ID[rownames(dvoct.filter) %in% c("RB301","RB302","RB303","RB304")] = "Gammarus_zaddachi"
-dvoct.filter$predator_ID[rownames(dvoct.filter) == "RB412"] = "Crangonyx_pseudogracilis"
-dvoct.filter$predator_ID[rownames(dvoct.filter) %in% c("RB606","RB613","RB616")] = "Gammarus_zaddachi"
+filter.oct$predator_ID[rownames(filter.oct) == "GW401"] = "Dikerogammarus_villosus"
+filter.oct$predator_ID[rownames(filter.oct) %in% c("RB301","RB302","RB303","RB304")] = "Gammarus_zaddachi"
+filter.oct$predator_ID[rownames(filter.oct) == "RB412"] = "Crangonyx_pseudogracilis"
+filter.oct$predator_ID[rownames(filter.oct) %in% c("RB606","RB613","RB616")] = "Gammarus_zaddachi"
 ```
 
 We now need to extract the information from the predator ID, so that we can set their ratio values equal to zero. We are basically obtaining a matrix with the only values that regards prey items or potential prey items. The information of the predator ID will still be stored into the column `predator_ID`.
