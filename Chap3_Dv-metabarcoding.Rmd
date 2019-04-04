@@ -401,41 +401,39 @@ filter.oct[-ednaoct, "sample_type"] = "gut"
 
 For the `predator_ID`, we used different ration to calculate the ID. May we could use the taxa with ratio greater or equal to 50% within each samples, for October instead we could use only ID with ratio greater or equal to 90% before getting miss-assignment. The samples where the chances of miss-assignment was too high were added manually.
 
-```{r}
-# Adding predator ID base on DNA ratio greater than 0.5 and 0.9
+```{r adding predator}
+# Adding predator ID based on the DNA ratio, If greater than 0.9
 ednamay = grep("e", rownames(filter.may))
-predmay = which(filter.may[-ednamay,1:87] >= 0.5, arr.ind=T)
+predmay = which(filter.may[-ednamay,1:87] >= 0.9, arr.ind=T)
 rownames(predmay)
-colnames(filter.may[rownames(predmay),as.vector(predmay[,2])])
+colnames(filter.may[rownames(predmay), as.vector(predmay[,2])])
 
-filter.may$predator_ID = "NA"
-filter.may[ednamay,"predator_ID"] = "water"
-filter.may[rownames(predmay),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.may[rownames(predmay),as.vector(predmay[,2])]))
+filter.may$predator_id = "NA"
+filter.may[ednamay,"predator_id"] = "water"
+filter.may[rownames(predmay),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.may[rownames(predmay), as.vector(predmay[,2])]))
 
 ednaoct = grep("e", rownames(filter.oct))
-#ednaoct
-predoct = which(filter.oct[-ednaoct,1:74] >= 0.8, arr.ind=T)
+predoct = which(filter.oct[-ednaoct,1:74] >= 0.9, arr.ind=T)
 rownames(predoct)
-colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])])
+colnames(filter.oct[rownames(predoct), as.vector(predoct[,2])])
 
-filter.oct$predator_ID = "NA"
-filter.oct[ednaoct,"predator_ID"] = "water"
-filter.oct[rownames(predoct),"predator_ID"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])]))
+filter.oct$predator_id = "NA"
+filter.oct[ednaoct,"predator_id"] = "water"
+filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])]))
 
-# Adding missing predators
-
-count(filter.may$predator_ID == "NA")
-miss.may = rownames(filter.may[filter.may$predator_ID == "NA",])
+# Checking for missing predators
+count(filter.may$predator_id == "NA")
+miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
 filter.may[rownames(filter.may) %in% miss.may,]
 
 filter.may$predator_ID[rownames(filter.may) == "RB303"] = "Corophium_multisetosum"
 filter.may$predator_ID[rownames(filter.may) == "RB603"] = "Gammarus_zaddachi"
 filter.may$predator_ID[rownames(filter.may) == "RB608"] = "Gammarus_zaddachi"
 
-count(filter.oct$predator_ID == "NA")
-miss.oct = rownames(filter.oct[filter.oct$predator_ID == "NA",])
+count(filter.oct$predator_id == "NA")
+miss.oct = rownames(filter.oct[filter.oct$predator_id == "NA",])
 filter.oct[rownames(filter.oct) %in% miss.oct,]
-apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74],1,max)
+apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74], 1, max)
 
 filter.oct$predator_ID[rownames(filter.oct) == "GW401"] = "Dikerogammarus_villosus"
 filter.oct$predator_ID[rownames(filter.oct) %in% c("RB301","RB302","RB303","RB304")] = "Gammarus_zaddachi"
@@ -448,12 +446,12 @@ We now need to extract the information from the predator ID, so that we can set 
 ```{r removing predator ratio}
 # May
 trow = rownames(dvmay.filter[dvmay.filter$predator_ID != "water", 1:87])
-tcol = dvmay.filter[dvmay.filter$predator_ID != "water", "predator_ID"]
+tcol = dvmay.filter[dvmay.filter$predator_ID != "water", "predator_id"]
 
 dvmay.filter[trow,unique(tcol)]
 
 for (i in trow){
-  pred_id = dvmay.filter[i,"predator_ID"]
+  pred_id = dvmay.filter[i,"predator_id"]
   dvmay.filter[i,pred_id] <- 0
 }
 
@@ -462,12 +460,12 @@ dvmay.filter[trow,unique(tcol)]
 
 # Oct
 urow = rownames(dvoct.filter[dvoct.filter$predator_ID != "water", 1:74])
-ucol = dvoct.filter[dvoct.filter$predator_ID != "water", "predator_ID"]
+ucol = dvoct.filter[dvoct.filter$predator_ID != "water", "predator_id"]
 
 dvoct.filter[urow,unique(ucol)]
 
 for (i in urow){
-  pred_id = dvoct.filter[i,"predator_ID"]
+  pred_id = dvoct.filter[i,"predator_id"]
   dvoct.filter[i,pred_id] <- 0
 }
 
@@ -490,7 +488,7 @@ gut.melt = melt(gut.ratio)
 head(gut.melt)
 
 gut.ratio2 = dvoct.filter[dvoct.filter$sample_type == "gut",]
-gut.ratio2[3, "predator_ID"] <- "Dikerogammarus_villosus"
+gut.ratio2[3, "predator_id"] <- "Dikerogammarus_villosus"
 gut.melt2 = melt(gut.ratio2)
 
 gut.full = full_join(gut.melt, gut.melt2)
@@ -505,9 +503,9 @@ ggplot(gut.full, aes(time, value)) +
 niche.frame = full_join(gut.ratio, gut.ratio2)
 niche.frame[is.na(niche.frame)] <- 0
 
-niche.info = niche.frame[,c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_ID"))]
+niche.info = niche.frame[,c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]
 
-niche.frame = subset(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_ID"))], select = colSums(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_ID"))]) > 0)
+niche.frame = subset(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))], select = colSums(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]) > 0)
 
 niche.frame[][niche.frame > 0] <- 1
 
@@ -563,9 +561,9 @@ head(niche.frame)
 
 niche.nmds = as.data.frame(niche.frame)
 
-niche.nmds = subset(niche.nmds, subset=rowSums(niche.nmds[,!c(colnames(niche.frame) %in% c("time","site","sample_id","predator_ID","sample_type"))]) > 0)
+niche.nmds = subset(niche.nmds, subset=rowSums(niche.nmds[,!c(colnames(niche.frame) %in% c("time","site","sample_id","predator_id","sample_type"))]) > 0)
 
-matrix.niche = as.matrix(niche.nmds[,!c(colnames(niche.nmds) %in% c("time","site","sample_id","predator_ID","sample_type"))])
+matrix.niche = as.matrix(niche.nmds[,!c(colnames(niche.nmds) %in% c("time","site","sample_id","predator_id","sample_type"))])
 
 fact_site.niche = matrix(c(niche.nmds$site),ncol=1) 
 fact_time.niche = matrix(c(niche.nmds$time), ncol=1)
@@ -614,7 +612,7 @@ niche.web = niche.model[-c(2,4,6),]
 
 rownames(niche.web) = c("Dv_GW-May","Dv_GW-Oct","Gz_RB-May","Gz_RB-Oct","Dv_WB-May","Dv_WB-Oct")
 
-niche.web = niche.web[,!c(colnames(niche.web) %in% c("site","time","predator_ID","Dikerogammarus_villosus","Porcellio_scaber"))]
+niche.web = niche.web[,!c(colnames(niche.web) %in% c("site","time","predator_id","Dikerogammarus_villosus","Porcellio_scaber"))]
 
 niche.web = as.data.frame(t(niche.web))
 
