@@ -308,14 +308,6 @@ filter.may = filter.may[,!(colnames(filter.may) %in% "Osmia_bicornis")]
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold; and _Osmia bicornis_ remained in only one samples (eGW4) with 28 reads (1.88%). In addition it was present contamination from _Porcellio scaber_ in two samples (RB409 and RB412), respectively at 2656 reads (5.6%), and 6234 reads (16.9%). Ultimately Psocoptera DNA was detected as contaminant in one sample (RB411), at 293 reads (0.9%).
 
 
-The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted containing lot of DNA reads:
-
-* `GW.BL1` = 3399, `GW.BL2` = 1782
-* `WB.BL1` = 6338, `WB.BL2` = 858
-* `RB.BL1` = 1808, `RB.BL2` = 1991
-
-Exploring these samples show that the only species contained in these samples is _Dikerogammarus villosus_. Less than ideal considering the 2 BLANKS from Rockland Broad (RB). The rest of the RB samples present though very low _D. villosus_ contamination.
-
 ```{r remaining contaminations Oct}
 # Checking in which sample(s) _Osmia bicornis_ contamination is still present
 count(filter.oct$Osmia_bicornis > 0)
@@ -323,14 +315,6 @@ rownames(filter.oct)[filter.oct$Osmia_bicornis > 0]
 
 # Checking N reads of _O. bicornis_
 clean.oct$Osmia_bicornis[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Osmia_bicornis > 0]]
-
-# Checking in which sample(s) _Porcellio scaber_ contamination is still present
-count(filter.oct$Porcellio_scaber > 0)
-rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]
-
-# Checking N reads of _P. scaber_
-clean.oct$Porcellio_scaber[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]]
-filter.oct[filter.oct$Porcellio_scaber > 0,"Porcellio_scaber"]
 
 # Checking in which sample(s) _Psocoptera_ contamination is still present
 count(filter.oct$`Psocoptera_sp._BOLD:AAN8452` > 0)
@@ -340,11 +324,17 @@ rownames(filter.oct)[filter.oct$`Psocoptera_sp._BOLD:AAN8452` > 0]
 clean.oct$`Psocoptera_sp._BOLD:AAN8452`[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$`Psocoptera_sp._BOLD:AAN8452` > 0]]
 filter.oct[filter.oct$`Psocoptera_sp._BOLD:AAN8452` > 0,"Psocoptera_sp._BOLD:AAN8452"]
 
+# Checking in which sample(s) _Porcellio scaber_ contamination is still present
+count(filter.oct$Porcellio_scaber > 0)
+rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]
+
+# Checking N reads of _P. scaber_
+clean.oct$Porcellio_scaber[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]]
+filter.oct[filter.oct$Porcellio_scaber > 0,"Porcellio_scaber"]
+
 ## P.scaber TO BE SORTED OUT!!!!
 
-
 rownames(clean.oct)
-
 colnames(clean.oct)
 
 clean.oct = clean.oct[,!(colnames(clean.oct) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
@@ -355,10 +345,20 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
 clean.oct = subset(clean.oct, subset = rowSums(clean.oct) > 0)
 filter.oct = subset(filter.oct, subset = rowSums(filter.oct) > 0)
+```
 
-# cleaning contamination samples
+The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted containing quite a high amount of contaminant DNA reads:
 
+* `GW.BL1` = 3399, `GW.BL2` = 1782
+* `WB.BL1` = 6338, `WB.BL2` = 863
+* `RB.BL1` = 1818, `RB.BL2` = 2002
+
+Exploring these samples show that the only species contained in these samples is _Dikerogammarus villosus_. Less than ideal considering the 2 BLANKS from Rockland Broad (RB). The rest of the RB samples present though very low _D. villosus_ contamination.
+
+```{r}
+# cleaning contamination in extraction blank samples
 rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
+clean.oct[grep("BL", rownames(filter.oct)),]
 
 clean.oct[grep("BL", rownames(filter.oct)),]
 rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
