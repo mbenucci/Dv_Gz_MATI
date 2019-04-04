@@ -353,15 +353,14 @@ The DNA extraction blanks (`GW.BL1 & 2`, `WB.BL1 & 2`, `RB.BL1 & 2`) resulted co
 * `WB.BL1` = 6338, `WB.BL2` = 863
 * `RB.BL1` = 1818, `RB.BL2` = 2002
 
-Exploring these samples show that the only species contained in these samples is _Dikerogammarus villosus_. Less than ideal considering the 2 BLANKS from Rockland Broad (RB). The rest of the RB samples present though very low _D. villosus_ contamination.
+Of these, between 99.4% and 100% belonged to _Dikerogamamrus villosus_. This is far less than ideal considering those are meant to be dissection and extraction blanks; and also in the perspective that the rest of the non-invaded Rockland Broad (RB) gut content samples presented very low _D. villosus_ contamination.
 
 ```{r}
 # cleaning contamination in extraction blank samples
 rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
-clean.oct[grep("BL", rownames(filter.oct)),]
+colSums(clean.oct[grep("BL", rownames(filter.oct)),])
 
-clean.oct[grep("BL", rownames(filter.oct)),]
-rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
+clean.oct[grep("BL", rownames(filter.oct)),"Dikerogammarus_villosus"]/rowSums(clean.oct[grep("BL", rownames(filter.oct)),])
 
 clean.oct[grep("RB", rownames(filter.oct)),"Dikerogammarus_villosus"]
 
