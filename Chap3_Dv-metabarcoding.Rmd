@@ -256,28 +256,6 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 ```
 
 
-```{r test}
-#pnmay = grep("POS|NEG", rownames(dvmay.filter), ignore.case=T)
-#dvmay.filter = dvmay.filter[-pnmay,]
-#dvmay.clean = dvmay.clean[-pnmay,]
-
-#pnoct = grep("POS|NEG", rownames(dvoct.filter), ignore.case=T)
-#dvoct.filter = dvoct.filter[-pnoct,]
-#dvoct.clean = dvoct.clean[-pnoct,]
-
-#rownames(dvmay.clean) = gsub("[.]{1}", "", rownames(dvmay.clean))
-#rownames(dvmay.filter) = gsub("[.]{1}", "", rownames(dvmay.filter))
-
-#rownames(dvoct.clean) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.clean))
-#rownames(dvoct.filter) = gsub(".pl[0-9]{1}.{4,5}.nc.blast$", "", rownames(dvoct.filter))
-
-#dvmay.clean = subset(dvmay.clean, subset = rowSums(dvmay.clean) > 0)
-#dvmay.filter = subset(dvmay.filter, subset = rowSums(dvmay.filter) > 0)
-
-#dvoct.clean = subset(dvoct.clean, subset = rowSums(dvoct.clean) > 0)
-#dvoct.filter = subset(dvoct.filter, subset = rowSums(dvoct.filter) > 0)
-```
-
 # Remaining known contaminations
 
 Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output.
@@ -332,7 +310,7 @@ rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]
 clean.oct$Porcellio_scaber[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]]
 filter.oct[filter.oct$Porcellio_scaber > 0,"Porcellio_scaber"]
 
-## P.scaber TO BE SORTED OUT!!!!
+## P.scaber AND cont.13 TO BE SORTED OUT!!!!
 
 rownames(clean.oct)
 colnames(clean.oct)
@@ -372,39 +350,76 @@ clean.oct = subset(clean.oct, subset = rowSums(clean.oct) > 0)
 filter.oct = subset(filter.oct, subset = rowSums(filter.oct) > 0)
 ```
 
+Positive, Negative and Blank samples need to be removed before continuing.
+
+```{r removing samples}
+pnmay = grep("POS|NEG", rownames(filter.may), ignore.case=T)
+filter.may = filter.may[-pnmay,]
+clean.may = clean.may[-pnmay,]
+
+pnoct = grep("POS|NEG", rownames(filter.oct), ignore.case=T)
+filter.oct = filter.oct[-pnoct,]
+clean.oct = clean.oct[-pnoct,]
+```
+
 Other variables need to be added to the data frames; specifically the sampling season, the gut contents samples ID, the site ID, and the predator ID (eDNA samples were labeled as "water"). Then the frames can be divided between gut contents and eDNA samples.
 
 ```{r adding variables}
 # Adding time variable
 filter.may$time = "May"
+clean.may$time = "May"
+
 filter.oct$time = "Oct"
+clean.oct$time = "Oct"
 
 # Adding sample ID from rownames
+# May
 filter.may$sample_id = gsub("[.]", "", rownames(filter.may))
+clean.may$sample_id = gsub("[.]", "", rownames(clean.may))
+
+# October
 filter.oct$sample_id = gsub("[.]pl[0-9]{1}.{5,6}nc.blast", "", rownames(filter.oct))
+clean.oct$sample_id = gsub("[.]pl[0-9]{1}.{5,6}nc.blast", "", rownames(clean.oct))
 
 # Nested gsub to keep only the 2 letter from each sample ID referring to the lake ID
+# May
 filter.may$site = gsub("BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", filter.may$sample_id))))
+clean.may$site = gsub("BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", clean.may$sample_id))))
+
+# October
 filter.oct$site = gsub("[.]BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", filter.oct$sample_id))))
+clean.oct$site = gsub("[.]BL{1}$", "", gsub("R{1}$", "", gsub("[0-9]{1,3}", "", gsub("e?", "", clean.oct$sample_id))))
 
 # Adding the sample type (eDNA or gut contents)
+# May
 ednamay = grep("e", filter.may$sample_id)
 filter.may$sample_type = "NA"
 filter.may[ednamay,"sample_type"] = "eDNA"
 filter.may[-ednamay,"sample_type"] = "gut"
 
+ednamay = grep("e", clean.may$sample_id)
+clean.may$sample_type = "NA"
+clean.may[ednamay,"sample_type"] = "eDNA"
+clean.may[-ednamay,"sample_type"] = "gut"
+
+# October
 ednaoct = grep("e", filter.oct$sample_id)
 filter.oct$sample_type = "NA"
 filter.oct[ednaoct, "sample_type"] = "eDNA"
 filter.oct[-ednaoct, "sample_type"] = "gut"
+
+ednaoct = grep("e", clean.oct$sample_id)
+clean.oct$sample_type = "NA"
+clean.oct[ednaoct, "sample_type"] = "eDNA"
+clean.oct[-ednaoct, "sample_type"] = "gut"
 ```
 
 For the `predator_ID`, we used different ration to calculate the ID. May we could use the taxa with ratio greater or equal to 50% within each samples, for October instead we could use only ID with ratio greater or equal to 90% before getting miss-assignment. The samples where the chances of miss-assignment was too high were added manually.
 
 ```{r adding predator}
-# Adding predator ID based on the DNA ratio, If greater than 0.9
+# Adding predator ID based on the DNA ratio greater than 0.9
 ednamay = grep("e", rownames(filter.may))
-predmay = which(filter.may[-ednamay,1:87] >= 0.9, arr.ind=T)
+predmay = which(filter.may[-ednamay,!c(colnames(filter.may) %in% c("time","site","sample_id","sample_type"))] >= 0.9, arr.ind=T)
 rownames(predmay)
 colnames(filter.may[rownames(predmay), as.vector(predmay[,2])])
 
@@ -425,6 +440,8 @@ filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 count(filter.may$predator_id == "NA")
 miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
 filter.may[rownames(filter.may) %in% miss.may,]
+
+##### SORT OUT cont.13 BEFORE CONTINUING!!!!!
 
 filter.may$predator_ID[rownames(filter.may) == "RB303"] = "Corophium_multisetosum"
 filter.may$predator_ID[rownames(filter.may) == "RB603"] = "Gammarus_zaddachi"
