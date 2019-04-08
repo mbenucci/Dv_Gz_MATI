@@ -282,8 +282,6 @@ clean.may$Harmonia_axyridis[rownames(clean.may) %in% rownames(filter.may)[filter
 clean.may = clean.may[,!(colnames(clean.may) %in% "Harmonia_axyridis")]
 filter.may = filter.may[,!(colnames(filter.may) %in% "Harmonia_axyridis")]
 
-## cont.13 TO BE SORTED OUT!!!!
-
 # Checking extra contamination sample(s) still present
 sum(clean.may["cont.13",])
 colnames(filter.may)[filter.may["cont.13",] > 0]
@@ -424,7 +422,7 @@ clean.oct[ednaoct, "sample_type"] = "eDNA"
 clean.oct[-ednaoct, "sample_type"] = "gut"
 ```
 
-For the `predator_ID`, we used different ration to calculate the ID. May we could use the taxa with ratio greater or equal to 50% within each samples, for October instead we could use only ID with ratio greater or equal to 90% before getting miss-assignment. The samples where the chances of miss-assignment was too high were added manually.
+For the `predator_id`, the taxa ID was extracted from the taxa with ratio greater or equal to 90% within each samples, for both May and October. The samples that resulted still as "NA" at the end of this process were manually checked and the taxa ID were added manually.
 
 ```{r adding predator}
 # Adding predator ID based on the DNA ratio greater than 0.9
@@ -455,20 +453,21 @@ miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
 miss.may
 View(filter.may[rownames(filter.may) %in% miss.may,])
 
-filter.may$predator_id[rownames(filter.may) %in% "WB.507"] = "Dikerogammarus_villosus"
-filter.may$predator_id[rownames(filter.may) %in% c("RB.304","RB.303")] = "Corophium_multisetosum"
-filter.may$predator_id[rownames(filter.may) %in% c(miss.may[!miss.may %in% c("WB.507","RB.304","RB.303")])] = "Gammarus_zaddachi"
+filter.may$predator_id[filter.may$sample_id %in% "WB507"] = "Dikerogammarus_villosus"
+filter.may$predator_id[filter.may$sample_id %in% c("RB304","RB303")] = "Corophium_multisetosum"
+filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB507","RB304","RB303")])] = "Gammarus_zaddachi"
 
 # October
 count(filter.oct$predator_id == "NA")
 miss.oct = rownames(filter.oct[filter.oct$predator_id == "NA",])
-filter.oct[rownames(filter.oct) %in% miss.oct,]
-apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74], 1, max)
+miss.oct
+View(filter.oct[rownames(filter.oct) %in% miss.oct,])
 
-filter.oct$predator_ID[rownames(filter.oct) == "GW401"] = "Dikerogammarus_villosus"
-filter.oct$predator_ID[rownames(filter.oct) %in% c("RB301","RB302","RB303","RB304")] = "Gammarus_zaddachi"
-filter.oct$predator_ID[rownames(filter.oct) == "RB412"] = "Crangonyx_pseudogracilis"
-filter.oct$predator_ID[rownames(filter.oct) %in% c("RB606","RB613","RB616")] = "Gammarus_zaddachi"
+#apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74], 1, max)
+
+filter.oct$predator_id[filter.oct$sample_id %in% c("GW103","GW108","GW401","GW601","WB627")] = "Dikerogammarus_villosus"
+filter.oct$predator_id[filter.oct$sample_id %in% c("RB301","RB302","RB303","RB304","RB305","RB606","RB613","RB616")] = "Gammarus_zaddachi"
+filter.oct$predator_id[filter.oct$sample_id %in% c("RB403","RB412")] = "Crangonyx_pseudogracilis"
 ```
 
 We now need to extract the information from the predator ID, so that we can set their ratio values equal to zero. We are basically obtaining a matrix with the only values that regards prey items or potential prey items. The information of the predator ID will still be stored into the column `predator_ID`.
