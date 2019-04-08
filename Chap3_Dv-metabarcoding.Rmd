@@ -514,8 +514,9 @@ write.csv(clean.oct, "R/Oct_reads_filtered.csv")
 write.csv(filter.oct, "R/Oct_ratio_filtered.csv")
 ```
 
+# 2. Diversity indexes of gut contents and eDNA community
 
-We can now start plotting and running models!
+Once We can now start plotting and running models!
 
 ```{r}
 gut.ratio = dvmay.filter[dvmay.filter$sample_type == "gut",]
