@@ -449,20 +449,18 @@ filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 # Checking for missing predators
 # May
 count(filter.may$predator_id == "NA")
-miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
+miss.may = gsub("[.]", "", rownames(filter.may[filter.may$predator_id == "NA",]))
 miss.may
 
 filter.may$predator_id[filter.may$sample_id %in% "WB507"] = "Dikerogammarus_villosus"
 filter.may$predator_id[filter.may$sample_id %in% c("RB304","RB303")] = "Corophium_multisetosum"
-filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB507","RB304","RB303")])] = "Gammarus_zaddachi"
+filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB.507","RB.304","RB.303")])] = "Gammarus_zaddachi"
 clean.may$predator_id = filter.may$predator_id
 
 # October
 count(filter.oct$predator_id == "NA")
 miss.oct = rownames(filter.oct[filter.oct$predator_id == "NA",])
 miss.oct
-
-#apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74], 1, max)
 
 filter.oct$predator_id[filter.oct$sample_id %in% c("GW103","GW108","GW401","GW601","WB627")] = "Dikerogammarus_villosus"
 filter.oct$predator_id[filter.oct$sample_id %in% c("RB301","RB302","RB303","RB304","RB305","RB606","RB613","RB616")] = "Gammarus_zaddachi"
@@ -473,6 +471,9 @@ clean.oct$predator_id = filter.oct$predator_id
 Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
 
 ```{r removing predator ratio}
+filter.may$predator_id
+filter.oct$predator_id
+
 pred_ratio_remove <- function(vector_of_rownames, input_frame){
   for (i in vector_of_rownames){
   pred_id = input_frame[i,"predator_id"]
@@ -513,6 +514,10 @@ for (i in urow){
 # Confirming the function worked
 filter.oct[urow,unique(ucol)]
 ```
+
+
+
+Saving the files into ".csv"
 
 ```{r}
 write.csv(dvmay.filter, "R/May_filtered.csv")
