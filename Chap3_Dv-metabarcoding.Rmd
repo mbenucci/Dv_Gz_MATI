@@ -516,6 +516,28 @@ write.csv(filter.oct, "R/Oct_ratio_filtered.csv")
 
 # 2. Diversity indexes of gut contents and eDNA community
 
+Dividing gut contents and eDNA samples.
+
+```{r dividing samples}
+clean.guts = full_join(clean.may[clean.may$sample_type == "gut",], clean.oct[clean.oct$sample_type == "gut",])
+clean.guts[is.na(clean.guts)] <- 0
+
+clean.edna = full_join(clean.may[clean.may$sample_type == "eDNA",], clean.oct[clean.oct$sample_type == "eDNA",])
+clean.edna[is.na(clean.edna)] <- 0
+```
+
+```{r removing empty taxa}
+info.guts = clean.guts[,c(colnames(clean.guts) %in% c("time","site","sample_id","sample_type","predator_id"))]
+info.edna = clean.edna[,c(colnames(clean.edna) %in% c("time","site","sample_id","sample_type","predator_id"))]
+
+# Cleaning empty taxa
+# gut content samples
+clean.guts = subset(clean.guts[,!c(colnames(clean.guts) %in% colnames(info.guts))], select=colSums(clean.guts[,!c(colnames(clean.guts) %in% colnames(info.guts))]) > 0)
+# eDNA samples
+clean.edna = subset(clean.edna[,!c(colnames(clean.edna) %in% colnames(info.edna))], select=colSums(clean.edna[,!c(colnames(clean.edna) %in% colnames(info.edna))]) > 0)
+```
+
+
 Once We can now start plotting and running models!
 
 ```{r}
