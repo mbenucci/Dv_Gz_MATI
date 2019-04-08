@@ -429,8 +429,8 @@ For the `predator_id`, the taxa ID was extracted from the taxa with ratio greate
 # May
 ednamay = grep("e", rownames(filter.may))
 predmay = which(filter.may[-ednamay,!c(colnames(filter.may) %in% c("time","site","sample_id","sample_type"))] >= 0.9, arr.ind=T)
-rownames(predmay)
-colnames(filter.may[rownames(predmay), as.vector(predmay[,2])])
+#rownames(predmay)
+#colnames(filter.may[rownames(predmay), as.vector(predmay[,2])])
 
 filter.may$predator_id = "NA"
 filter.may[ednamay,"predator_id"] = "water"
@@ -439,8 +439,8 @@ filter.may[rownames(predmay),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 # October
 ednaoct = grep("e", rownames(filter.oct))
 predoct = which(filter.oct[-ednaoct,1:74] >= 0.9, arr.ind=T)
-rownames(predoct)
-colnames(filter.oct[rownames(predoct), as.vector(predoct[,2])])
+#rownames(predoct)
+#colnames(filter.oct[rownames(predoct), as.vector(predoct[,2])])
 
 filter.oct$predator_id = "NA"
 filter.oct[ednaoct,"predator_id"] = "water"
@@ -451,55 +451,67 @@ filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 count(filter.may$predator_id == "NA")
 miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
 miss.may
-View(filter.may[rownames(filter.may) %in% miss.may,])
 
 filter.may$predator_id[filter.may$sample_id %in% "WB507"] = "Dikerogammarus_villosus"
 filter.may$predator_id[filter.may$sample_id %in% c("RB304","RB303")] = "Corophium_multisetosum"
 filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB507","RB304","RB303")])] = "Gammarus_zaddachi"
+clean.may$predator_id = filter.may$predator_id
 
 # October
 count(filter.oct$predator_id == "NA")
 miss.oct = rownames(filter.oct[filter.oct$predator_id == "NA",])
 miss.oct
-View(filter.oct[rownames(filter.oct) %in% miss.oct,])
 
 #apply(filter.oct[rownames(filter.oct) %in% miss.oct,1:74], 1, max)
 
 filter.oct$predator_id[filter.oct$sample_id %in% c("GW103","GW108","GW401","GW601","WB627")] = "Dikerogammarus_villosus"
 filter.oct$predator_id[filter.oct$sample_id %in% c("RB301","RB302","RB303","RB304","RB305","RB606","RB613","RB616")] = "Gammarus_zaddachi"
 filter.oct$predator_id[filter.oct$sample_id %in% c("RB403","RB412")] = "Crangonyx_pseudogracilis"
+clean.oct$predator_id = filter.oct$predator_id
 ```
 
-We now need to extract the information from the predator ID, so that we can set their ratio values equal to zero. We are basically obtaining a matrix with the only values that regards prey items or potential prey items. The information of the predator ID will still be stored into the column `predator_ID`.
+Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
 
 ```{r removing predator ratio}
-# May
-trow = rownames(dvmay.filter[dvmay.filter$predator_ID != "water", 1:87])
-tcol = dvmay.filter[dvmay.filter$predator_ID != "water", "predator_id"]
+pred_ratio_remove <- function(vector_of_rownames, input_frame){
+  for (i in vector_of_rownames){
+  pred_id = input_frame[i,"predator_id"]
+  input_frame[i,pred_id] <- 0
+  }
+  return(input_frame)
+}
 
-dvmay.filter[trow,unique(tcol)]
+# May
+trow = rownames(filter.may[filter.may$predator_id != "water", c("site","sample_id","time","sample_type","predator_id")])
+tcol = filter.may[filter.may$predator_ID != "water", "predator_id"]
+
+#filter.may[trow,unique(tcol)]
+pred_ratio_remove(trow, filter.may)
+
+filter.may[rownames(filter.may) %in% "RB.302","predator_id"]
 
 for (i in trow){
-  pred_id = dvmay.filter[i,"predator_id"]
-  dvmay.filter[i,pred_id] <- 0
+  filter.may[i, "predator_id"]
+  #pred_id = filter.may[i,"predator_id"]
+#  filter.may[i,pred_id] <- 0
 }
 
 # Confirming the function worked
-dvmay.filter[trow,unique(tcol)]
+filter.may[trow,unique(tcol)]
 
 # Oct
-urow = rownames(dvoct.filter[dvoct.filter$predator_ID != "water", 1:74])
-ucol = dvoct.filter[dvoct.filter$predator_ID != "water", "predator_id"]
+urow = rownames(filter.oct[filter.oct$predator_ID != "water", 1:74])
+ucol = filter.oct[filter.oct$predator_ID != "water", "predator_id"]
 
-dvoct.filter[urow,unique(ucol)]
+filter.oct[urow,unique(ucol)]
 
 for (i in urow){
-  pred_id = dvoct.filter[i,"predator_id"]
-  dvoct.filter[i,pred_id] <- 0
+  pred_id = filter.oct[i,"predator_id"]
+  filter.oct[i,pred_id] <- 0
 }
 
 # Confirming the function worked
-dvoct.filter[urow,unique(ucol)]
+filter.oct[urow,unique(ucol)]
 ```
 
 ```{r}
