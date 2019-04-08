@@ -452,13 +452,12 @@ filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 # May
 count(filter.may$predator_id == "NA")
 miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
-rownames(filter.may[rownames(filter.may) %in% miss.may,])
+miss.may
+View(filter.may[rownames(filter.may) %in% miss.may,])
 
-
-
-filter.may$predator_ID[rownames(filter.may) == "RB303"] = "Corophium_multisetosum"
-filter.may$predator_ID[rownames(filter.may) == "RB603"] = "Gammarus_zaddachi"
-filter.may$predator_ID[rownames(filter.may) == "RB608"] = "Gammarus_zaddachi"
+filter.may$predator_id[rownames(filter.may) %in% "WB.507"] = "Dikerogammarus_villosus"
+filter.may$predator_id[rownames(filter.may) %in% c("RB.304","RB.303")] = "Corophium_multisetosum"
+filter.may$predator_id[rownames(filter.may) %in% c(miss.may[!miss.may %in% c("WB.507","RB.304","RB.303")])] = "Gammarus_zaddachi"
 
 # October
 count(filter.oct$predator_id == "NA")
