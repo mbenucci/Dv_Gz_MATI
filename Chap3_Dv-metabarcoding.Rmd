@@ -454,7 +454,7 @@ miss.may
 
 filter.may$predator_id[filter.may$sample_id %in% "WB507"] = "Dikerogammarus_villosus"
 filter.may$predator_id[filter.may$sample_id %in% c("RB304","RB303")] = "Corophium_multisetosum"
-filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB.507","RB.304","RB.303")])] = "Gammarus_zaddachi"
+filter.may$predator_id[filter.may$sample_id %in% c(miss.may[!miss.may %in% c("WB507","RB304","RB303")])] = "Gammarus_zaddachi"
 clean.may$predator_id = filter.may$predator_id
 
 # October
