@@ -471,41 +471,39 @@ clean.oct$predator_id = filter.oct$predator_id
 Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
 
 ```{r removing predator ratio}
-# Checking predator id assignment worked appropriately
-filter.may$predator_id
-filter.oct$predator_id
-
 # Removal of predator ratios and DNA reads
 # May
-trow = rownames(filter.may[filter.may$predator_id != "water", c("site","sample_id","time","sample_type","predator_id")])
-tcol = filter.may[filter.may$predator_ID != "water", "predator_id"]
+m.row = rownames(filter.may[filter.may$predator_id != "water", c("site","sample_id","time","sample_type","predator_id")])
+m.col = filter.may[filter.may$predator_id != "water", "predator_id"]
 
-filter.may[trow,unique(tcol)]
+filter.may[m.row,unique(m.col)]
 
-for (i in trow){
-  filter.may[i, "predator_id"]
+for (i in m.row){
   pred_id = filter.may[i,"predator_id"]
+  pred_read = clean.may[i, "predator_id"]
   filter.may[i,pred_id] <- 0
+  clean.may[i,pred_read] <- 0
 }
 
 # Confirming the function worked
-#filter.may[trow,unique(tcol)]
+filter.may[m.row,unique(m.col)]
 
 # Oct
-urow = rownames(filter.oct[filter.oct$predator_ID != "water", c("site","sample_id","time","sample_type","predator_id")])
-ucol = filter.oct[filter.oct$predator_ID != "water", "predator_id"]
+o.row = rownames(filter.oct[filter.oct$predator_id != "water", c("site","sample_id","time","sample_type","predator_id")])
+o.col = filter.oct[filter.oct$predator_id != "water", "predator_id"]
 
-filter.oct[urow,unique(ucol)]
+filter.oct[o.row,unique(o.col)]
 
-for (i in urow){
+for (i in o.row){
   pred_id = filter.oct[i,"predator_id"]
+  pred_read = clean.oct[i, "predator_id"]
   filter.oct[i,pred_id] <- 0
+  clean.oct[i,pred_read] <- 0
 }
 
 # Confirming the function worked
-#filter.oct[urow,unique(ucol)]
+filter.oct[o.row,unique(o.col)]
 ```
-
 
 
 Saving the files into ".csv"
