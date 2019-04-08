@@ -258,9 +258,19 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
 # Remaining known contaminations
 
-Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output.
+Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence in the overal output, therefore it can be excluded.
 
 ```{r remaining contaminations May}
+# Checking in which sample(s) _Osmia bicornis_ contamination is still present
+count(filter.may$Osmia_bicornis > 0)
+rownames(filter.may)[filter.may$Osmia_bicornis > 0]
+
+# Checking N reads of _O. bicornis_
+clean.may$Osmia_bicornis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Osmia_bicornis > 0]]
+
+clean.may = clean.may[,!(colnames(clean.may) %in% "Osmia_bicornis")]
+filter.may = filter.may[,!(colnames(filter.may) %in% "Osmia_bicornis")]
+
 # Checking in which sample(s) _Harmonia axyridis_ contamination is still present
 count(filter.may$Harmonia_axyridis > 0)
 rownames(filter.may)[filter.may$Harmonia_axyridis > 0]
@@ -272,15 +282,19 @@ clean.may$Harmonia_axyridis[rownames(clean.may) %in% rownames(filter.may)[filter
 clean.may = clean.may[,!(colnames(clean.may) %in% "Harmonia_axyridis")]
 filter.may = filter.may[,!(colnames(filter.may) %in% "Harmonia_axyridis")]
 
-# Checking in which sample(s) _Osmia bicornis_ contamination is still present
-count(filter.may$Osmia_bicornis > 0)
-rownames(filter.may)[filter.may$Osmia_bicornis > 0]
+## cont.13 TO BE SORTED OUT!!!!
 
-# Checking N reads of _O. bicornis_
-clean.may$Osmia_bicornis[rownames(clean.may) %in% rownames(filter.may)[filter.may$Osmia_bicornis > 0]]
+# Checking extra contamination sample(s) still present
+sum(clean.may["cont.13",])
+colnames(filter.may)[filter.may["cont.13",] > 0]
 
-clean.may = clean.may[,!(colnames(clean.may) %in% "Osmia_bicornis")]
-filter.may = filter.may[,!(colnames(filter.may) %in% "Osmia_bicornis")]
+# Checking N reads of _D. villosus_ and _O. bicornis_ present in pcr contamination sample
+clean.may["cont.13","Dikerogammarus_villosus"]
+clean.may["cont.13","Osmia_bicornis"]
+
+# Removing `cont.13` sample without need of further filtration
+clean.may = clean.may[!(rownames(clean.may) %in% "cont.13"),]
+filter.may = filter.may[!(rownames(filter.may) %in% "cont.13"),]
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold; and _Osmia bicornis_ remained in only one samples (eGW4) with 28 reads (1.88%). In addition it was present contamination from _Porcellio scaber_ in two samples (RB409 and RB412), respectively at 2656 reads (5.6%), and 6234 reads (16.9%). Ultimately Psocoptera DNA was detected as contaminant in one sample (RB411), at 293 reads (0.9%).
@@ -310,11 +324,7 @@ rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]
 clean.oct$Porcellio_scaber[rownames(clean.oct) %in% rownames(filter.oct)[filter.oct$Porcellio_scaber > 0]]
 filter.oct[filter.oct$Porcellio_scaber > 0,"Porcellio_scaber"]
 
-## P.scaber AND cont.13 TO BE SORTED OUT!!!!
-
-rownames(clean.oct)
-colnames(clean.oct)
-
+# Removing contamination
 clean.oct = clean.oct[,!(colnames(clean.oct) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
 filter.oct = filter.oct[,!(colnames(filter.oct) %in% c("Osmia_bicornis","Psocoptera_sp._BOLD:AAN8452","Porcellio_scaber"))]
 
@@ -418,6 +428,7 @@ For the `predator_ID`, we used different ration to calculate the ID. May we coul
 
 ```{r adding predator}
 # Adding predator ID based on the DNA ratio greater than 0.9
+# May
 ednamay = grep("e", rownames(filter.may))
 predmay = which(filter.may[-ednamay,!c(colnames(filter.may) %in% c("time","site","sample_id","sample_type"))] >= 0.9, arr.ind=T)
 rownames(predmay)
@@ -427,6 +438,7 @@ filter.may$predator_id = "NA"
 filter.may[ednamay,"predator_id"] = "water"
 filter.may[rownames(predmay),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.may[rownames(predmay), as.vector(predmay[,2])]))
 
+# October
 ednaoct = grep("e", rownames(filter.oct))
 predoct = which(filter.oct[-ednaoct,1:74] >= 0.9, arr.ind=T)
 rownames(predoct)
@@ -437,16 +449,18 @@ filter.oct[ednaoct,"predator_id"] = "water"
 filter.oct[rownames(predoct),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnames(filter.oct[rownames(predoct),as.vector(predoct[,2])]))
 
 # Checking for missing predators
+# May
 count(filter.may$predator_id == "NA")
 miss.may = rownames(filter.may[filter.may$predator_id == "NA",])
-filter.may[rownames(filter.may) %in% miss.may,]
+rownames(filter.may[rownames(filter.may) %in% miss.may,])
 
-##### SORT OUT cont.13 BEFORE CONTINUING!!!!!
+
 
 filter.may$predator_ID[rownames(filter.may) == "RB303"] = "Corophium_multisetosum"
 filter.may$predator_ID[rownames(filter.may) == "RB603"] = "Gammarus_zaddachi"
 filter.may$predator_ID[rownames(filter.may) == "RB608"] = "Gammarus_zaddachi"
 
+# October
 count(filter.oct$predator_id == "NA")
 miss.oct = rownames(filter.oct[filter.oct$predator_id == "NA",])
 filter.oct[rownames(filter.oct) %in% miss.oct,]
