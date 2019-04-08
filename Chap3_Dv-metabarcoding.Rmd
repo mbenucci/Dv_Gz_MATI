@@ -505,12 +505,13 @@ for (i in o.row){
 filter.oct[o.row,unique(o.col)]
 ```
 
-
 Saving the files into ".csv"
 
-```{r}
-write.csv(dvmay.filter, "R/May_filtered.csv")
-write.csv(dvoct.filter, "R/Oct_filtered.csv")
+```{r saving files}
+write.csv(clean.may, "R/May_reads_filtered.csv")
+write.csv(filter.may, "R/May_ratio_filtered.csv")
+write.csv(clean.oct, "R/Oct_reads_filtered.csv")
+write.csv(filter.oct, "R/Oct_ratio_filtered.csv")
 ```
 
 
