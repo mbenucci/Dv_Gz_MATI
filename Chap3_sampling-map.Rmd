@@ -56,10 +56,15 @@ head(lakes.coords)
 lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
 ```
 
+## FROM HERE!!! ISSUES IN PLOTTING AES IN GGPLOT2 FOR MAPPING
+
 ```{r map plot}
-ggplot(lakes.coords, aes(Longitude, Latitude)) +
-  geom_map() +
-  geom_point()
+
+
+```
+
+```{r}
+test[test@data$ADMIN == "United Kingdom",]
 
 ```
 
