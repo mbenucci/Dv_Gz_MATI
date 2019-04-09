@@ -41,14 +41,24 @@ lapply(pack.list, require, character.only=T)
 wb.sites = read.csv("maps/Wroxham_sites.csv")
 gw.sites = read.csv("maps/Grafham_sites.csv")
 rb.sites = read.csv("maps/Rockland_sites.csv")
-lakes.coords = read.table("maps/Dv study sites.xlsx", sep="t")
+lakes.coords = read.csv("maps/Dv_site_coords.csv")
 ```
 
-```{r checking files are correct}
+
+Lakes coordinates include also a fourth lake which is part of this study, so it needs to be excluded from our current analysis.
+
+```{r checking files plus removing one lake}
 head(wb.sites)
 head(gw.sites)
 head(rb.sites)
 head(lakes.coords)
+
+lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
+```
+
+```{r map plot}
+
+
 ```
 
 
