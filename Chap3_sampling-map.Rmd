@@ -37,10 +37,19 @@ lapply(pack.list, require, character.only=T)
 
 ## Plotting the map for Chapter 3 on DNA metabarcoding and MATI of invasive _D. villosus_ against non-invasive _G. zaddachi_.
 
-```{r}
-
+```{r input data}
+wb.sites = read.csv("maps/Wroxham_sites.csv")
+gw.sites = read.csv("maps/Grafham_sites.csv")
+rb.sites = read.csv("maps/Rockland_sites.csv")
+lakes.coords = read.table("maps/Dv study sites.xlsx", sep="t")
 ```
 
+```{r checking files are correct}
+head(wb.sites)
+head(gw.sites)
+head(rb.sites)
+head(lakes.coords)
+```
 
 
 ## WRITING LOG FILE FOR R VERSION AND SESSION INFO
