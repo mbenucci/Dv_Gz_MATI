@@ -1,0 +1,57 @@
+---
+title: "Chapter3_sampling-map"
+output: html_document
+---
+
+```{r setup, include=T}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r environment setup, include=F}
+## R(v3.5.1 - Win)
+#.libPaths(c("C:\\Users\\501596\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win", .libPaths("C:\\Users\\501596\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win")))
+
+## R(v3.5.1 - OSX)
+.libPaths(c("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx", .libPaths("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx")))
+
+## R(v3.5.1 - Ubuntu)
+#.libPaths(c("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix", .libPaths("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix")))
+```
+
+```{r directory setup, include=F}
+dir()
+rm(list=ls())
+ls()
+```
+
+## Setting working directory and packages
+
+The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
+
+```{r packages loading, include=T}
+install.packages("devtools")
+library(devtools)
+
+devtools::install_github("rstudio/leaflet")
+devtools::install_github("r-spatial/mapview")
+install.packages("ggplot2")
+
+library(leaflet)
+library(mapview)
+library(ggplot2)
+```
+
+## Plotting the map for Chapter 3 on DNA metabarcoding and MATI of invasive _D. villosus_ against non-invasive _G. zaddachi_.
+
+
+
+## WRITING LOG FILE FOR R VERSION AND SESSION INFO
+
+```{r log creation}
+sink("log_map-creation.txt")
+sessionInfo()
+citation()
+sink()
+
+print("END")
+```
