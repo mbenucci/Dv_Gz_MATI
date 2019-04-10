@@ -541,10 +541,7 @@ The predator DNA reads now are equal to 0 across all gut content samples. This a
 
 ```{r}
 ## FROM HERE!!!!
-# NOTE: Issues to solve are in calculating the prey ratio in the guts. Too many NaN appears...I've seen this already, so check Harmonia script!
-
-ratio.guts = clean.guts[,]/rowSums(clean.guts[,])
-
+ratio.guts = clean.guts[,]/rowSums(clean.guts)
 
 ```
 
