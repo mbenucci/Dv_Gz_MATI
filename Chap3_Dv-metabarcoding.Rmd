@@ -505,6 +505,14 @@ for (i in o.row){
 filter.oct[o.row,unique(o.col)]
 ```
 
+Now that predators DNA ratio have been removed, the focus can move towards the prey id. Both _Crangonyx pseudogracilis_ and _C. floridanus_ appear detected in the data set; however despite recent records of this latter, its detection in the lakes included in this study couldn't be confirmed. The DNA reads belonging to those 2 species have been joined together. 
+
+```{r}
+#### DNA READS OF CRANGONYX SPECIES TO BE SUMMED!!!!
+```
+
+
+
 Saving the files into ".csv"
 
 ```{r saving files}
@@ -555,14 +563,20 @@ The miss-identification of few predators is reflected in the results of the sequ
 ```{r prey detection in guts}
 full.guts = cbind(ratio.guts, info.guts)
 full.guts = full.guts[full.guts$predator_id %in% c("Dikerogammarus_villosus","Gammarus_zaddachi"),]
-full.guts = melt(full.guts)
+melt.guts = melt(full.guts)
 ```
 
 ```{r}
-ggplot(full.guts, aes(time, value)) +
+ggplot(melt.guts, aes(time, value)) +
   geom_jitter(aes(color=predator_id)) +
   facet_grid (.~site) + theme_bw() +
   ylab("prey DNA ratio") + xlab("sampling month")
+```
+
+```{r}
+unique(melt.guts$variable)
+
+## FROM HERE!!!!
 ```
 
 # 3. Comparison between eDNA, kick-samples and gut contents detections
