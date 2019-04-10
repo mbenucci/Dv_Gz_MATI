@@ -550,13 +550,15 @@ rownames(ratio.guts)
 info.guts = info.guts[rownames(ratio.guts),]
 ```
 
+## NEED TO REMOVE PREDATORS!
+
 ```{r}
 full.guts = cbind(ratio.guts, info.guts)
 full.guts = melt(full.guts) 
 
 ggplot(full.guts, aes(time, value)) +
-  geom_jitter(aes(color=predator_id)) +
-  facet_grid (.~variable) +
+  geom_boxplot() +
+  facet_grid (predator_id~.) +
   ylab("prey DNA ratio") + xlab("sampling month")
 ```
 
