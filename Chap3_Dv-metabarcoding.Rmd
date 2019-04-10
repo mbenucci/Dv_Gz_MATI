@@ -540,10 +540,11 @@ clean.edna = subset(clean.edna[,!c(colnames(clean.edna) %in% colnames(info.edna)
 The predator DNA reads now are equal to 0 across all gut content samples. This allows for calculating the prey DNA ratio within each gut content sample, that will allow also for a niche overlap analysis.
 
 ```{r}
-## FROM HERE!!!!
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
-
+ratio.guts[is.na(ratio.guts)] <- 0
 ```
+
+
 
 
 
