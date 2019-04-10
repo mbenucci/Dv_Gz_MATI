@@ -514,7 +514,7 @@ write.csv(clean.oct, "R/Oct_reads_filtered.csv")
 write.csv(filter.oct, "R/Oct_ratio_filtered.csv")
 ```
 
-# 2. Diversity indexes of gut contents and eDNA community
+# 2. Detection of prey DNA in gut contents
 
 Dividing gut contents and eDNA samples.
 
@@ -543,9 +543,27 @@ The predator DNA reads now are equal to 0 across all gut content samples. This a
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
 ratio.guts[is.na(ratio.guts)] <- 0
 
+ratio.guts = subset(ratio.guts, rowSums(ratio.guts) > 0)
 
-
+# Using row names to subset the info associated with the gut contents
+rownames(ratio.guts)
+info.guts = info.guts[rownames(ratio.guts),]
 ```
+
+```{r}
+full.guts = cbind(ratio.guts, info.guts)
+full.guts = melt(full.guts) 
+
+ggplot(full.guts, aes(time, value)) +
+  geom_jitter(aes(color=predator_id)) +
+  facet_grid (.~variable) +
+  ylab("prey DNA ratio") + xlab("sampling month")
+```
+
+# 3. Comparison between eDNA, kick-samples and gut contents detections
+
+
+
 
 
 
