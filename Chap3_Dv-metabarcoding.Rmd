@@ -560,13 +560,13 @@ info.guts = info.guts[rownames(ratio.guts),]
 
 The miss-identification of few predators is reflected in the results of the sequencing on the gut contents. So far all predators were included to allow for accurate quality controls; however before continuing into more semi-quantitative analysis of overlap and diversity indexes those mis-identified predators will need to be removed. 11 samples corresponding to _Corophium multisetosum_ (N=2), _Gammarus tigrinus_ (N=2), and _Crangonyx pseudogracilis_ (N=7) will need to be removed from the dataset as they won't provide accurate comparisons with the rest of the dataset.
 
-```{r prey detection in guts}
-full.guts = cbind(ratio.guts, info.guts)
-full.guts = full.guts[full.guts$predator_id %in% c("Dikerogammarus_villosus","Gammarus_zaddachi"),]
-melt.guts = melt(full.guts)
+```{r prey ratio in guts}
+ratio.guts = cbind(ratio.guts, info.guts)
+ratio.guts = ratio.guts[ratio.guts$predator_id %in% c("Dikerogammarus_villosus","Gammarus_zaddachi"),]
+melt.guts = melt(ratio.guts)
 ```
 
-```{r}
+```{r initial plot}
 ggplot(melt.guts, aes(time, value)) +
   geom_jitter(aes(color=predator_id)) +
   facet_grid (.~site) + theme_bw() +
@@ -575,10 +575,12 @@ ggplot(melt.guts, aes(time, value)) +
 
 Visualising the prey species detected, showed presence of both _Crangonyx pseudogracili_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
 
-```{r prey analysis}
+```{r prey detection analysis}
+clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
+clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
 
 
-unique(melt.guts$variable)
+
 
 ## FROM HERE!!!!
 ```
