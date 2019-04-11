@@ -573,7 +573,11 @@ ggplot(melt.guts, aes(time, value)) +
   ylab("prey DNA ratio") + xlab("sampling month")
 ```
 
-```{r}
+Visualising the prey species detected, showed presence of both _Crangonyx pseudogracili_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
+
+```{r prey analysis}
+
+
 unique(melt.guts$variable)
 
 ## FROM HERE!!!!
