@@ -576,12 +576,19 @@ ggplot(melt.guts, aes(time, value)) +
 Visualising the prey species detected, showed presence of both _Crangonyx pseudogracili_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
 Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the dataset.
 
-```{r prey detection analysis}
+```{r prey detection rarefaction curves}
 clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
+clean.guts = clean.guts[,!c(colnames(clean.guts) %in% "Isopoda")]
 
-#colnames(clean.guts)
-#colSums(clean.guts)
+# removing empty samples
+clean.guts = subset(clean.guts, rowSums(clean.guts) > 0)
+full.guts = cbind(clean.guts, info.guts)
+
+# removing `sample_type` and `sample_id` variables and transforming detections into abundances
+full.guts = full.guts[,!c(colnames(full.guts) %in% c("sample_type","sample_id"))]
+full.guts[,!c(colnames(full.guts) %in% c("time","site","predator_id"))][full.guts[,!c(colnames(full.guts) %in% c("time","site","predator_id"))] > 0] <- 1
+
 
 
 
