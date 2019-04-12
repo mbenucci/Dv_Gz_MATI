@@ -631,10 +631,8 @@ abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))][abund.edna[,!c(colna
 
 # adding genus information to help in plotting
 abund.edna = as.data.frame(t(abund.edna))
-abund.edna$genus = gsub("[_][A-Za-z0-9_-]{+}.{+}$","", rownames(abund.edna))
-abund.edna$genus
+abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}[.]{0,1}){0,+}$","", rownames(abund.edna))
 
-# Remaining species name to be manually changed!!!!
 
 ## FROM HERE!!!!
 ```
