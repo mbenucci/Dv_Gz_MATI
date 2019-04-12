@@ -630,9 +630,17 @@ abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("sample_type","sample_
 abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))] > 0] <- 1
 
 # adding genus information to help in plotting
-abund.edna = as.data.frame(t(abund.edna))
-abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}[.]{0,1}){0,+}$","", rownames(abund.edna))
+test.edna = as.data.frame(t(abund.edna))
+#abund.edna$genus = gsub("(([_]{1}[A-Za-z0-9-]{+}){1,+}(/{0,1}|[.]{0,1})){0,+}$","", rownames(test.edna))
+#gsub("([_]{1}[A-Za-z0-9-]{+}){1,+}(/{0,1}|[.]{0,1})){0,+}$","", rownames(test.edna))
 
+melt.abund.edna = melt(abund.edna)
+head(melt.abund.edna)
+
+melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
+
+ggplot(melt.abund.edna, aes(site, value)) +
+  geom_bar(stat="identity", aes(colour=genus))
 
 ## FROM HERE!!!!
 ```
