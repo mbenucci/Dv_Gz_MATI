@@ -511,12 +511,9 @@ filter.oct[o.row,unique(o.col)]
 Now that predators DNA ratio have been removed, the focus can move towards the prey id. Both _Crangonyx pseudogracilis_ and _C. floridanus_ appear detected in the data set; however despite recent records of this latter, its detection in the lakes included in this study couldn't be confirmed. The DNA reads belonging to those 2 species have been joined together. 
 
 ```{r}
-clean.may$Crangonyx_floridanus + clean.may$Crangonyx_pseudogracilis
-clean.oct$Crangonyx_floridanus + clean.oct$Crangonyx_pseudogracilis
-
+clean.may$Crangonyx = clean.may$Crangonyx_floridanus + clean.may$Crangonyx_pseudogracilis
+clean.oct$Crangonyx = clean.oct$Crangonyx_floridanus + clean.oct$Crangonyx_pseudogracilis
 ```
-
-
 
 Saving the files into ".csv"
 
@@ -627,9 +624,6 @@ gen.sp.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Chironomidae","Chydori
 # calculating ratio
 gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
-
-gen.sp.edna$sample_id
-View(gen.sp.edna[gen.sp.edna$sample_id == "eWBBL",])
 
 ## FROM HERE!!!!
 ```
