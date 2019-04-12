@@ -625,8 +625,22 @@ gen.sp.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Chironomidae","Chydori
 gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
 
+# removing `predator_id`, `sample_type` and `sample_id` variables and transforming eDNA detections into abundances
+abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("sample_type","sample_id","predator_id"))]
+abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))] > 0] <- 1
+
+# adding genus information to help in plotting
+abund.edna = as.data.frame(t(abund.edna))
+abund.edna$genus = gsub("[_][A-Za-z0-9_-]{+}.{+}$","", rownames(abund.edna))
+abund.edna$genus
+
+# Remaining species name to be manually changed!!!!
+
 ## FROM HERE!!!!
 ```
+
+
+
 
 # 3. Comparison between eDNA, kick-samples and gut contents detections
 
