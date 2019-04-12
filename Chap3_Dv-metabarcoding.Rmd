@@ -293,6 +293,9 @@ clean.may["cont.13","Osmia_bicornis"]
 # Removing `cont.13` sample without need of further filtration
 clean.may = clean.may[!(rownames(clean.may) %in% "cont.13"),]
 filter.may = filter.may[!(rownames(filter.may) %in% "cont.13"),]
+
+clean.may = clean.may[-c(grep("BL", rownames(filter.may))),]
+filter.may = filter.may[-c(grep("BL", rownames(filter.may))),]
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold; and _Osmia bicornis_ remained in only one samples (eGW4) with 28 reads (1.88%). In addition it was present contamination from _Porcellio scaber_ in two samples (RB409 and RB412), respectively at 2656 reads (5.6%), and 6234 reads (16.9%). Ultimately Psocoptera DNA was detected as contaminant in one sample (RB411), at 293 reads (0.9%).
@@ -508,7 +511,9 @@ filter.oct[o.row,unique(o.col)]
 Now that predators DNA ratio have been removed, the focus can move towards the prey id. Both _Crangonyx pseudogracilis_ and _C. floridanus_ appear detected in the data set; however despite recent records of this latter, its detection in the lakes included in this study couldn't be confirmed. The DNA reads belonging to those 2 species have been joined together. 
 
 ```{r}
-#### DNA READS OF CRANGONYX SPECIES TO BE SUMMED!!!!
+clean.may$Crangonyx_floridanus + clean.may$Crangonyx_pseudogracilis
+clean.oct$Crangonyx_floridanus + clean.oct$Crangonyx_pseudogracilis
+
 ```
 
 
@@ -619,8 +624,12 @@ fam.edna = clean.edna[,c(colnames(clean.edna) %in% c("Chironomidae","Chydoridae"
 
 gen.sp.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Chironomidae","Chydoridae","Cyclopidae","Daphniidae","Naididae"))]
 
-gen.sp.edna = 
+# calculating ratio
+gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
+
+gen.sp.edna$sample_id
+View(gen.sp.edna[gen.sp.edna$sample_id == "eWBBL",])
 
 ## FROM HERE!!!!
 ```
