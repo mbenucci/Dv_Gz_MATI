@@ -613,7 +613,7 @@ ggiNEXT(guts_inext) +
 # 3. Diversity analysis of eDNA samples plus comparison with gut contents
 To avoid over-estimating the diversity present in the eDNA samples, the data set need to be cleaned a bit further. For this purpose assignment at higher taxonomic rank (mainly Order), were removed from the dataset, while assignments to Family, were spearated from the assignments to Genus and Species level. 
 
-```{r eDNA samples}
+```{r eDNA samples rarefaction curves}
 clean.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Cyclopoida","Diptera","Podocopida","Spongillida"))]
 
 # splitting Family ranks from Genus and Species ranks
@@ -642,10 +642,10 @@ abund.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")
 rownames(abund.edna) = paste(abund.edna$site, abund.edna$time, sep="_")
 
 # removing `time`, `sample_id` and `site` variables as no more necessary.
-edna_inext = t(abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))])
+abund.edna = t(abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))])
 
 # extrapolating rarefaction curves for Species richness and Shannon Diversity
-edna_inext = iNEXT(edna_inext, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
+edna_inext = iNEXT(abund.edna, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
 ggiNEXT(edna_inext) +
@@ -653,14 +653,17 @@ ggiNEXT(edna_inext) +
   theme(legend.position="bottom") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
   ggtitle("Species level rarefaction curves of eDNA samples")
+```
+
+```{r eDNA and gut contents overlap}
+View(abund.edna)
+View(abund.guts)
 
 
-ggplot(melt.abund.edna, aes(site, value)) +
-  geom_bar(stat="identity", aes(colour=genus))
+
 
 ## FROM HERE!!!!
 ```
-
 
 
 
@@ -884,7 +887,7 @@ edna.full = full_join(edna.melt, edna.melt2)
 
 head(edna.full)
 
-ggplot(edna.full, aes(sample_id, value)) +
+ggplot(abund.edna, aes(sample_id, value)) +
   geom_jitter() +
   geom_bar(stat="identity", position="fill", aes(fill=variable)) +
   facet_grid (.~time) +
