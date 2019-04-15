@@ -607,7 +607,7 @@ ggiNEXT(guts_inext) +
   labs(y = "", x="Number of samples") +
   theme(legend.position="bottom") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
-  ggtitle("Species level rarefaction curves on community")
+  ggtitle("Species level rarefaction curves of preys in gut contents")
 ```
 
 # 3. Diversity analysis of eDNA samples plus comparison with gut contents
@@ -633,21 +633,32 @@ abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site"))][abund.ed
 melt.abund.edna = melt(abund.edna)
 melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
 
-## FROM HERE!!!!
-# NOTE: to find the right way to plot this data! (barplot?) Also to implement, alpha-div and raref. curves (need to transpose and sort sample names!) plus overlap between guts and eDNA. Next section kick-samples.
+# NOTE: to find the right way to plot this data! (barplot?) 
+# Also alpha-div and raref. curves (need to transpose and sort sample names!) need to be done on abund.edna frame (genus column causes issues), while the plot of the data visualisation needs to be done on the melt.abund.edna so to summarise the species by the genus column.
+# Next steps overlap between guts and eDNA. Next section kick-samples.
 
-edna_inext = iNEXT(test.dcast, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
+# Rarefaction curves calculated on abundance data without genus information
+abund.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+rownames(abund.edna) = paste(abund.edna$site, abund.edna$time, sep="_")
+
+# removing `time`, `sample_id` and `site` variables as no more necessary.
+edna_inext = t(abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))])
+
+# extrapolating rarefaction curves for Species richness and Shannon Diversity
+edna_inext = iNEXT(edna_inext, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
 ggiNEXT(edna_inext) +
   labs(y = "", x="Number of samples") +
   theme(legend.position="bottom") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
-  ggtitle("Species level rarefaction curves on community")
+  ggtitle("Species level rarefaction curves of eDNA samples")
 
 
 ggplot(melt.abund.edna, aes(site, value)) +
   geom_bar(stat="identity", aes(colour=genus))
+
+## FROM HERE!!!!
 ```
 
 
