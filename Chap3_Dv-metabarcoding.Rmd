@@ -653,22 +653,56 @@ ggiNEXT(inext.edna) +
 
 ```{r PERMANOVA eDNA and gut contents}
 # gut contents PERMANOVA
-matrix.guts = as.matrix(abund.guts[,!c(colnames(abund.guts) %in% c("time","site","type","predator_id"))])
+adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","type","predator_id"))]
 
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 fact_all.nmds = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-dist.guts = vegdist(matrix.guts, method="euclidean")
+dist.guts = vegdist(adonis.guts, method="euclidean")
 
 adonis(dist.guts~fact_site.guts*fact_time.guts, permutations = 10000, method="euclidean")
 adonis(dist.guts~fact_predator.guts*fact_time.guts, permutations = 10000, method="euclidean")
+adonis(dist.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 10000, method="euclidean")
 ```
 
 ```{r}
-meta.guts = metaMDS(dist.guts, zerodist=ignore, trymax=200, distance="euclidean")
+# NMDS based on the distance matrix
+meta.guts = metaMDS(comm=dist.guts, trymax=200, distance="euclidean")
+
+# NMDS based on the abundance data (will give the species scores as well)
+meta.ad.guts = metaMDS(comm=adonis.guts, trymax=200, distance="euclidean")
 ```
+
+```{r}
+meta.guts
+meta.ad.guts
+```
+
+```{r}
+nmds.guts = as.data.frame(scores(meta.ad.guts))
+nmds.guts$id = rownames(nmds.guts)
+
+nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
+nmds.sp.guts$species = rownames(nmds.sp.guts)
+
+ggplot() +
+  geom_text(data=nmds.sp.guts, aes(x=NMDS1,y=NMDS2, label=species)) +
+  geom_point(data=nmds.guts, aes(x=NMDS1,y=NMDS2), size=3) +
+  geom_text(data=nmds.guts, aes(x=NMDS1,y=NMDS2, label=id), size=6, vjust=0) +
+  coord_equal() +
+  theme_bw()
+
+
+
+#  scale_colour_manual(values=c("A" = "red", "B" = "blue")) +
+
+```
+
+
+
+
 
 ```{r}
 plot(meta.guts,type="n",
