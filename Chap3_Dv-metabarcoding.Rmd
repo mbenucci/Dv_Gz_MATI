@@ -687,20 +687,13 @@ nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
 nmds.sp.guts$species = rownames(nmds.sp.guts)
 
 ggplot() +
+  geom_polygon(data=nmds.guts, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
   geom_text(data=nmds.sp.guts, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
   geom_point(data=nmds.guts, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
   geom_text(data=nmds.guts, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
-  #geom_path(data=nmds.guts, aes(x=NMDS1,y=NMDS2), size=1, linetype=2) +
-  #scale_shape_manual() +
   scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
   coord_equal() +
   theme_bw()
-
-
-#p<-ggplot(data=meta.nmds, aes(x,y))
-#p<-p+ annotate("text", x=meta.nmds$x,y=meta.nmds$y,size=4)
-#p<-p+ geom_path(data=df_ell, aes(x=NMDS1, y=NMDS2), size=1, linetype=2)
-#p<-p+ geom_point(aes(shape=Depth))+scale_shape_manual(values=shape_values)+theme_bw()
 ```
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
@@ -737,7 +730,7 @@ ggplot() +
   geom_text(data=nmds.sp.edna, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
   geom_point(data=nmds.edna, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
   geom_text(data=nmds.edna, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
-  #geom_path(data=nmds.guts, aes(x=NMDS1,y=NMDS2), size=1, linetype=2) +
+  #geom_polygon(data=nmds.edna, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
   #scale_shape_manual() +
   scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
   coord_equal() +
