@@ -738,17 +738,31 @@ ggplot() +
   scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
   coord_equal() +
   theme_bw()
+```
 
+```{r eDNA and guts comparison}
+# Sorting out variables and joining the two frames
+abund.edna$sample_type = "eDNA"
+abund.guts$sample_type = "gut"
+
+abund.full = full_join(abund.guts, abund.edna)
+abund.full[is.na(abund.full)] <- 0
+colnames(abund.full)
+adonis.full = abund.full[,!c(colnames(abund.full) %in% c("time","site","sample_id","predator_id","sample_type"))]
+
+fact_site.full = matrix(c(abund.full$site), ncol=1)
+fact_time.full = matrix(c(abund.full$time), ncol=1)
+fact_id.full = matrix(c(abund.full$sample_type), ncol=1)
+fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_type), ncol=3)
+
+dist.full = vegdist(adonis.full, method="euclidean")
+
+adonis(dist.full~fact_site.full*fact_time.full*fact_id.full, permutations = 10000, method="euclidean")
 
 ## FROM HERE!!!!
 ```
 
-
-
 # 3. Comparison between eDNA, kick-samples and gut contents detections
-
-
-
 
 
 
