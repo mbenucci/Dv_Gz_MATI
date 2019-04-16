@@ -634,11 +634,11 @@ melt.abund.edna = melt(abund.edna)
 melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
 
 # Rarefaction curves calculated on abundance data without genus information
-abund.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")] %>% group_by(site, time) %>% summarise_all(funs(sum)))
-rownames(abund.edna) = paste(abund.edna$site, abund.edna$time, sep="_")
+inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+rownames(inext.edna) = paste(inext.edna$site, inext.edna$time, sep="_")
 
 # removing `time`, `sample_id` and `site` variables as no more necessary.
-inext.edna= t(abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))])
+inext.edna= t(inext.edna[,!c(colnames(inext.edna) %in% c("time","site"))])
 
 # extrapolating rarefaction curves for Species richness and Shannon Diversity
 inext.edna = iNEXT(inext.edna, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
@@ -687,25 +687,28 @@ nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
 nmds.sp.guts$species = rownames(nmds.sp.guts)
 
 ggplot() +
-  geom_polygon(data=nmds.guts, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
-  geom_text(data=nmds.sp.guts, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
+#  geom_text(data=nmds.sp.guts, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
   geom_point(data=nmds.guts, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
   geom_text(data=nmds.guts, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
+  geom_polygon(data=nmds.guts, aes(x=NMDS1,y=NMDS2, group=site, fill=site), alpha=0.3) +
   scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
   coord_equal() +
   theme_bw()
 ```
+
+
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
-adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site"))]
+adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id"))]
 
 fact_site.edna = matrix(c(abund.edna$site), ncol=1)
 fact_time.edna = matrix(c(abund.edna$time), ncol=1)
-fact_all.nmds = matrix(c(abund.edna$site, abund.edna$time), ncol=3)
+fact_id.edna = matrix(c(abund.edna$sample_id), ncol=1)
+fact_all.nmds = matrix(c(abund.edna$site, abund.edna$time, abund.edna$sample_id), ncol=3)
 
 dist.edna = vegdist(adonis.edna, method="euclidean")
 
-adonis(dist.edna~fact_site.edna*fact_time.edna, permutations = 10000, method="euclidean")
+adonis(dist.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="euclidean")
 ```
 
 ```{r nmds based on distances and on abundance data}
@@ -722,16 +725,16 @@ nmds.edna = as.data.frame(scores(meta.ad.edna))
 nmds.edna$id = rownames(nmds.edna)
 nmds.edna$site = abund.edna[,"site"]
 nmds.edna$time = abund.edna[,"time"]
+nmds.edna$sample = abund.edna[,"sample_id"]
 
 nmds.sp.edna = as.data.frame(scores(meta.ad.edna,"species"))
 nmds.sp.edna$species = rownames(nmds.sp.edna)
 
 ggplot() +
-  geom_text(data=nmds.sp.edna, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
+#  geom_text(data=nmds.sp.edna, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
   geom_point(data=nmds.edna, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
   geom_text(data=nmds.edna, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
-  #geom_polygon(data=nmds.edna, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
-  #scale_shape_manual() +
+  geom_polygon(data=nmds.edna, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
   scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
   coord_equal() +
   theme_bw()
