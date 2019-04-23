@@ -730,14 +730,23 @@ nmds.edna$sample = abund.edna[,"sample_id"]
 nmds.sp.edna = as.data.frame(scores(meta.ad.edna,"species"))
 nmds.sp.edna$species = rownames(nmds.sp.edna)
 
-ggplot() +
-#  geom_text(data=nmds.sp.edna, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
-  geom_point(data=nmds.edna, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
-  geom_text(data=nmds.edna, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
-  geom_polygon(data=nmds.edna, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
-  scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
-  coord_equal() +
-  theme_bw()
+plot(meta.edna, type="n", main="eDNA NMDS")#, ylim=c(-0.7,0.9), xlim=c(-0.5,1))
+points(meta.edna, select=which(fact_site.edna[,1]=="WB"),col="black",pch=1)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW"),col="blue",pch=22)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB"),col="red",pch=25)
+ordispider(meta.edna,group=fact_site.edna[,1], col=c("green","orange","green4"),label=T)
+ordiellipse(meta.edna,group=fact_site.edna[,1],kind="ehull", lty=c(1,3),label=F,lwd=2)
+```
+
+```{r}
+#ggplot() +
+##  geom_text(data=nmds.sp.edna, aes(x=NMDS1,y=NMDS2, label=species), size=2) +
+#  geom_point(data=nmds.edna, aes(x=NMDS1,y=NMDS2, shape=time, colour=site), size=3) +
+#  geom_text(data=nmds.edna, aes(x=NMDS1,y=NMDS2, label=site), size=3, vjust=1) +
+#  geom_polygon(data=nmds.edna, aes(x=NMDS1,y=NMDS2, fill=site, group=site), alpha=0.3) +
+#  scale_colour_manual(values=c("GW"="blue","RB"="orange","WB"="purple")) +
+#  coord_equal() +
+#  theme_bw()
 ```
 
 ```{r eDNA and guts comparison}
