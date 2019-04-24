@@ -29,7 +29,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=T}
-pack.list = c("broom","devtools","dplyr","ggplot2","ggsn","leaflet","maptools","mapview","raster","RColorBrewer","rgdal","rgeos","rworldmap","tmap")
+pack.list = c("broom","devtools","dplyr","ggplot2","ggsn","leaflet","maps","maptools","mapview","raster","RColorBrewer","rgdal","rgeos","rworldmap","tmap")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -54,12 +54,15 @@ head(rb.sites)
 head(lakes.coords)
 
 lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
+
+### FROM HERE!!!
 ```
 
 ## FROM HERE!!! ISSUES IN PLOTTING AES IN GGPLOT2 FOR MAPPING
 
 ```{r map plot}
-
+ggplot(lakes.coords, aes(Longitude, Latitude)) +
+  geom_point()
 
 ```
 
