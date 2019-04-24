@@ -809,12 +809,9 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```
 
 ```{r adding the binomial}
-gw.may[is.na(gw.may)] <- gw.may$FAMILY
-
-gw.may$Binomial = paste(gw.may$GENUS, gw.may$SPECIES, sep="_")
-gw.oct$Binomial = paste(gw.oct$GENUS, gw.oct$SPECIES, sep="_")
-
 View(gw.may)
+View(gw.oct)
+
 ## FROM HERE!!!!
 ```
 
