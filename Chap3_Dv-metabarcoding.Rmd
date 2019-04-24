@@ -811,6 +811,7 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```{r adding the binomial}
 View(gw.may)
 View(gw.oct)
+View(wb.may)
 
 ## FROM HERE!!!!
 ```
