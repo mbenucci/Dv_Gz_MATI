@@ -799,10 +799,20 @@ dev.off()
 
 # 3. Comparison between eDNA, kick-samples and gut contents detections
 
-```{r}
+```{r input files microscopy}
+gw.may = read.csv("data/microscopy/gw_may_microscopy.csv", sep="\t")
+gw.oct = read.csv("data/microscopy/gw_oct_microscopy.csv", sep="\t")
+wb.may = read.csv("data/microscopy/wb_may_microscopy.csv", sep="\t")
+wb.oct = read.csv("data/microscopy/wb_oct_microscopy.csv", sep="\t")
+rb.may = read.csv("data/microscopy/rb_may_microscopy.csv", sep="\t")
+rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
+```
 
+```{r adding the binomial}
+gw.may$Binomial = paste(gw.may$GENUS, gw.may$SPECIES, sep="_")
+gw.oct$Binomial = paste(gw.oct$GENUS, gw.oct$SPECIES, sep="_")
 
-
+View(gw.may)
 ## FROM HERE!!!!
 ```
 
