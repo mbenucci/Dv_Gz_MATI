@@ -1,0 +1,63 @@
+TUBE ID	DATE	LOCATION	SITE	ORDER	FAMILY	GENUS	SPECIES	NUMBERS
+RB101	04/10/17	RB	1	Diptera	Chironomidae			21
+RB102	04/10/17	RB	1	Crustacea	Corophiidae	Corphium	sp.	7
+RB104	04/10/17	RB	1	Hemiptera	Corixidae			2
+RB105	04/10/17	RB	1	Hydracarina	Limnesiidae	Limnesia	sp.	2
+RB106	04/10/17	RB	1	Ostracoda				2
+RB108	04/10/17	RB	1	Crustacea	Daphniidae			1
+RB110	04/10/17	RB	1	Oligochaeta				35
+RB113	04/10/17	RB	1	Mollusca	Sphaeriidae	Pisidium	sp.	8
+RB114	04/10/17	RB	1	Mollusca	Valvatidae	Valvata	piscinalis	1
+RB120	04/10/17	RB	1	Zygoptera	Coenagrionidae			1
+RB122	04/10/17	RB	1	Crustacea	Gammaridae			1
+RB124	04/10/17	RB	1	Diptera	Chydoridae			1
+RB127	04/10/17	RB	1	Mollusca	Cyrenidae	Corbicula	fluminea	1
+RB201	04/10/17	RB	2	Mollusca	Planorbidae			1
+RB202	04/10/17	RB	2	Diptera	Chironomidae			11
+RB203	04/10/17	RB	2	Mollusca	Sphaeriidae	Sphaerium	sp.	1
+RB204	04/10/17	RB	2	Crustacea	Gammaridae	Gammarus	sp.	3
+RB206	04/10/17	RB	2	Mollusca	Hydrobiidae			1
+RB208	04/10/17	RB	2	Mollusca	Lymnaeidae	Radix	peregra	2
+RB211	04/10/17	RB	2	Mollusca	Physiidae	Physa	acuta	1
+RB213	04/10/17	RB	2	Mollusca	Lymnaeidae	Radix	auricolaria	1
+RB301	04/10/17	RB	3	Crustacea	Corophiidae	Corophium	sp.	39
+RB303	04/10/17	RB	3	Mollusca	Valvatidae	Valvata	piscinalis	1
+RB304	04/10/17	RB	3	Zygoptera	Coenagrionidae			1
+RB305	04/10/17	RB	3	Diptera	Chironomidae			4
+RB307	04/10/17	RB	3	Mollusca	Sphaeriidae	Sphaerium	sp.	2
+RB308	04/10/17	RB	3	Crustacea	Gammaridae	Gammarus	zaddachi	6
+RB401	04/10/17	RB	4	Mollusca	Hydrobiidae	Potamopyrgus	jenkinsi	1
+RB402	04/10/17	RB	4	Mollusca	Planorbidae	Planorbis	contortus	9
+RB403	04/10/17	RB	4	Mollusca	Valvatidae	Valvata	cristata	5
+RB404	04/10/17	RB	4	Crustacea	Gammaridae	Gammarus	zaddachi	1
+RB405	04/10/17	RB	4	Crustacea	Cranogonyctidae	Crangonyx	sp.	5
+RB406	04/10/17	RB	4	Crustacea	Cranogonyctidae	Crangonyx	floridanus	1
+RB408	04/10/17	RB	4	Mollusca	Sphaeriidae	Pisidium	sp.	2
+RB413	04/10/17	RB	4	Hirudinea	Glossiphoniidae	Glossiphonia	complanata	3
+RB414	04/10/17	RB	4	Hirudinea	Glossiphoniidae	Helobdella	stagnalis	2
+RB502	04/10/17	RB	5	Diptera	Chironomidae			6
+RB504	04/10/17	RB	5	Crustacea	Corophiidae	Corophium	sp.	2
+RB506	04/10/17	RB	5	Ephemeroptera	Caenidae	Caenis	sp.	1
+RB507	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnea	stagnalis	1
+RB508	04/10/17	RB	5	Mollusca	Hydrobiidae			1
+RB511	04/10/17	RB	5	Mollusca	Hydrobiidae	Bithynia	tentaculata	1
+RB514	04/10/17	RB	5	Trichoptera	indet.			1
+RB515	04/10/17	RB	5	Zygoptera	Coenagrionidae			1
+RB516	04/10/17	RB	5	Crustacea	Asellidae	Asellus	aquaticus	2
+RB517	04/10/17	RB	5	Mollusca	Sphaeriidae	Sphaerium	sp.	3
+RB518	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnea	stagnalis	1
+RB601	04/10/17	RB	6	Hirudinea	Glossiphoniidae	Glossiphonia	complanata	1
+RB602	04/10/17	RB	6	Ephemeroptera	Caenidae	Caenis	sp.	1
+RB603	04/10/17	RB	6	Mollusca	Sphaeriidae	Pisidium	sp.	1
+RB604	04/10/17	RB	6	Mollusca	Physiidae	Physa	fontinalis	1
+RB605	04/10/17	RB	6	Mollusca	Sphaeriidae	Sphaerium	sp.	1
+RB606	04/10/17	RB	6	Mollusca	Hydrobiidae	Bithynia	sp.	1
+RB607	04/10/17	RB	6	Oligochaeta				4
+RB609	04/10/17	RB	6	Crustacea	Corophiidae	Corophium	sp.	67
+RB610	04/10/17	RB	6	Mollusca	Cyrenidae	Corbicula	fluminea	1
+RB611	04/10/17	RB	6	Mollusca	Lymnaeidae	Lymnea	truncatula	2
+RB613	04/10/17	RB	6	Hemiptera				
+RB614	04/10/17	RB	6	Crustacea	Gammaridae	Gammarus	zaddachi	25
+RB615	04/10/17	RB	6	Diptera	Chironomidae			1
+RB616	04/10/17	RB	6	Mollusca	Cyrenidae	Corbicula	fluminea	1
+RB617	04/10/17	RB	6	Crustacea	Corophiidae	Corophium	sp.	2

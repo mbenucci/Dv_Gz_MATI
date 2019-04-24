@@ -1,0 +1,62 @@
+TUBE ID	DATE	LOCATION	REPLICATE	ORDER	FAMILY	GENUS	SPECIES	NUMBERS
+WB101	04/10/2017	WB	1	Oligochaeta				22
+WB102	04/10/2017	WB	1	Mollusca	Lymnaeidae	Lymnea	truncatula	21
+WB103	04/10/2017	WB	1	Diptera	Chironomidae			1
+WB106	04/10/2017	WB	1	Crustacea	Gammaridae	Dikerogammarus	villosus	4
+WB107	04/10/2017	WB	1	Diptera	Psychodidae			1
+WB108	04/10/2017	WB	1	Mollusca	Valvatidae	Segmentina	sp.	1
+WB109	04/10/2017	WB	1	Mollusca	Dreissenidae	Dreissena	polymorpha	2
+WB110	04/10/2017	WB	1	Mollusca	Hydrobiidae	Potamopyrgus	jenkinsi	1
+WB111	04/10/2017	WB	1	Hirudinea	Glossiphonidae	Glossiphonia	complanata	1
+WB114	04/10/2017	WB	1	Mollusca	Lymnaeidae	Radix	balthica	2
+WB201	04/10/2017	WB	2	Diptera	Chironomidae			2
+WB203	04/10/2017	WB	2	Mollusca	Valvatidae	Segmentina	sp.	1
+WB207	04/10/2017	WB	2	Oligochaeta				1
+WB208	04/10/2017	WB	2	Crustacea	Crangonyctidae	Crangonyx	sp.	1
+WB209	04/10/2017	WB	2	Crustacea	Gammaridae	Dikerogammarus	villosus	3
+WB301	04/10/2017	WB	3	Crustacea	Corophiidae	Corophium	sp.	27
+WB302	04/10/2017	WB	3	Crustacea	Gammaridae	Dikerogammarus	villosus	15
+WB303	04/10/2017	WB	3	Mollusca	Lymnaeidae	Lymnea	truncatula	1
+WB305	04/10/2017	WB	3	Megaloptera	Sialidae			1
+WB310	04/10/2017	WB	3	Mollusca	Dreissenidae	Dreissena	polymorpha	1
+WB401	04/10/2017	WB	4	Mollusca	Hydrobiidae	Bithynia	tentaculata	72
+WB402	04/10/2017	WB	4	Mollusca	Physiidae	Physa	fontinalis	15
+WB403	04/10/2017	WB	4	Mollusca	Valvatidae	Valvata	cristata	1
+WB404	04/10/2017	WB	4	Diptera	Chironomidae			28
+WB405	04/10/2017	WB	4	Zygoptera	Coeangrionidae			6
+WB406	04/10/2017	WB	4	Hirudinea	Glossiphonidae	Helobdella	stagnalis	1
+WB407	04/10/2017	WB	4	Mollusca	Dreissenidae	Dreissena	polymorpha	7
+WB408	04/10/2017	WB	4	Crustacea	Corophiidae	Corophium	sp.	52
+WB409	04/10/2017	WB	4	Crustacea	Gammaridae	Dikerogammarus	villosus	16
+WB410	04/10/2017	WB	4	Mollusca	Hydrobiidae	Potamopyrgus	jenkinsi	23
+WB411	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnea	stagnalis	3
+WB412	04/10/2017	WB	4	Mollusca	Neritidae	Theodoxus	fluviatilis	3
+WB415	04/10/2017	WB	4	Mollusca	Valvatidae	Valvata	piscinalis	4
+WB416	04/10/2017	WB	4	Zygoptera	Coeangrionidae			4
+WB417	04/10/2017	WB	4	Crustacea	Gammaridae	Gammarus	sp.	4
+WB430	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnea	auricolaria	1
+WB431	04/10/2017	WB	4	Mollusca	Lymnaeidae	Radix	balthica	1
+WB432	04/10/2017	WB	4	Mollusca	Dreissenidae	Dreissena	polymorpha	17
+WB502	04/10/2017	WB	5	Mollusca	Hydrobiidae	Potamopyrgus	jenkinsi	4
+WB505	04/10/2017	WB	5	Mollusca	Dreissenidae	Dreissena	polymorpha	2
+WB506	04/10/2017	WB	5	Crustacea	Corophiidae	Corophium	sp.	49
+WB507	04/10/2017	WB	5	Diptera	Chironomidae			1
+WB510	04/10/2017	WB	5	Crustacea	Gammaridae	Dikerogammarus	villosus	13
+WB512	04/10/2017	WB	5	Mollusca	Lymnaeidae			1
+WB602	04/10/2017	WB	6	Mollusca	Hydrobiidae	Bithynia	sp.	5
+WB603	04/10/2017	WB	6	Mollusca	Hydrobiidae	Potamopyrgus	jenkinsi	5
+WB604	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus	villosus	14
+WB605	04/10/2017	WB	6	Diptera	Chironomidae			3
+WB606	04/10/2017	WB	6	Crustacea	Corophiidae	Corophium	sp.	48
+WB607	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus	villosus	12
+WB608	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus	villosus	60
+WB611	04/10/2017	WB	6	Mollusca	Sphaeriidae	Pisidium	sp.	1
+WB613	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	6
+WB616	04/10/2017	WB	6	Mollusca	Neritidae	Theodoxus	fluviatilis	3
+WB620	04/10/2017	WB	6	Mollusca	Valvatidae			2
+WB621	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	18
+WB622	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	20
+WB623	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	23
+WB624	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	32
+WB625	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena	polymorpha	26
+WB628	04/10/2017	WB	6	Crustacea	Gammaridae	Gammarus	sp.	8
