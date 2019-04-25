@@ -471,7 +471,7 @@ filter.oct$predator_id[filter.oct$sample_id %in% c("RB403","RB412")] = "Crangony
 clean.oct$predator_id = filter.oct$predator_id
 ```
 
-Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
+Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream analysis to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
 
 ```{r removing predator ratio}
 # Removal of predator ratios and DNA reads
@@ -596,6 +596,9 @@ abund.guts.site = as.data.frame(abund.guts %>% group_by(time, site, predator_id)
 abund.guts.site[grep("Gammarus_zaddachi", abund.guts.site$predator_id),"predator_id"] <- "G.zad"
 abund.guts.site[grep("Dikerogammarus_villosus", abund.guts.site$predator_id),"predator_id"] <- "D.vil"
 
+abund.guts[grep("Gammarus_zaddachi", abund.guts$predator_id),"predator_id"] <- "G.zad"
+abund.guts[grep("Dikerogammarus_villosus", abund.guts$predator_id),"predator_id"] <- "D.vil"
+
 # setting rownames and removing extra variables
 rownames(abund.guts.site) = paste(abund.guts.site$predator_id, abund.guts.site$site, abund.guts.site$time, sep="_")
 inext.guts = t(abund.guts.site[,!c(colnames(abund.guts.site) %in% c("site","time","predator_id"))])
@@ -660,19 +663,14 @@ fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 fact_all.nmds = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-dist.guts = vegdist(adonis.guts, method="euclidean")
-
-adonis(dist.guts~fact_site.guts*fact_time.guts, permutations = 10000, method="euclidean")
-adonis(dist.guts~fact_predator.guts*fact_time.guts, permutations = 10000, method="euclidean")
-adonis(dist.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 10000, method="euclidean")
+adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 10000, method="bray")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 10000, method="bray")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 10000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-meta.guts = metaMDS(dist.guts, trymax=200, distance="euclidean")
-
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ad.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+meta.ad.guts = metaMDS(adonis.guts, trymax=200, distance="bray")
 ```
 
 
@@ -686,7 +684,7 @@ nmds.guts$time = abund.guts[,"time"]
 nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
 nmds.sp.guts$species = rownames(nmds.sp.guts)
 
-pdf("images/guts_NMDS.pdf")
+pdf("images/guts_predator2_NMDS.pdf")
 plot(meta.ad.guts, type="n", main="gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.2,1.2))
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
@@ -694,8 +692,8 @@ points(meta.ad.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ad.guts,group=fact_site.guts[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.ad.guts,group=fact_site.guts[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+ordispider(meta.ad.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.ad.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
 dev.off()
 ```
 
@@ -709,17 +707,18 @@ fact_time.edna = matrix(c(abund.edna$time), ncol=1)
 fact_id.edna = matrix(c(abund.edna$sample_id), ncol=1)
 fact_all.nmds = matrix(c(abund.edna$site, abund.edna$time, abund.edna$sample_id), ncol=3)
 
-dist.edna = vegdist(adonis.edna, method="euclidean")
+dist.edna = vegdist(adonis.edna, method="bray")
 
-adonis(dist.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="euclidean")
+adonis(adonis.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="bray")
+adonis(dist.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the distance matrix
-meta.edna = metaMDS(dist.edna, trymax=200, distance="euclidean")
+meta.edna = metaMDS(dist.edna, trymax=200, distance="bray")
 
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ad.edna = metaMDS(adonis.edna, trymax=200, distance="euclidean")
+meta.ad.edna = metaMDS(adonis.edna, trymax=200, distance="bray")
 ```
 
 
@@ -761,17 +760,17 @@ fact_time.full = matrix(c(abund.full$time), ncol=1)
 fact_type.full = matrix(c(abund.full$sample_type), ncol=1)
 fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_type), ncol=3)
 
-dist.full = vegdist(adonis.full, method="euclidean")
+dist.full = vegdist(adonis.full, method="bray")
 
-adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10000, method="euclidean")
+adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the distance matrix
-meta.guts.edna = metaMDS(dist.full, trymax=200, distance="euclidean")
+meta.guts.edna = metaMDS(dist.full, trymax=200, distance="bray")
 
 # NMDS based on the abundance data (will give the species scores as well)
-meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="euclidean")
+meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="bray")
 ```
 
 ```{r plotting eDNA nmds}
@@ -866,6 +865,11 @@ rb.kick = rb.kick[,!c(colnames(rb.kick) %in% c("TUBE.ID","DATE"))]
 gw.kick$site = paste0(gw.kick$LOCATION, gw.kick$REPLICATE)
 wb.kick$site = paste0(wb.kick$LOCATION, wb.kick$REPLICATE)
 rb.kick$site = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
+```
+
+```{r}
+
+
 
 ## FROM HERE!!!!
 ```
@@ -963,7 +967,7 @@ fact_time.niche = matrix(c(niche.nmds$time), ncol=1)
 fact_predator.niche = matrix(c(niche.nmds$predator_ID), ncol=1)
 fact_all.niche = matrix(c(niche.nmds$site, niche.nmds$time, niche.nmds$predator_ID), ncol=3)
 
-dist.niche = vegdist(matrix.niche, method="euclidean")
+dist.niche = vegdist(matrix.niche, method="bray")
 
 adonis(dist.niche~fact_site.niche*fact_predator.niche, permutations = 10000, method="euclid")
 adonis(dist.niche~fact_time.niche*fact_predator.niche, permutations = 10000, method="euclid")
