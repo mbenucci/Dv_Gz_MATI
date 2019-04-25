@@ -764,7 +764,7 @@ fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_typ
 
 dist.full = vegdist(adonis.full, method="bray")
 
-adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 1000, method="bray")
+adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 1000, method="euclidean")
 ```
 
 ```{r nmds based on distances and on abundance data}
@@ -772,7 +772,7 @@ adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10
 # meta.guts.edna = metaMDS(dist.full, trymax=200, distance="bray")
 
 # NMDS based on the abundance data (will give the species scores as well)
-meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="bray")
+meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="euclidean")
 ```
 
 ```{r plotting eDNA nmds}
@@ -786,8 +786,8 @@ nmds.sp.guts.edna = as.data.frame(scores(meta.abund.guts.edna,"species"))
 nmds.sp.guts.edna$species = rownames(nmds.sp.guts.edna)
 
 # full symbols for May, hollow symbols for October
-pdf("images/guts-vs-eDNA_NMDS_bray.pdf")
-plot(meta.abund.guts.edna, type="n", main="gut contents vs. eDNA NMDS", xlim=c(-2.5,5), ylim=c(-1,1))
+pdf("images/guts-vs-eDNA_NMDS_euclidean.pdf")
+plot(meta.abund.guts.edna, type="n", main="gut contents vs. eDNA NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
 points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
 points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=22)
