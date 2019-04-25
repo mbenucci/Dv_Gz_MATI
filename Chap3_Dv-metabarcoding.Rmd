@@ -663,15 +663,14 @@ fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 fact_all.guts = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="bray")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="bray")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="bray")
-adonis2(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="bray")
+adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="euclidean")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ab.guts = metaMDS(adonis.guts, distance="euclidean")
+meta.ab.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 ```
 
 
@@ -763,17 +762,17 @@ fact_time.full = matrix(c(abund.full$time), ncol=1)
 fact_type.full = matrix(c(abund.full$sample_type), ncol=1)
 fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_type), ncol=3)
 
-dist.full = vegdist(adonis.full, method="bray")
+dist.full = vegdist(adonis.full, method="euclidean")
 
-adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10000, method="bray")
+adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10000, method="euclidean")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the distance matrix
-meta.guts.edna = metaMDS(dist.full, trymax=200, distance="bray")
+meta.guts.edna = metaMDS(dist.full, trymax=200, distance="euclidean")
 
 # NMDS based on the abundance data (will give the species scores as well)
-meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="bray")
+meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="euclidean")
 ```
 
 ```{r plotting eDNA nmds}
@@ -970,7 +969,7 @@ fact_time.niche = matrix(c(niche.nmds$time), ncol=1)
 fact_predator.niche = matrix(c(niche.nmds$predator_ID), ncol=1)
 fact_all.niche = matrix(c(niche.nmds$site, niche.nmds$time, niche.nmds$predator_ID), ncol=3)
 
-dist.niche = vegdist(matrix.niche, method="bray")
+dist.niche = vegdist(matrix.niche, method="euclidean")
 
 adonis(dist.niche~fact_site.niche*fact_predator.niche, permutations = 10000, method="euclid")
 adonis(dist.niche~fact_time.niche*fact_predator.niche, permutations = 10000, method="euclid")
