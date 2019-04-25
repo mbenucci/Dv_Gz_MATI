@@ -809,7 +809,15 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```
 
 ```{r adding the binomial}
-gw.may
+data_structuring <- function(list_df){
+  for (df in list_df){
+    df = spread(df, TAXA, NUMBER, fill=NA)
+  }
+  return(df)
+}
+
+
+spread(gw.may, TAXA, NUMBER, fill=NA)
 
 
 
