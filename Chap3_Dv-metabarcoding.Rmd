@@ -661,16 +661,17 @@ adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","type","p
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
-fact_all.nmds = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
+fact_all.guts = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 10000, method="bray")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 10000, method="bray")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 10000, method="e")
+adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="bray")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="bray")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="bray")
+adonis2(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ad.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+meta.ad.guts = metaMDS(adonis.guts, distance="bray")
 ```
 
 
@@ -684,6 +685,7 @@ nmds.guts$time = abund.guts[,"time"]
 nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
 nmds.sp.guts$species = rownames(nmds.sp.guts)
 
+# full symbols for May, hollow symbols for October 
 pdf("images/guts_predator_NMDS.pdf")
 plot(meta.ad.guts, type="n", main="gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
 points(meta.ad.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
