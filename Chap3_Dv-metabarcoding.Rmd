@@ -811,13 +811,22 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```{r adding the binomial}
 data_structuring <- function(list_df){
   for (df in list_df){
-    df = spread(df, TAXA, NUMBER, fill=NA)
+    df = as.data.frame(df)
+    df = df[,!c(colnames(df) %in% c("ORDER","FAMILY"))]
+    df = spread(df, TAXA, NUMBERS, fill=0)
   }
   return(df)
 }
 
+kick_df = list(gw.may,gw.oct,wb.may,wb.oct,rb.may,rb.oct)
+data_structuring(kick_df)
 
-spread(gw.may, TAXA, NUMBER, fill=NA)
+View(gw.may)
+
+colnames(gw.may)
+test = gw.may
+test = test[,!c(colnames(test) %in% c("ORDER","FAMILY"))]
+spread(test, TAXA, NUMBERS, fill=0)
 
 
 
