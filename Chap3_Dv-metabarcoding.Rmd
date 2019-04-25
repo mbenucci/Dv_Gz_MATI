@@ -858,6 +858,14 @@ colnames(rb.kick)
 ```
 
 ```{r}
+# Removing unnecessary columns
+gw.kick = gw.kick[,!c(colnames(gw.kick) %in% c("TUBE.ID","DATE"))]
+wb.kick = wb.kick[,!c(colnames(wb.kick) %in% c("TUBE.ID","DATE"))]
+rb.kick = rb.kick[,!c(colnames(rb.kick) %in% c("TUBE.ID","DATE"))]
+
+gw.kick$site = paste0(gw.kick$LOCATION, gw.kick$REPLICATE)
+wb.kick$site = paste0(wb.kick$LOCATION, wb.kick$REPLICATE)
+rb.kick$site = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
 
 ## FROM HERE!!!!
 ```
