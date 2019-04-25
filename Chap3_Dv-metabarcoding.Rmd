@@ -871,12 +871,24 @@ rb.kick$site = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
 ```
 
 ```{r}
+abund.kick = full_join(gw.kick, wb.kick)
+abund.kick = full_join(abund.kick, rb.kick)
 
+# Sorting out variables and joining the two frames
+abund.kick[is.na(abund.kick)] <- 0
+adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","site","sample_type","LOCATION","REPLICATE"))]
 
+fact_site.kick = matrix(c(abund.kick$site), ncol=1)
+fact_time.kick = matrix(c(abund.kick$time), ncol=1)
+fact_type.kick = matrix(c(abund.kick$sample_type), ncol=1)
 
+adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="bray")
 ## FROM HERE!!!!
 ```
 
+```{r}
+meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
+```
 
 
 Once We can now start plotting and running models!
