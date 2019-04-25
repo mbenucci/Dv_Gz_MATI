@@ -809,26 +809,43 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```
 
 ```{r adding the binomial}
-data_structuring <- function(list_df){
-  for (df in list_df){
-    df = as.data.frame(df)
-    df = df[,!c(colnames(df) %in% c("ORDER","FAMILY"))]
-    df = spread(df, TAXA, NUMBERS, fill=0)
-  }
+data_structuring <- function(df){
+  df = as.data.frame(df)
+  df = df[,!c(colnames(df) %in% c("ORDER","FAMILY"))]
+  df = spread(df, TAXA, NUMBERS, fill=0)
   return(df)
 }
 
-kick_df = list(gw.may,gw.oct,wb.may,wb.oct,rb.may,rb.oct)
-data_structuring(kick_df)
+gw.may.kick = data_structuring(gw.may)
+gw.oct.kick = data_structuring(gw.oct)
+wb.may.kick = data_structuring(wb.may)
+wb.oct.kick = data_structuring(wb.oct)
+rb.may.kick = data_structuring(rb.may)
+rb.oct.kick = data_structuring(rb.oct)
 
-View(gw.may)
+# Adding variables
 
-colnames(gw.may)
-test = gw.may
-test = test[,!c(colnames(test) %in% c("ORDER","FAMILY"))]
-spread(test, TAXA, NUMBERS, fill=0)
+gw.may.kick$time = "May"
+gw.oct.kick$time = "Oct"
+wb.may.kick$time = "May"
+wb.oct.kick$time = "Oct"
+rb.may.kick$time = "May"
+rb.oct.kick$time = "Oct"
 
+gw.may.kick$sample_type = "kick"
+gw.oct.kick$sample_type = "kick"
+wb.may.kick$sample_type = "kick"
+wb.oct.kick$sample_type = "kick"
+rb.may.kick$sample_type = "kick"
+rb.oct.kick$sample_type = "kick"
 
+gw.kick = full_join(gw.may.kick, gw.oct.kick)
+wb.kick = full_join(wb.may.kick, wb.oct.kick)
+rb.kick = full_join(rb.may.kick, rb.oct.kick)
+
+gw.kick[is.na(gw.kick)] <- 0
+wb.kick[is.na(wb.kick)] <- 0
+rb.kick[is.na(rb.kick)] <- 0
 
 ## FROM HERE!!!!
 ```
