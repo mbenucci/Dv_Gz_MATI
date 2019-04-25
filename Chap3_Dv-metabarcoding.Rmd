@@ -846,6 +846,18 @@ rb.kick = full_join(rb.may.kick, rb.oct.kick)
 gw.kick[is.na(gw.kick)] <- 0
 wb.kick[is.na(wb.kick)] <- 0
 rb.kick[is.na(rb.kick)] <- 0
+```
+
+```{r checking and removing duplication in species}
+colnames(gw.kick)
+gw.kick$Dikerogammarus_sp. = gw.kick$Dikerogammarus_sp. + gw.kick$Dikerogammarus_spp.
+gw.kick = gw.kick[,!c(colnames(gw.kick) %in% "Dikerogammarus_spp.")]
+
+colnames(wb.kick)
+colnames(rb.kick)
+```
+
+```{r}
 
 ## FROM HERE!!!!
 ```
