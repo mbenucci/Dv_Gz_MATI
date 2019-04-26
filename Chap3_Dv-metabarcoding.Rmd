@@ -762,9 +762,7 @@ fact_time.full = matrix(c(abund.full$time), ncol=1)
 fact_type.full = matrix(c(abund.full$sample_type), ncol=1)
 fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_type), ncol=3)
 
-dist.full = vegdist(adonis.full, method="bray")
-
-adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 1000, method="euclidean")
+adonis(adonis.full~fact_site.full*fact_time.full*fact_type.full, permutations = 1000, method="euclidean")
 ```
 
 ```{r nmds based on distances and on abundance data}
@@ -884,7 +882,6 @@ fact_site.kick = matrix(c(abund.kick$site), ncol=1)
 fact_time.kick = matrix(c(abund.kick$time), ncol=1)
 
 adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="bray")
-## FROM HERE!!!!
 ```
 
 ```{r}
@@ -910,9 +907,19 @@ dev.off()
 abund.kick.edna = full_join(abund.edna, abund.kick)
 abund.kick.edna[is.na(abund.kick.edna)] <- 0
 
-fact_site.edki = 
-fact_time.edki = 
-fact_type.edki =
+adonis.kick.edna = abund.kick.edna[,!c(colnames(abund.kick.edna) %in% c("site","sample_id","sample_type","time"))]
+
+fact_site.edki = matrix(c(abund.kick.edna$site), ncol=1)
+fact_time.edki = matrix(c(abund.kick.edna$time), ncol=1)
+fact_type.edki = matrix(c(abund.kick.edna$sample_type), ncol=1)
+
+adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 1000, method = "bray")
+```
+
+```{r}
+## FROM HERE!!!
+
+print("end")
 ```
 
 
