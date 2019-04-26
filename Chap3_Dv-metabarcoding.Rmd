@@ -917,8 +917,27 @@ adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutatio
 ```
 
 ```{r}
-## FROM HERE!!!
+meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
+```
 
+
+```{r}
+# full symbols for May, hollow symbols for October
+pdf("images/kick-eDNA_NMDS_bray-curtis.pdf")
+plot(meta.kick.edna, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=15)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.kick.edna, group=fact_type.edki[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+dev.off()
+```
+
+```{r}
+## FROM HERE!!!
 print("end")
 ```
 
