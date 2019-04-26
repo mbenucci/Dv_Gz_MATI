@@ -906,9 +906,13 @@ ordiellipse(meta.ab.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),lab
 dev.off()
 ```
 
-```{r}
+```{r merging kick-samples and eDNA frames}
+abund.kick.edna = full_join(abund.edna, abund.kick)
+abund.kick.edna[is.na(abund.kick.edna)] <- 0
 
-colnames(abund.edna)
+fact_site.edki = 
+fact_time.edki = 
+fact_type.edki =
 ```
 
 
