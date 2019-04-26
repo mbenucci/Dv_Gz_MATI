@@ -878,9 +878,8 @@ abund.kick = full_join(abund.kick, rb.kick)
 abund.kick[is.na(abund.kick)] <- 0
 adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","site","sample_type","LOCATION","REPLICATE"))]
 
-fact_site.kick = matrix(c(abund.kick$site), ncol=1)
+fact_site.kick = matrix(c(abund.kick$LOCATION), ncol=1)
 fact_time.kick = matrix(c(abund.kick$time), ncol=1)
-fact_type.kick = matrix(c(abund.kick$sample_type), ncol=1)
 
 adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="bray")
 ## FROM HERE!!!!
@@ -890,6 +889,21 @@ adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="b
 meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 ```
 
+```{r}
+# full symbols for May, hollow symbols for October
+pdf("images/kick-samples_NMDS_bray-curtis.pdf")
+plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=22)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=15)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.ab.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.ab.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+dev.off()
+```
+```
 
 Once We can now start plotting and running models!
 
