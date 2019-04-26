@@ -889,7 +889,7 @@ adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="b
 meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 ```
 
-```{r}
+```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
 pdf("images/kick-samples_NMDS_bray-curtis.pdf")
 plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
