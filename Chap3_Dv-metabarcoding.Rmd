@@ -874,6 +874,9 @@ abund.kick = full_join(abund.kick, rb.kick)
 
 colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
 
+# Summarising kick-samples by sites
+abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
+
 # Sorting out variables and joining the two frames
 abund.kick[is.na(abund.kick)] <- 0
 adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","sample_id","sample_type","site","REPLICATE"))]
