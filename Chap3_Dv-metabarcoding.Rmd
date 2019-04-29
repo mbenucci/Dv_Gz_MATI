@@ -658,49 +658,66 @@ dev.off()
 ```
 
 ```{r PERMANOVA gut contents}
-# gut contents PERMANOVA
-adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","type","predator_id"))]
+# comparing D.vil and G.zad
+adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
 
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
-fact_all.guts = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
-adonis(adonis.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 1000, method="euclidean")
+#adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
+#adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
+
+# comparing only D.vil
+adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
+
+fact_site.dvil = matrix(c(adonis.dvil$site), ncol=1)
+fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
+colnames(adonis.dvil)
+adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
+
+adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
 ```
 
-```{r nmds based on distances and on abundance data}
-# NMDS based on the abundance data (will give the species scores as well)
-meta.ab.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+```{r NMDS of gut contents both D.vil and G.zad}
+meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+```
+
+```{r NMDS on D.vil gut contents}
+meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 ```
 
 
 ```{r plotting guts nmds}
-nmds.guts = as.data.frame(scores(meta.ab.guts))
-nmds.guts$id = rownames(nmds.guts)
-nmds.guts$site = abund.guts[,"site"]
-nmds.guts$predator = abund.guts[,"predator_id"]
-nmds.guts$time = abund.guts[,"time"]
-
-nmds.sp.guts = as.data.frame(scores(meta.ab.guts,"species"))
-nmds.sp.guts$species = rownames(nmds.sp.guts)
-
 # full symbols for May, hollow symbols for October
-png("images/guts_predator_NMDS_euclidean.png", width = 800, height = 800, units = "px")
-plot(meta.ab.guts, type="n", main="gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.ab.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ab.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
-ordiellipse(meta.ab.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+png("images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.guts, type="n", main="gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
 dev.off()
 ```
 
+```{r plotting guts nmds}
+# full symbols for May, hollow symbols for October
+png("images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
+#points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+#points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+dev.off()
+```
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
@@ -711,42 +728,27 @@ fact_time.edna = matrix(c(abund.edna$time), ncol=1)
 fact_id.edna = matrix(c(abund.edna$sample_id), ncol=1)
 fact_all.edna = matrix(c(abund.edna$site, abund.edna$time, abund.edna$sample_id), ncol=3)
 
-dist.edna = vegdist(adonis.edna, method="bray")
-
 adonis(adonis.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="bray")
-adonis(dist.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-meta.edna = metaMDS(dist.edna, distance="bray")
-
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ab.edna = metaMDS(adonis.edna, distance="bray")
+meta.edna = metaMDS(adonis.edna, distance="bray")
 ```
 
 
 ```{r plotting eDNA nmds}
-nmds.edna = as.data.frame(scores(meta.ab.edna))
-nmds.edna$id = rownames(nmds.edna)
-nmds.edna$site = abund.edna[,"site"]
-nmds.edna$time = abund.edna[,"time"]
-nmds.edna$sample = abund.edna[,"sample_id"]
-
-nmds.sp.edna = as.data.frame(scores(meta.ab.edna,"species"))
-nmds.sp.edna$species = rownames(nmds.sp.edna)
-
 # full symbols for May, hollow symbols for October
-png("images/eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
-plot(meta.ab.edna, type="n", main="eDNA NMDS", xlim=c(-1,1.5), ylim=c(-1,1))
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=22)
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=15)
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
-points(meta.ab.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ab.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.ab.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+png("images/eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+plot(meta.edna, type="n", main="eDNA NMDS", xlim=c(-1,1.5), ylim=c(-1,1))
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=22)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=15)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 dev.off()
 ```
 
@@ -769,9 +771,6 @@ adonis(adonis.full~fact_site.full*fact_time.full*fact_type.full, permutations = 
 ```
 
 ```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-# meta.guts.edna = metaMDS(dist.full, trymax=200, distance="bray")
-
 # NMDS based on the abundance data (will give the species scores as well)
 meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="euclidean")
 ```
@@ -926,7 +925,7 @@ meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 
 ```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
-png("images/kick-samples_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
+png("images/kick-samples_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
 plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
@@ -977,7 +976,9 @@ dev.off()
 Once We can now start plotting and running models!
 
 ```{r niche breadth of D.villosus}
+#View(abund.guts)
 niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
+colnames(niche.dv)
 
 # summing prey DNA reads by predator ID, site and time.
 niche.model = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type","sample_id"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
