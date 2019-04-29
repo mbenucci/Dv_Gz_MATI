@@ -981,33 +981,13 @@ colnames(niche.dv)
 # summing prey DNA reads by predator ID, site and time.
 niche.model = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type","sample_id"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
 
-View(niche.model)
+## Null model with ra2 algorithm since this is not a niche overlap analysis
+niche.dv.model = niche_null_model(speciesData=niche.model[,!c(colnames(niche.model) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
 
-#niche.model = niche.model[-c(2,4,6),]
-#niche.model = niche.model[,!c(colnames(niche.model) %in% c("Dikerogammarus_villosus","Porcellio_scaber"))]
-
-## test of the null model with ra2 algorithm
-niche.null.model = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra2", metric="pianka", suppressProg=T, nReps=5000)
-
-summary(niche.null.model)
-plot(niche.null.model,type="hist")
-plot(niche.null.model,type="niche")
-
-## test of the null model with ra3 algorithm
-niche.null.model3 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra3", metric="pianka", suppressProg=T, nReps=5000)
-
-summary(niche.null.model3)
-plot(niche.null.model3,type="hist")
-
-niche.model
-rowSums(niche.model[,4:ncol(niche.model)])
-
-## test of the null model with ra4 algorithm
-#niche.null.model4 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra4", metric="pianka", suppressProg=T, nReps=5000)
-
-#summary(niche.null.model4)
-#plot(niche.null.model4,type="hist")
-
+summary(niche.dv.model)
+png("images/Dvil_niche_breadth.png", width=500, height=500, units="px")
+plot(niche.dv.model, type="hist", main="Niche breadth of D.villosus across invaded sites")
+dev.off()
 ```
 
 ```{r}
@@ -1055,6 +1035,26 @@ ordiellipse(meta.niche,group=fact_time.niche[,1],kind="ehull",lty=c(1,3), label=
 
 #,lty=as.numeric(factor(fact_predator.niche[,1]))
 #c("green","orange","green4")
+```
+
+
+```{r}
+## test of the null model with ra3 algorithm
+niche.null.model3 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra3", metric="pianka", suppressProg=T, nReps=5000)
+
+summary(niche.null.model3)
+plot(niche.null.model3,type="hist")
+
+niche.model
+rowSums(niche.model[,4:ncol(niche.model)])
+
+## test of the null model with ra4 algorithm
+#niche.null.model4 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra4", metric="pianka", suppressProg=T, nReps=5000)
+
+#summary(niche.null.model4)
+#plot(niche.null.model4,type="hist")
+
+
 ```
 
 # Food webs
