@@ -707,14 +707,12 @@ dev.off()
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
 png("images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS")#, xlim=c(-1.5,1), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
-#points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-#points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","orange"),label=T)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=T)
 ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
 dev.off()
 ```
@@ -958,8 +956,8 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 
 ```{r}
 # full symbols for May, hollow symbols for October
-png("images/kick-eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
-plot(meta.kick.edna, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
+png("images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-0.6,0.6))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -973,7 +971,7 @@ dev.off()
 
 # 4. Niche/Diet breadth
 
-Once We can now start plotting and running models!
+After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
 
 ```{r niche breadth of D.villosus}
 #View(abund.guts)
