@@ -648,10 +648,10 @@ inext.edna = iNEXT(inext.edna, q=c(0,1), datatype = "abundance", se=T, endpoint=
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
 
-png("images/eDNA_species_rarefactions.png", width = 480, height = 480, units = "px")
+png("images/eDNA_species_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.edna) +
   labs(y = "", x="Number of samples") +
-  theme(legend.position="bottom") +
+  theme(legend.position="right") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
   ggtitle("Species level rarefaction curves of eDNA samples")
 dev.off()
@@ -888,11 +888,13 @@ raref.kick = t(raref.kick[,!c(colnames(raref.kick) %in% c("site","time"))])
 inext.kick = iNEXT(raref.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=1400)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
+png("images/kick-samples_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.kick) +
-  labs(y = "", x="Number of samples") +
+  labs(y = "", x="Number of individuals") +
   theme(legend.position="bottom") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
-  ggtitle("Species level rarefaction curves of communities in kick samples")
+  ggtitle("Rarefaction curves of communities in kick samples")
+dev.off()
 ```
 
 ```{r]}
