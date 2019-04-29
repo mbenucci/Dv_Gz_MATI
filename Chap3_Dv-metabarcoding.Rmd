@@ -688,7 +688,7 @@ nmds.sp.guts = as.data.frame(scores(meta.ab.guts,"species"))
 nmds.sp.guts$species = rownames(nmds.sp.guts)
 
 # full symbols for May, hollow symbols for October
-pdf("images/guts_predator_NMDS_euclidean.pdf")
+png("images/guts_predator_NMDS_euclidean.png", width = 800, height = 800, units = "px")
 plot(meta.ab.guts, type="n", main="gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
 points(meta.ab.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.ab.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
@@ -737,7 +737,7 @@ nmds.sp.edna = as.data.frame(scores(meta.ab.edna,"species"))
 nmds.sp.edna$species = rownames(nmds.sp.edna)
 
 # full symbols for May, hollow symbols for October
-pdf("images/eDNA_NMDS_bray-curtis.pdf")
+png("images/eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
 plot(meta.ab.edna, type="n", main="eDNA NMDS", xlim=c(-1,1.5), ylim=c(-1,1))
 points(meta.ab.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
 points(meta.ab.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
@@ -787,7 +787,7 @@ nmds.sp.guts.edna = as.data.frame(scores(meta.abund.guts.edna,"species"))
 nmds.sp.guts.edna$species = rownames(nmds.sp.guts.edna)
 
 # full symbols for May, hollow symbols for October
-pdf("images/guts-vs-eDNA_NMDS_euclidean.pdf")
+png("images/guts-vs-eDNA_NMDS_euclidean.png", width = 800, height = 800, units = "px")
 plot(meta.abund.guts.edna, type="n", main="gut contents vs. eDNA NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
 points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
@@ -879,25 +879,34 @@ colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
 head(abund.kick)
 raref.kick = abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE","sample_type"))]
 
-raref.kick = as.data.frame(raref.kick %>% group_by(site, time) %>% summarise_all(funs(sum)))
+# removing high order taxa
+colnames(raref.kick)
+raref.kick = raref.kick[,!c(colnames(raref.kick) %in% c("Trichoptera","Diptera","Oligochaeta","Ostracoda","Araneae","Coleoptera","Mollusca","Zygopotera","Plecoptera","Nematoda"))]
 
-rownames(raref.kick) = paste(raref.kick$site, raref.kick$time, sep="_")
-raref.kick[is.na(raref.kick)] <- 0
-raref.kick = t(raref.kick[,!c(colnames(raref.kick) %in% c("site","time"))])
+# list of families in data set to be removed
+kick.fam = colnames(raref.kick[,grepl("idae", colnames(raref.kick)) == T])
+raref.sp.kick = raref.kick[,!c(colnames(raref.kick) %in% kick.fam)]
 
-inext.kick = iNEXT(raref.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=1400)
+# summarising data set by lake and season
+raref.sp.kick = as.data.frame(raref.sp.kick %>% group_by(site, time) %>% summarise_all(funs(sum)))
+
+rownames(raref.sp.kick) = paste(raref.sp.kick$site, raref.sp.kick$time, sep="_")
+raref.sp.kick[is.na(raref.sp.kick)] <- 0
+raref.sp.kick = t(raref.sp.kick[,!c(colnames(raref.sp.kick) %in% c("site","time"))])
+
+inext.kick = iNEXT(raref.sp.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=1400)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
 png("images/kick-samples_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.kick) +
   labs(y = "", x="Number of individuals") +
-  theme(legend.position="bottom") +
+  theme(legend.position="right") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
   ggtitle("Rarefaction curves of communities in kick samples")
 dev.off()
 ```
 
-```{r]}
+```{r}
 # Summarising kick-samples by sites
 abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
 
@@ -917,7 +926,7 @@ meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 
 ```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
-pdf("images/kick-samples_NMDS_bray-curtis.pdf")
+png("images/kick-samples_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
 plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
@@ -950,7 +959,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 
 ```{r}
 # full symbols for May, hollow symbols for October
-pdf("images/kick-eDNA_NMDS_bray-curtis.pdf")
+png("images/kick-eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
 plot(meta.kick.edna, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
