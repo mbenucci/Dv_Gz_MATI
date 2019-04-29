@@ -849,12 +849,8 @@ rb.kick[is.na(rb.kick)] <- 0
 ```
 
 ```{r checking and removing duplication in species}
-colnames(gw.kick)
 gw.kick$Dikerogammarus_sp. = gw.kick$Dikerogammarus_sp. + gw.kick$Dikerogammarus_spp.
 gw.kick = gw.kick[,!c(colnames(gw.kick) %in% "Dikerogammarus_spp.")]
-
-colnames(wb.kick)
-colnames(rb.kick)
 ```
 
 ```{r}
@@ -868,12 +864,32 @@ wb.kick$sample_id = paste0(wb.kick$LOCATION, wb.kick$REPLICATE)
 rb.kick$sample_id = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
 ```
 
-```{r}
+```{r joining frames}
 abund.kick = full_join(gw.kick, wb.kick)
 abund.kick = full_join(abund.kick, rb.kick)
 
 colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
+```
 
+```{r rarefaction curves on kick-samples}
+# setting rownames and removing extra variables
+head(abund.kick)
+raref.kick = abund.kick
+rownames(raref.kick) = paste(raref.kick$sample_id, raref.kick$time, sep="_")
+colnames(raref.kick)
+inext.kick = t(raref.kick[,!c(colnames(raref.kick) %in% c("site","time","sample_id","REPLICATE","sample_type"))])
+
+inext.kick = iNEXT(inext.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
+
+strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
+ggiNEXT(inext.kick) +
+  labs(y = "", x="Number of samples") +
+  theme(legend.position="bottom") +
+  facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
+  ggtitle("Species level rarefaction curves of communities in kick samples")
+```
+
+```{r]}
 # Summarising kick-samples by sites
 abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
 
