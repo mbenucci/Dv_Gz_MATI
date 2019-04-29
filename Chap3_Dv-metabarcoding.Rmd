@@ -972,66 +972,20 @@ ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),lab
 dev.off()
 ```
 
-```{r}
-## FROM HERE!!!
-print("end")
-```
-
-
 # 4. Niche/Diet breadth
 
 Once We can now start plotting and running models!
 
-```{r}
-gut.ratio = dvmay.filter[dvmay.filter$sample_type == "gut",]
-gut.melt = melt(gut.ratio)
-
-head(gut.melt)
-
-gut.ratio2 = dvoct.filter[dvoct.filter$sample_type == "gut",]
-gut.ratio2[3, "predator_id"] <- "Dikerogammarus_villosus"
-gut.melt2 = melt(gut.ratio2)
-
-gut.full = full_join(gut.melt, gut.melt2)
-
-ggplot(gut.full, aes(time, value)) +
-  geom_jitter(aes(color=predator_ID)) +
-  facet_grid (.~site) +
-  ylab("prey DNA ratio") + xlab("sampling month")
-```
-
-```{r}
-niche.frame = full_join(gut.ratio, gut.ratio2)
-niche.frame[is.na(niche.frame)] <- 0
-
-niche.info = niche.frame[,c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]
-
-niche.frame = subset(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))], select = colSums(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]) > 0)
-
-niche.frame[][niche.frame > 0] <- 1
-
-niche.frame = cbind(niche.frame, niche.info)
-```
+```{r niche breadth of D.villosus}
+niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
 
 # summing prey DNA reads by predator ID, site and time.
+niche.model = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type","sample_id"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
 
-```{r}
-colnames(niche.frame)
-head(niche.frame)
+View(niche.model)
 
-nrow(niche.frame)
-
-niche.model = as.data.frame(niche.frame[,!c(colnames(niche.frame) %in% c("sample_type","sample_id"))] %>% group_by(site, time, predator_ID) %>% summarise_all(funs(sum)))
-
-# Becuase _C.f loridanus_ hasn't been confirmed in Rockland Broad, we decided to be conservative and pull both Crangonyx species up to the genus level.
-
-niche.model$Crangonyx = niche.model$Crangonyx_pseudogracilis + niche.model$Crangonyx_floridanus
-niche.model = niche.model[,!c(colnames(niche.model) %in% c("Crangonyx_pseudogracilis", "Crangonyx_floridanus"))]
-
-ncol(niche.model)
-
-niche.model = niche.model[-c(2,4,6),]
-niche.model = niche.model[,!c(colnames(niche.model) %in% c("Dikerogammarus_villosus","Porcellio_scaber"))]
+#niche.model = niche.model[-c(2,4,6),]
+#niche.model = niche.model[,!c(colnames(niche.model) %in% c("Dikerogammarus_villosus","Porcellio_scaber"))]
 
 ## test of the null model with ra2 algorithm
 niche.null.model = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra2", metric="pianka", suppressProg=T, nReps=5000)
@@ -1058,20 +1012,20 @@ rowSums(niche.model[,4:ncol(niche.model)])
 ```
 
 ```{r}
-head(niche.frame)
+head(niche.dv)
 
-niche.nmds = as.data.frame(niche.frame)
+niche.nmds = as.data.frame(niche.dv)
 
-niche.nmds = subset(niche.nmds, subset=rowSums(niche.nmds[,!c(colnames(niche.frame) %in% c("time","site","sample_id","predator_id","sample_type"))]) > 0)
+niche.nmds = subset(niche.nmds, subset=rowSums(niche.nmds[,!c(colnames(niche.dv) %in% c("time","site","predator_id","sample_type"))]) > 0)
 
-matrix.niche = as.matrix(niche.nmds[,!c(colnames(niche.nmds) %in% c("time","site","sample_id","predator_id","sample_type"))])
+#matrix.niche = as.matrix(niche.nmds[,!c(colnames(niche.nmds) %in% c("time","site","predator_id","sample_type"))])
 
 fact_site.niche = matrix(c(niche.nmds$site),ncol=1) 
 fact_time.niche = matrix(c(niche.nmds$time), ncol=1)
-fact_predator.niche = matrix(c(niche.nmds$predator_ID), ncol=1)
-fact_all.niche = matrix(c(niche.nmds$site, niche.nmds$time, niche.nmds$predator_ID), ncol=3)
+fact_predator.niche = matrix(c(niche.nmds$predator_id), ncol=1)
+fact_all.niche = matrix(c(niche.nmds$site, niche.nmds$time, niche.nmds$predator_id), ncol=3)
 
-dist.niche = vegdist(matrix.niche, method="euclidean")
+dist.niche = vegdist(niche.dv, method="euclidean")
 
 adonis(dist.niche~fact_site.niche*fact_predator.niche, permutations = 10000, method="euclid")
 adonis(dist.niche~fact_time.niche*fact_predator.niche, permutations = 10000, method="euclid")
@@ -1136,8 +1090,9 @@ citation()
 sink()
 ```
 
-## END
-
+```{r}
+print("end")
+```
 
 
 # Testing for the main 2 predators _Dikerogammarus villosus_ (for WB and GW) and _Gammarus zaddachi_ (for RB).
