@@ -260,7 +260,7 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
 # Remaining known contaminations
 
-Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence, however being fairly widespread the decision was to remove all _D. villosus_ detections in the gut contents.
+Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence, however being fairly widespread the decision is to remove all _D. villosus_ detections in the gut contents. The removal will happen further downstream to prevent mis-identifying the predators.
 
 ```{r remaining contaminations May}
 # Checking in which sample(s) _Osmia bicornis_ contamination is still present
@@ -298,10 +298,6 @@ filter.may = filter.may[!(rownames(filter.may) %in% "cont.13"),]
 
 clean.may = clean.may[-c(grep("BL", rownames(filter.may))),]
 filter.may = filter.may[-c(grep("BL", rownames(filter.may))),]
-
-# Removing _D. villosus_ detections in gut contents
-filter.may$Dikerogammarus_villosus <- 0
-clean.may$Dikerogammarus_villosus <- 0
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold; and _Osmia bicornis_ remained in only one samples (eGW4) with 28 reads (1.88%). In addition it was present contamination from _Porcellio scaber_ in two samples (RB409 and RB412), respectively at 2656 reads (5.6%), and 6234 reads (16.9%). Ultimately Psocoptera DNA was detected as contaminant in one sample (RB411), at 293 reads (0.9%).
@@ -494,6 +490,10 @@ for (i in m.row){
   clean.may[i,pred_read] <- 0
 }
 
+# Removing DNA read belonging to _D. villosus_ due to wide spread contamination
+filter.may$Dikerogammarus_villosus <- 0
+clean.may$Dikerogammarus_villosus <- 0
+
 # Confirming the function worked
 filter.may[m.row,unique(m.col)]
 
@@ -509,6 +509,10 @@ for (i in o.row){
   filter.oct[i,pred_id] <- 0
   clean.oct[i,pred_read] <- 0
 }
+
+# Removing DNA read belonging to _D. villosus_ due to wide spread contamination
+filter.oct$Dikerogammarus_villosus <- 0
+clean.oct$Dikerogammarus_villosus <- 0
 
 # Confirming the function worked
 filter.oct[o.row,unique(o.col)]
@@ -999,7 +1003,6 @@ dev.off()
 
 # 5. Food webs network
 
-
 ```{r food web network plus bipartite}
 # Summing prey DNA reads by predator ID, site and time.
 food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
@@ -1012,7 +1015,7 @@ food.web = as.matrix(food.web)
 
 rownames(food.web)
 
-plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, text.rot=90)
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90)
 ```
 
 
