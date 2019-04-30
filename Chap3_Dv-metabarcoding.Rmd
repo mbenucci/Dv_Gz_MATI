@@ -1009,27 +1009,44 @@ food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type
 rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, sep="_")
 
 food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
-
 food.web = as.data.frame(t(food.web))
 
-#network.prey = rownames(food.web)
-#rownames(food.web) <- NULL
+# Setting up the estimate vectors as taxa distribution
+#est.edna = abund.edna
+#est.kick = abund.kick
 
-nrow(abund.edna)
-nrow(abund.kick)
+#est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))][est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))] > 0] <- 1
+#est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))][est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))] > 0] <- 1
 
-est.edna = abund.edna
-est.kick = abund.kick
+#est.edna = as.data.frame(est.edna[,!c(colnames(est.edna) %in% c("sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+#est.kick = as.data.frame(est.kick[,!c(colnames(est.kick) %in% c("REPLICATE","sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
 
+#est.web = full_join(est.edna, est.kick)
+#est.web[is.na(est.web)] <- 0
 
+#est.kick$Radix_balthica
+#est.edna$Radix_balthica
+#est.web$Radix_balthica
 
-est.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
-est.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLICATE","sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+#colnames(est.web)
+#est.web = as.data.frame(est.web %>% group_by(site, time) %>% summarise_all(funs(sum)))
 
-est.edna
-est.kick
+#rownames(est.web) = paste(est.web$site, est.web$time, sep="_")
+#est.web = est.web[,!c(colnames(est.web) %in% c("site","time"))]
 
+#est.web = as.data.frame(t(est.web))
+#rownames(est.web) = c("D.vil_GW_May","D.vil_GW_Oct","G.zad_RB_May","G.zad_RB_Oct","D.vil_WB_May","D.vil_WB_Oct")
+#str(est.web)
+#str(food.web)
+#rownames(est.web)
+#rownames(food.web)
+
+#est.web = est.web %>% summarise_all(funs(sum))
+#colnames(est.web)
+
+png("images/bipartite_network.png", width=500, height=500, units="px")
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90, col.interaction=c("blue","blue","orange","orange","green","green"))
+dev.off()
 ```
 
 ```{r end}
