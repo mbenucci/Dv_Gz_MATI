@@ -224,9 +224,9 @@ pos.oct["Dikerogammarus_villosus",]/colSums(pos.oct)
 pos.oct = pos.oct[,-c(1:3)]
 ```
 
-Based on the levels of contamination in the Positive samples, the threshold levels were decided to be respectively 0.03% (May data set) and 0.5% (October data set).
+Based on the levels of contamination in the Positive samples, the threshold levels were decided to be respectively 0.5% (May data set) and 0.5% (October data set). In May data set we still detect some _D. villosus_ contamination.
 
-```{r threshold}
+```{r threshold May}
 # Transposing the data frames and copying them to carry them over as N reads and ratios.
 clean.may = as.data.frame(t(clean.may))
 
@@ -237,6 +237,11 @@ filter.may[is.na(filter.may)] <- 0
 filter.may[][filter.may <= 0.0003] <- 0
 clean.may[][clean.may[,]/rowSums(clean.may) <= 0.0003] <- 0
 
+filter.may[grep("RB", rownames(filter.may)),"Dikerogammarus_villosus"]
+clean.may[grep("RB", rownames(filter.may)),"Dikerogammarus_villosus"]
+```
+
+```{r threshold October}
 clean.oct = as.data.frame(t(clean.oct))
 
 filter.oct = as.data.frame(clean.oct)
@@ -954,7 +959,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 ```
 
 
-```{r}
+```{r NMDS plot of kick-samples vs eDNA}
 # full symbols for May, hollow symbols for October
 png("images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
 plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-0.6,0.6))
@@ -983,7 +988,7 @@ niche.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type"))]
 rownames(niche.dv) = paste(niche.dv$predator_id, niche.dv$site, niche.dv$time, sep="_")
 
 ## Null model with ra2 algorithm since this is not a niche overlap analysis
-niche.dv.model = niche_null_model(speciesData=niche.model[,!c(colnames(niche.model) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
+niche.dv.model = niche_null_model(speciesData=niche.dv[,!c(colnames(niche.dv) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
 
 summary(niche.dv.model)
 png("images/Dvil_niche_breadth.png", width=500, height=500, units="px")
@@ -991,48 +996,22 @@ plot(niche.dv.model, type="hist", main="Niche breadth of D.villosus across invad
 dev.off()
 ```
 
-```{r niche overlap between D.villosus and G.zaddachi}
-niche.dvgz = abund.guts
-
-# summing prey DNA reads by predator ID, site and time.
-niche.overlap = as.data.frame(niche.dvgz[,!c(colnames(niche.dvgz) %in% c("sample_type"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
-rownames(niche.overlap) = paste(niche.overlap$predator_id, niche.overlap$site, niche.overlap$time, sep="_")
-
-## Null model with ra2 algorithm since this is not a niche overlap analysis
-niche.overlap.model = niche_null_model(speciesData=niche.overlap[,!c(colnames(niche.overlap) %in% c("site","time","predator_id"))], algo="ra3", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
-
-summary(niche.overlap.model)
-png("images/Dvil-Gzad_niche_overlap.png", width=500, height=500, units="px")
-plot(niche.overlap.model, type="hist", main="Niche overlap of D.villosus and G.zaddachi")
-dev.off()
-```
-
 # 5. Food webs network
 
-```{r}
-### FROM HERE!!!!
-```
 
-```{r}
-niche.model
+```{r food web network plus bipartite}
+# Summing prey DNA reads by predator ID, site and time.
+food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
+rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, sep="_")
 
-niche.web = niche.model[-c(2,4,6),]
+food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 
-rownames(niche.web) = c("Dv_GW-May","Dv_GW-Oct","Gz_RB-May","Gz_RB-Oct","Dv_WB-May","Dv_WB-Oct")
+food.web = as.data.frame(t(food.web))
+food.web = as.matrix(food.web)
 
-niche.web = niche.web[,!c(colnames(niche.web) %in% c("site","time","predator_id","Dikerogammarus_villosus","Porcellio_scaber"))]
+rownames(food.web)
 
-niche.web = as.data.frame(t(niche.web))
-
-str(niche.web)
-
-niche.web = as.matrix(niche.web)
-```
-
-# NEED TO REMOVE Dv FROM WEB AND DIPTERA!!!!
-
-```{r tripartite web, fig.keep="last"}
-plotweb(niche.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, text.rot=90)
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, text.rot=90)
 ```
 
 
@@ -1045,509 +1024,4 @@ sink()
 
 ```{r}
 print("end")
-```
-
-
-# Testing for the main 2 predators _Dikerogammarus villosus_ (for WB and GW) and _Gammarus zaddachi_ (for RB).
-
-```{r}
-gut.full2 = subset(gut.full, subset=gut.full$value > 0)
-
-test.glm = lm(gut.full2$value ~ gut.full2$site, family = quasibinomial)
-test.glm2 = lm(gut.full2$value ~ gut.full2$predator_ID, family = quasibinomial)
-summary(test.glm)
-summary(test.glm2)
-
-plot(test.glm)
-plot(test.glm2)
-
-test.gam = gam(gut.full$value[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")] ~ gut.full$site[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")] + gut.full$predator_ID[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")])
-
-test.gam2 = gam(gut.full$value ~ gut.full$site + gut.full$predator_ID)
-
-summary(test.gam)
-summary(test.gam2)
-
-gam.check(test.gam)
-gam.check(test.gam2)
-
-#gut.full2 %>%
-#  mutate(variable = reorder(variable, value)) %>%
-#  ggplot( aes(x=variable, y=value, fill=variable, color=variable)) +
-#    geom_violin(width=2.1, size=0.2) +
-#    scale_fill_viridis(discrete=TRUE) +
-#    scale_color_viridis(discrete=TRUE) +
-#    facet_free(site~time) +
-#    theme_classic() +
-#    theme(legend.position="none") +
-#    coord_flip() +
-#    xlab("") +
-#    ylab("ratio(%)")
-```
-
-```{r}
-
-edna.ratio = dvmay.filter[dvmay.filter$sample_type == "eDNA",]
-edna.melt = melt(edna.ratio)
-edna.melt = subset(edna.melt, subset=edna.melt$value > 0)
-
-edna.ratio2 = dvoct.filter[dvoct.filter$sample_type == "eDNA",]
-edna.melt2 = melt(edna.ratio2)
-edna.melt2 = subset(edna.melt2, subset=edna.melt2$value > 0)
-
-edna.full = full_join(edna.melt, edna.melt2)
-
-head(edna.full)
-
-ggplot(abund.edna, aes(sample_id, value)) +
-  geom_jitter() +
-  geom_bar(stat="identity", position="fill", aes(fill=variable)) +
-  facet_grid (.~time) +
-  xlab("sampling month")
-
-```
-
-
-
-```{r splitting samples}
-guts.all = full_join(guts.may, guts.oct)
-guts.all[is.na(guts.all)] <- 0
-
-edna.all = full_join(edna.may, edna.oct)
-edna.all[is.na(edna.all)] <- 0
-
-chr = grep("samples_id|time", colnames(guts.all))
-guts.melt = subset(guts.all, select = colSums(guts.all[,-chr]) > 0)
-guts.melt$samples_id = guts.all$samples_id
-
-
-chr2 = grep("samples_id|time", colnames(edna.all))
-edna.melt = subset(edna.all, select = colSums(edna.all[,-chr2]) > 0)
-edna.melt$time = edna.all$time
-
-guts.melt2 = melt(guts.melt)
-edna.melt2 = melt(edna.melt)
-
-ggplot(guts.melt2, aes(samples_id, value)) +
-  geom_bar(stat="identity", aes(fill=variable)) +
-  facet_grid(time~.)
-```
-
-
-```{r}
-## DIVIDING THE DATA FRAME BY LAKE ##
-#guts.melt$site = gsub("[0-9]{1,3}","", guts.melt$samples_id)
-
-head(guts.melt)
-gw = grep("GW", guts.melt$samples_id, fixed=T)
-guts.gw = guts.melt[gw,]
-
-wb = grep("WB", guts.melt$samples_id, fixed=T)
-guts.wb = guts.melt[wb,]
-
-rb = grep("RB", guts.melt$samples_id, fixed=T)
-guts.rb = guts.melt[rb,]
-
-tssgw = grep("time|samples_id|site", colnames(guts.gw))
-gw.melt = subset(guts.gw, select=colSums(guts.gw[,-tssgw]) > 0)
-gw.melt = cbind(gw.melt, guts.gw[,tssgw])
-
-tsswb = grep("time|samples_id|site", colnames(guts.wb))
-wb.melt = subset(guts.wb, select=colSums(guts.wb[,-tsswb]) > 0)
-wb.melt = cbind(wb.melt, guts.wb[,tsswb])
-
-tssrb = grep("time|samples_id|site", colnames(guts.rb))
-rb.melt = subset(guts.rb, select=colSums(guts.rb[,-tssrb]) > 0)
-rb.melt = cbind(rb.melt, guts.rb[,tssrb])
-
-guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))]
-
-### writing output to file
-write.csv(guts.wb, "R/wroxham_gutcontents.csv")
-write.csv(guts.gw, "R/grafham_gutcontents.csv")
-write.csv(guts.rb, "R/rockland_gutcontents.csv")
-```
-
-## Model running
-Before running any model we need to make sure that we decide correctly whether to change the the proportions to pres/abs (1,0). In order to keep the semi-quantification at population level (the semi-quantification at individual is outside of our scopes) we add an extra information regarding the predator identity (we will need to remove the predator variable from the ratio).
-
-```{r}
-colnames(guts.gw)
-
-
-  
-
-
-
-gw.melt = melt(guts.gw)
-wb.melt = melt(guts.wb)
-rb.melt = melt(guts.rb)
-
-gw.melt$value[][gw.melt$value > 0] <- 1
-
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")] ~ gw.melt$variable[!(gw.melt$variable %in% "Dikerogammarus_villosus")] | gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")])
-gw.model <- lm(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")] ~ gw.melt$variable[!(gw.melt$variable %in% "Dikerogammarus_villosus")] * gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")])
-summary(gw.model)
-drop1(gw.model,test = "F")
-
-plot(gw.model, add.smooth = FALSE, which = 1)
-gwres <- resid(gw.model)
-hist(gwres, xlab = "Residuals", main = "")
-plot(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")], gwres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(gwres ~ gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-wb.melt$value[][wb.melt$value > 0] <- 1
-
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")] ~ wb.melt$variable[!(wb.melt$variable %in% "Dikerogammarus_villosus")] | wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")])
-wb.model <- lm(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")] ~ wb.melt$variable[!(wb.melt$variable %in% "Dikerogammarus_villosus")] * wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")])
-drop1(wb.model,test = "F")
-
-plot(wb.model, add.smooth = FALSE, which = 1)
-wbres <- resid(wb.model)
-hist(wbres, xlab = "Residuals", main = "")
-plot(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")], wbres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(wbres ~ wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-rb.melt$variable[rb.melt$value > 0.75]
-rb.melt$value[!(rb.melt$value > 0.9)]
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(rb.melt$value[!(rb.melt$value > 0.75)] ~ rb.melt$variable[!(rb.melt$value > 0.75)] | rb.melt$time[!(rb.melt$value > 0.75)])
-rb.model <- lm(rb.melt$value[!(rb.melt$value > 0.75)] ~ rb.melt$variable[!(rb.melt$value > 0.75)] * rb.melt$time[!(rb.melt$value > 0.75)])
-drop1(rb.model,test = "F")
-
-plot(rb.model, add.smooth = FALSE, which = 1)
-rbres <- resid(rb.model)
-hist(rbres, xlab = "Residuals", main = "")
-plot(rb.melt$value[!(rb.melt$value > 0.75)], rbres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(rbres ~ rb.melt$time[!(rb.melt$value > 0.75)], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-
-
-plot(glm(gw.melt$variable ~ gw.melt$samples_id*gw.melt$time, family = binomial))
-
-anosim(guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))], guts.gw$time, distance="euclid", permutations=1000)
-metaMDS(as.matrix(vegdist(guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))], distance="euclid")), distance="euclid", trymax = 1000)
-
-anosim(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], guts.melt$site, distance="euclid")
-metaMDS(as.matrix(vegdist(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], distance="euclid")), distance="euclid", trymax = 10000)
-```
-
-## OLD SCRIPT
-
-```{r}
-names(test)=ordered(names(test), levels=c("eWB1","eWB2","eWB3","eWB4","eWB5","eWB6",
-                                                "eGW1","eGW2","eGW3","eGW4","eGW5","eGW6"))
-
-test = melt(test)
-names(test)
-names(test)[1]="family"
-
-g<-ggplot(test, aes(variable,value,fill=family))
-g<-g+geom_bar(stat="identity", position="fill", width=0.75)
-#g<-g+geom_boxplot()
-g<-g+theme_bw()#scale_fill_brewer(palette="Set1")
-g<-g+xlab("eDNA sampling sites") + 
-ylab("Filtered DNA reads ratios")
-g<-g+theme(axis.text = element_text(size=15)) + 
-theme(axis.title = element_text(size=15))
-g
-
-## SAVE IMAGE ##
-
-#ggsave("eDNA-coiAug-barplot.emf", width=8, height=10)
-
-## TISSUE SAMPLES FOR THE TROPHIC WEB ##
-
-tissue = read.csv("CO1Aug_gutcontent_filtered.csv", header=T, row.names=1)
-head(tissue)
-
-colSums(tissue)
-rowSums(tissue)
-
-## CLEANING FROM EMPTY SAMPLES AND SPECIES ##
-
-dim(tissue)
-tissue = subset(tissue, select = c(colSums(tissue) > 0))
-dim(tissue)
-tissue = subset(tissue, subsett = c(rowSums(tissue) > 0))
-dim(tissue)
-
-## DIVIDING THE DATA FRAME BY LAKE ##
-
-tissue.plot = t(tissue)
-
-gw = grep("GW", colnames(tissue.plot), fixed=T)
-for (t in tissue.plot[,gw]){
-	tissue.gw = data.frame(subset(tissue.plot[,gw]))
-}
-dim(tissue.gw)
-
-wb = grep("WB", colnames(tissue.plot), fixed=T)
-for (t in tissue.plot[,wb]){
-	tissue.wb = data.frame(subset(tissue.plot[,wb]))
-}
-dim(tissue.wb)
-
-## NEED TO CLEAN THE FRAMES FROM EMPTY CELLS ##
-######
-## Surely there's a loop that can be made, but for
-## now the manual version will do the job
-######
-
-rowSums(tissue.gw)
-rowSums(tissue.wb)
-
-dim(tissue.gw)
-tissue.gw = subset(tissue.gw, select=c(colSums(tissue.gw) > 0))
-dim(tissue.gw)
-tissue.gw = subset(tissue.gw, subset=c(rowSums(tissue.gw) > 0))
-dim(tissue.gw)
-
-dim(tissue.wb)
-tissue.wb = subset(tissue.wb, select=c(colSums(tissue.wb) > 0))
-dim(tissue.wb)
-tissue.wb = subset(tissue.wb, subset=c(rowSums(tissue.wb) > 0))
-dim(tissue.wb)
-
-rownames(tissue.gw)
-rownames(tissue.wb)
-tissue.wb=tissue.wb[!(rownames(tissue.wb)%in% "Anser_anser"),]
-############################################################
-## CHANGING THE NAME OF SAMPLE BY ADDING NAME OF PREDATOR ##
-############################################################
-
-tissue.gw
-g = which(tissue.gw >= 0.9, arr.ind=T)
-rownames(g)
-g[,2]
-colnames(tissue.gw) = paste(rownames(g), colnames(tissue.gw[which(colnames(tissue.gw) == g[,2]),]), sep="_")
-tissue.gw
-
-tissue.wb
-w = which(tissue.wb >= 0.7, arr.ind=T)
-rownames(w)
-w[,2]
-colnames(tissue.wb) = paste(rownames(w), colnames(tissue.wb[which(colnames(tissue.wb) == w[,2]),]), sep="_")
-tissue.wb
-
-write.csv(tissue.gw, "coi-eDNA/tissue_gw.csv")
-write.csv(tissue.wb, "coi-eDNA/tissue_wb.csv")
-
-## SWAPPING ALL VALUES ABOVE 0 TO 1 ##
-
-tissue.wb[,][tissue.wb[,] > 0] <- 1
-tissue.gw[,][tissue.gw[,] > 0] <- 1
-
-################################################
-## SETTING UP THE GW AND WB WEBS FRAMES USING ##
-## D. villosus GUT CONTENTS                   ##
-################################################
-
-colnames(tissue.wb)
-colnames(tissue.gw)
-
-wb.web = tissue.wb[!(rownames(tissue.wb)%in% "Dikerogammarus_villosus"),]
-gw.web = tissue.gw[!(rownames(tissue.gw)%in% "Dikerogammarus_villosus"),]
-
-wb.web$D_villosus_WB = rowSums(wb.web[,grep("Dikerogammarus_villosus", colnames(wb.web))])
-wb.web = subset(wb.web, select = c(colnames(wb.web)%in% 'D_villosus_WB'))
-
-gw.web$D_villosus_GW = rowSums(gw.web[,grep("Dikerogammarus_villosus", colnames(gw.web))])
-gw.web = subset(gw.web, select = c(colnames(gw.web)%in% 'D_villosus_GW'))
-
-## LOADING eDNA AND KICK-SAMPLE DATA FOR ESTIMATING ABUNDANCES ##
-
-dir()
-dna.water = read.csv("CO1Aug_water-samples_filtered.csv", header=T, row.names=1)
-
-head(dna.water)
-## dna.water$samples = substr(rownames(dna.water), 2, 
-## nchar(rownames(dna.water))-1)
-
-dna.water = t(dna.water)
-
-## MAKING ALL VALUES > 0 EQUAL TO 1 PLUS ##
-## EXTRACTING 'GW' AND 'WB' SAMPLES FROM THE FRAME ##
-
-dna.water[1:nrow(dna.water),][dna.water[1:nrow(dna.water),] > 0] <- 1
-
-colnames(dna.water)
-
-gw.list = grep("GW", colnames(dna.water), fixed=T)
-for (t in dna.water[,gw.list]){
-	gw.water = data.frame(subset(dna.water[,gw.list]))
-}
-wb.list = grep("WB", colnames(dna.water), fixed=T)
-for (t in dna.water[,wb.list]){
-	wb.water = data.frame(subset(dna.water[,wb.list]))
-}
-
-## IMPORTING MICROSCOPY DATA ##
-
-dir("coi-eDNA")
-#micros = read.csv("coi-eDNA/ID_gw-wb.csv", header=T)
-micros=read.csv("coi-eDNA/microscopy_gw-wb.csv", header=T, row.names=1)
-micros
-names(micros)
-str(micros)
-micros=data.frame(t(micros))
-
-#rownames(micros)= micros$BINOMIAL
-
-gwmic=micros[,grep("GW", colnames(micros))]
-wbmic=micros[,grep("WB", colnames(micros))]
-
-gwmic[1:nrow(gwmic),][gwmic[1:nrow(gwmic),] > 0] <- 1
-wbmic[1:nrow(wbmic),][wbmic[1:nrow(wbmic),] > 0] <- 1
-
-names(gwmic)
-names(wbmic)
-ncol(gwmic)
-ncol(wbmic)
-dim(gwmic)
-dim(wbmic)
-
-## JOINING AND CALCULATING TOTAL OCCUPANCY (COMBINING eDNA and MICROSCOPY) ##
-
-rownames(gwmic)
-rownames(gw.water)
-dim(gw.water)
-dim(gw.web)
-gwmic
-gwmic$species = rownames(gwmic)
-gw.water$species = rownames(gw.water)
-
-gw.joined = full_join(gwmic, gw.water, by="species")
-gw.joined[is.na(gw.joined)] <- 0
-gw.joined
-
-sites = "GW1|GW2|GW3|GW4|GW5|GW6"
-gw.joined$GW_occup = (rowSums(gw.joined[,grep(sites, colnames(gw.joined))])/6)
-gw.joined
-
-names(wbmic)
-names(wb.water)
-wbmic
-wbmic$species = rownames(wbmic)
-wb.water$species = rownames(wb.water)
-
-wb.joined = full_join(wbmic, wb.water, by="species")
-wb.joined[is.na(wb.joined)] <- 0
-wb.joined
-
-sites = "WB1|WB2|WB3|WB4|WB5|WB6"
-wb.joined$WB_occup = (rowSums(wb.joined[,grep(sites, colnames(wb.joined))])/6)
-wb.joined
-
-##################################
-## SETTING THE ESTIMATE VECTORS ##
-##################################
-
-gw.est = subset(gw.joined, select = c(colnames(gw.joined)%in% 'GW_occup'))
-wb.est = subset(wb.joined, select = c(colnames(wb.joined)%in% 'WB_occup'))
-
-gw.est
-wb.est
-
-gw.est = as.vector(gw.est[,1])
-names(gw.est) = c(gw.joined$species)
-names(gw.est)
-
-wb.est = as.vector(wb.est[,1])
-names(wb.est) = c(wb.joined$species)
-names(wb.est)
-
-###############################################
-## PLOTTING THE WEBS WITH THE eDNA ESTIMATES ##
-###############################################
-
-#dev.new()
-#par(mfrow=c(1,2))
-
-str(wb.web)
-str(wb.est)
-
-write.csv(gw.web, "DV_foodwebs_2018/gw_web.csv")
-write.csv(gw.est, "DV_foodwebs_2018/gw_est.csv")
-          
-write.csv(wb.web, "DV_foodwebs_2018/wb_web.csv")
-write.csv(wb.est, "DV_foodwebs_2018/wb_est.csv")
-
-## IMPROVING LABELS FOR PLOTS ##
-gw.web = read.csv("DV_foodwebs_2018/gw_web.csv", row.names = 1, header=T)
-gw.est = read.csv("DV_foodwebs_2018/gw_est.csv", row.names = 1, header=T)
-
-gw.est = as.vector(gw.est)
-gw.est = t(gw.est)
-names(gw.est) = colnames(gw.est)
-
-wb.web = read.csv("DV_foodwebs_2018/wb_web.csv", row.names = 1, header=T)
-wb.est = read.csv("DV_foodwebs_2018/wb_est.csv", row.names = 1, header=T)
-
-wb.est = as.vector(wb.est)
-wb.est = t(wb.est)
-names(wb.est) = colnames(wb.est)
-
-## GW WEB
-plotweb(gw.web, text.rot=45, adj.high=0, adj.low=1, low.spacing = 0.02, 
-arrow="down.center", low.abun=gw.est, abuns.type="additional", labsize=1.2)
-title(main="Grafham Water")
-
-## WB WEB
-plotweb(wb.web, text.rot=45, adj.high=0, adj.low=1, low.spacing = 0.03, 
-arrow="down.center", low.abun=wb.est, abuns.type="additional", labsize=1.2)
-title(main="Wroxham Broad")
-
-## WRITING LOG FILE FOR R VERSION AND SESSION INFO ##
-
-sink("log_bipartite-session.txt")
-sessionInfo()
-citation()
-sink()
-
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
 ```
