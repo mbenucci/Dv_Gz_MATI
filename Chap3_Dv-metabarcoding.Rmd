@@ -1011,17 +1011,23 @@ rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, s
 food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 
 food.web = as.data.frame(t(food.web))
-food.web = as.matrix(food.web)
 
-rownames(food.web)
+#network.prey = rownames(food.web)
+#rownames(food.web) <- NULL
 
-strsplit(rownames(food.web), "_")[[]][1]
+nrow(abund.edna)
+nrow(abund.kick)
 
-for (r in rownames(food.web)){
-  print(strsplit(r, "_")[[1]][1])
-  
-}
+est.edna = abund.edna
+est.kick = abund.kick
 
+
+
+est.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+est.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLICATE","sample_type","sample_id"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+
+est.edna
+est.kick
 
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90, col.interaction=c("blue","blue","orange","orange","green","green"))
 ```
@@ -1036,3 +1042,10 @@ sink()
 ```{r}
 print("end")
 ```
+
+```{r}
+for (p in pack.list[2:length(pack.list)]){
+ print(citation(p))
+}
+```
+
