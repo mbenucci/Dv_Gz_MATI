@@ -1015,15 +1015,16 @@ food.web = as.matrix(food.web)
 
 rownames(food.web)
 
-plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90, col.interaction=as.numeric(grep()))
+strsplit(rownames(food.web), "_")[[]][1]
+
+for (r in rownames(food.web)){
+  print(strsplit(r, "_")[[1]][1])
+  
+}
+
+
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90, col.interaction=c("blue","blue","orange","orange","green","green"))
 ```
-
-```{r}
-test.order = list(seq.higher=c("D.vil_GW_May","D.vil_WB_May","D.vil_GW_Oct","D.vil_WB_Oct","G.zad_RB_May","G.zad_RB_Oct"))
-
-plotweb(sortweb(food.web, sort.order="seq", sequence=test.order))#, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.06, text.rot=90)
-```
-
 
 ```{r end}
 sink("log_session_packages.txt")
