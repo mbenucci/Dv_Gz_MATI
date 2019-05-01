@@ -490,10 +490,6 @@ for (i in m.row){
   clean.may[i,pred_read] <- 0
 }
 
-# Removing DNA read belonging to _D. villosus_ due to wide spread contamination
-filter.may[filter.may$sample_type == "gut","Dikerogammarus_villosus"] <- 0
-clean.may[clean.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
-
 # Confirming the function worked
 filter.may[m.row,unique(m.col)]
 
@@ -509,10 +505,6 @@ for (i in o.row){
   filter.oct[i,pred_id] <- 0
   clean.oct[i,pred_read] <- 0
 }
-
-# Removing DNA read belonging to _D. villosus_ present in the gut contents due to wide spread contamination
-filter.oct[filter.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
-clean.oct[clean.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
 
 # Confirming the function worked
 filter.oct[o.row,unique(o.col)]
@@ -559,12 +551,12 @@ clean.edna = subset(clean.edna[,!c(colnames(clean.edna) %in% colnames(info.edna)
 
 The predator DNA reads now are equal to 0 across all gut content samples. This allows for calculating the prey DNA ratio within each gut content sample, that will allow also for a niche overlap analysis.
 the prey species detected included also both _Crangonyx pseudogracilis_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
-Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the dataset.
+Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the gut contents dataset. _Dikerogammarus villosus_
 
-```{r}
+```{r cleaning gut contents data frame}
 clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
-clean.guts = clean.guts[,!c(colnames(clean.guts) %in% "Isopoda")]
+clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Dikerogammarus_villosus"))]
 
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
 ratio.guts[is.na(ratio.guts)] <- 0
@@ -638,16 +630,16 @@ gen.sp.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Chironomidae","Chydori
 gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
 
-# removing `predator_id`, `sample_type` and `sample_id` variables and transforming eDNA detections into abundances
-abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("sample_type","predator_id"))]
-abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site"))] > 0] <- 1
+# removing `predator_id` variables and transforming eDNA detections into abundances
+abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("predator_id"))]
+abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
 # adding genus information to help in plotting
 melt.abund.edna = melt(abund.edna)
 melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
 
 # Rarefaction curves calculated on abundance data without genus information
-inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id","sample_type"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
 rownames(inext.edna) = paste(inext.edna$site, inext.edna$time, sep="_")
 
 # removing `time`, `sample_id` and `site` variables as no more necessary.
@@ -729,7 +721,7 @@ dev.off()
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
-adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id"))]
+adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id","sample_type"))]
 
 fact_site.edna = matrix(c(abund.edna$site), ncol=1)
 fact_time.edna = matrix(c(abund.edna$time), ncol=1)
