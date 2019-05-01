@@ -491,8 +491,8 @@ for (i in m.row){
 }
 
 # Removing DNA read belonging to _D. villosus_ due to wide spread contamination
-filter.may$Dikerogammarus_villosus <- 0
-clean.may$Dikerogammarus_villosus <- 0
+filter.may[filter.may$sample_type == "gut","Dikerogammarus_villosus"] <- 0
+clean.may[clean.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
 
 # Confirming the function worked
 filter.may[m.row,unique(m.col)]
@@ -510,9 +510,9 @@ for (i in o.row){
   clean.oct[i,pred_read] <- 0
 }
 
-# Removing DNA read belonging to _D. villosus_ due to wide spread contamination
-filter.oct$Dikerogammarus_villosus <- 0
-clean.oct$Dikerogammarus_villosus <- 0
+# Removing DNA read belonging to _D. villosus_ present in the gut contents due to wide spread contamination
+filter.oct[filter.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
+clean.oct[clean.oct$sample_type == "gut","Dikerogammarus_villosus"] <- 0
 
 # Confirming the function worked
 filter.oct[o.row,unique(o.col)]
@@ -746,7 +746,7 @@ meta.edna = metaMDS(adonis.edna, distance="bray")
 ```{r plotting eDNA nmds}
 # full symbols for May, hollow symbols for October
 png("images/eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
-plot(meta.edna, type="n", main="eDNA NMDS", xlim=c(-1,1.5), ylim=c(-1,1))
+plot(meta.edna, type="n", main="eDNA NMDS")#, xlim=c(-1,1.5), ylim=c(-1,1))
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
 points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=22)
