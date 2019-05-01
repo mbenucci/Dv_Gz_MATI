@@ -962,11 +962,12 @@ niche.width(breadth.dv, method="shannon")
 ```
 
 ```{r niche breadth of D.villosus vs G.zaddachi}
-breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","site"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
+#breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","site"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
+breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
-rownames(breadth.dvgz) = breadth.dvgz$predator_id
+rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
 
-breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id"))])
+breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","site"))])
 
 niche.width(breadth.dvgz, method="levins")
 niche.width(breadth.dvgz, method="shannon")
