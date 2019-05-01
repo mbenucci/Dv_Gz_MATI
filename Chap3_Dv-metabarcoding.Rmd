@@ -671,18 +671,17 @@ dev.off()
 # comparing D.vil and G.zad
 adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
 
-fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 
-adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
 
 # comparing only D.vil
 adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
 
 fact_site.dvil = matrix(c(adonis.dvil$site), ncol=1)
 fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
-colnames(adonis.dvil)
+
 adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
 
 adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
@@ -702,7 +701,7 @@ meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
 png("images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.guts, type="n", main="gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
+plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
 points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
@@ -1063,6 +1062,7 @@ for (p in pack.list){
 }
 sink()
 ```
+
 ```{r}
 print("end")
 ```
