@@ -716,7 +716,7 @@ dev.off()
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
 png("images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1.8,1), ylim=c(-1,1))
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1,1.8), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
