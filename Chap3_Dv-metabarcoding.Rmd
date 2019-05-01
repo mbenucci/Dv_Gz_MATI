@@ -31,7 +31,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
-pack.list = c("AED","aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
+pack.list = c("aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -675,8 +675,6 @@ fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 
-#adonis(adonis.guts~fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
-#adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
 adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 1000, method="euclidean")
 
 # comparing only D.vil
@@ -690,9 +688,11 @@ adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample
 adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
 ```
 
+
 ```{r NMDS of gut contents both D.vil and G.zad}
 meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 ```
+
 
 ```{r NMDS on D.vil gut contents}
 meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
@@ -1049,20 +1049,21 @@ plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablengt
 dev.off()
 ```
 
-```{r end}
-sink("log_session_packages.txt")
+```{r log session info}
+sink("log_session_analysis.txt")
 sessionInfo()
 citation()
 sink()
 ```
 
-```{r}
-print("end")
-```
-
-```{r}
-for (p in pack.list[2:length(pack.list)]){
+```{r packages citation}
+sink("packages_citations.txt")
+for (p in pack.list){
  print(citation(p))
 }
+sink()
+```
+```{r}
+print("end")
 ```
 
