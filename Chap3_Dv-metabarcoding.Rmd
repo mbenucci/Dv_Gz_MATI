@@ -952,6 +952,9 @@ breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))
 
 niche.width(breadth.dv, method="levins")
 niche.width(breadth.dv, method="shannon")
+
+(niche.width(breadth.dv, method="levins")[1] -1)/(nrow(breadth.dv) -1)
+(niche.width(breadth.dv, method="levins")[2] -1)/(nrow(breadth.dv) -1)
 ```
 
 ```{r niche breadth of D.villosus vs G.zaddachi}
