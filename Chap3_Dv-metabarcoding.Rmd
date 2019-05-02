@@ -825,13 +825,13 @@ colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
 ```
 
 ```{r rarefaction curves on kick-samples}
+# removing high order taxa
+colnames(abund.kick)
+abund.kick = abund.kick[,!c(colnames(abund.kick) %in% c("Trichoptera","Diptera","Oligochaeta","Ostracoda","Araneae","Coleoptera","Mollusca","Zygopotera","Plecoptera","Nematoda"))]
+
 # setting rownames and removing extra variables
 head(abund.kick)
 raref.kick = abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE","sample_type"))]
-
-# removing high order taxa
-colnames(raref.kick)
-raref.kick = raref.kick[,!c(colnames(raref.kick) %in% c("Trichoptera","Diptera","Oligochaeta","Ostracoda","Araneae","Coleoptera","Mollusca","Zygopotera","Plecoptera","Nematoda"))]
 
 # list of families in data set to be removed
 kick.fam = colnames(raref.kick[,grepl("idae", colnames(raref.kick)) == T])
@@ -954,7 +954,6 @@ niche.width(breadth.dv, method="shannon")
 ```
 
 ```{r niche breadth of D.villosus vs G.zaddachi}
-#breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","site"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
 breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
 rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
@@ -963,6 +962,12 @@ breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","s
 
 niche.width(breadth.dvgz, method="levins")
 niche.width(breadth.dvgz, method="shannon")
+
+nrow(breadth.dvgz)
+
+(niche.width(breadth.dvgz, method="levins")[1] -1)/(nrow(breadth.dvgz) -1)
+(niche.width(breadth.dvgz, method="levins")[2] -1)/(nrow(breadth.dvgz) -1)
+(niche.width(breadth.dvgz, method="levins")[3] -1)/(nrow(breadth.dvgz) -1)
 ```
 
 
