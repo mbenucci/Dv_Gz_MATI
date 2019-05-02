@@ -999,6 +999,10 @@ est.web = as.matrix(est.web)
 names(est.web) = colnames(est.web)
 
 png("images/bipartite_network.png", width=800, height=500, units="px")
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.1, text.rot=90, col.interaction=c("blue","blue","orange","orange","green","green"))
+dev.off()
+
+png("images/bipartite_network_estimated.png", width=800, height=500, units="px")
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.1, text.rot=90, low.abun=est.web, low.abun.col="grey", col.interaction=c("blue","blue","orange","orange","green","green"))
 dev.off()
 ```
