@@ -559,6 +559,10 @@ clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_ps
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Dikerogammarus_villosus","Diptera","Cyclopidae"))]
 
+# Saving clean gut contents files
+write.csv(clean.guts, "R/gut_contents_reads.csv")
+
+# converting reads into ratio
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
 ratio.guts[is.na(ratio.guts)] <- 0
 
@@ -621,6 +625,10 @@ To avoid over-estimating the diversity present in the eDNA samples, the data set
 
 ```{r eDNA samples rarefaction curves}
 clean.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Cyclopoida","Diptera","Podocopida","Spongillida"))]
+
+# Saving eDNA clean reads to file
+write.csv(clean.edna, "R/eDNA_reads.csv")
+
 
 # splitting Family ranks from Genus and Species ranks
 fam.edna = clean.edna[,c(colnames(clean.edna) %in% c("Chironomidae","Chydoridae","Cyclopidae","Daphniidae","Naididae"))]
