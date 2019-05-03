@@ -659,7 +659,7 @@ inext.edna = iNEXT(inext.edna, q=c(0,1), datatype = "abundance", se=T, endpoint=
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
 
-png("images/eDNA_species_rarefactions.png", width = 1000, height = 800, units = "px")
+png("R_images/eDNA_species_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.edna) +
   labs(y = "", x="Number of samples") +
   theme(legend.position="right") +
@@ -702,7 +702,7 @@ meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
-png("images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+png("R_images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
 plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
@@ -717,7 +717,7 @@ dev.off()
 
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
-png("images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
 plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1.8,1), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
@@ -746,7 +746,7 @@ meta.edna = metaMDS(adonis.edna, distance="bray")
 
 ```{r plotting eDNA nmds}
 # full symbols for May, hollow symbols for October
-png("images/eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+png("R_images/eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
 plot(meta.edna, type="n", main="eDNA NMDS")#, xlim=c(-1,1.5), ylim=c(-1,1))
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
@@ -856,7 +856,7 @@ raref.sp.kick = t(raref.sp.kick[,!c(colnames(raref.sp.kick) %in% c("site","time"
 inext.kick = iNEXT(raref.sp.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=1400)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
-png("images/kick-samples_rarefactions.png", width = 1000, height = 800, units = "px")
+png("R_images/kick-samples_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.kick) +
   labs(y = "", x="Number of individuals") +
   theme(legend.position="right") +
@@ -885,7 +885,7 @@ meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 
 ```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
-png("images/kick-samples_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+png("R_images/kick-samples_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
 plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
@@ -918,7 +918,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 
 ```{r NMDS plot of kick-samples vs eDNA}
 # full symbols for May, hollow symbols for October
-png("images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
 plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-0.6,0.6))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
@@ -947,7 +947,7 @@ rownames(niche.dv) = paste(niche.dv$predator_id, niche.dv$site, niche.dv$time, s
 niche.dv.model = niche_null_model(speciesData=niche.dv[,!c(colnames(niche.dv) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
 
 summary(niche.dv.model)
-png("images/Dvil_niche_breadth.png", width=500, height=500, units="px")
+png("R_images/Dvil_niche_breadth.png", width=500, height=500, units="px")
 plot(niche.dv.model, type="hist", main="Niche breadth of D.villosus across invaded sites")
 dev.off()
 ```
@@ -994,7 +994,7 @@ food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 food.web = as.data.frame(t(food.web))
 
 # Producing the bipartite network
-png("images/bipartite_network.png", width=800, height=500, units="px")
+png("R_images/bipartite_network.png", width=800, height=500, units="px")
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
 dev.off()
 ```
@@ -1018,7 +1018,7 @@ est.web = as.matrix(est.web)
 names(est.web) = colnames(est.web)
 
 # Producing the bipartite network with prey abundances
-png("images/bipartite_network_estimated.png", width=800, height=500, units="px")
+png("R_images/bipartite_network_estimated.png", width=800, height=500, units="px")
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5,  low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.12, text.rot=90, low.abun=est.web, low.abun.col="grey", col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
 dev.off()
 ```
