@@ -14,16 +14,16 @@ attached base packages:
 [10] base     
 
 other attached packages:
- [1] bindrcpp_0.2.2       UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3       
- [5] spaa_0.2.2           reshape2_1.4.3       plyr_1.8.4           phyloseq_1.25.2     
- [9] msa_1.12.0           Biostrings_2.48.0    XVector_0.20.0       IRanges_2.14.12     
-[13] S4Vectors_0.18.3     BiocGenerics_0.26.0  mgcv_1.8-24          nlme_3.1-137        
-[17] lmtest_0.9-36        zoo_1.8-3            lme4_1.1-17          Matrix_1.2-14       
-[21] iNEXT_2.0.17         gridExtra_2.3        gplots_3.0.1         ggsignif_0.5.0      
-[25] ggplot2_3.1.1        EcoSimR_0.1.0        MASS_7.3-50          dplyr_0.7.6         
-[29] usethis_1.4.0        devtools_2.0.2       bipartite_2.11       sna_2.4             
-[33] network_1.13.0.1     statnet.common_4.1.4 vegan_2.5-3          lattice_0.20-35     
-[37] permute_0.9-4        ape_5.2              aod_1.3             
+ [1] UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3        spaa_0.2.2          
+ [5] reshape2_1.4.3       plyr_1.8.4           phyloseq_1.25.2      msa_1.12.0          
+ [9] Biostrings_2.48.0    XVector_0.20.0       IRanges_2.14.12      S4Vectors_0.18.3    
+[13] BiocGenerics_0.26.0  mgcv_1.8-24          nlme_3.1-137         lmtest_0.9-36       
+[17] zoo_1.8-3            lme4_1.1-17          Matrix_1.2-14        iNEXT_2.0.17        
+[21] gridExtra_2.3        gplots_3.0.1         ggsignif_0.5.0       ggplot2_3.1.1       
+[25] EcoSimR_0.1.0        MASS_7.3-50          dplyr_0.7.6          usethis_1.4.0       
+[29] devtools_2.0.2       bipartite_2.11       sna_2.4              network_1.13.0.1    
+[33] statnet.common_4.1.4 vegan_2.5-3          lattice_0.20-35      permute_0.9-4       
+[37] ape_5.2              aod_1.3             
 
 loaded via a namespace (and not attached):
  [1] bitops_1.0-6       fs_1.2.6           rprojroot_1.3-2    tools_3.5.1        backports_1.1.2   
@@ -39,7 +39,7 @@ loaded via a namespace (and not attached):
 [51] igraph_1.2.2       codetools_0.2-15   pkgload_1.0.2      glue_1.3.1         data.table_1.12.0 
 [56] remotes_2.0.2      foreach_1.4.4      spam_2.2-0         nloptr_1.0.4       gtable_0.3.0      
 [61] purrr_0.2.5        assertthat_0.2.1   coda_0.19-1        survival_2.42-6    tibble_2.1.1      
-[66] iterators_1.0.10   memoise_1.1.0      fields_9.6         cluster_2.0.7-1   
+[66] iterators_1.0.10   memoise_1.1.0      fields_9.6         bindrcpp_0.2.2     cluster_2.0.7-1   
 
 To cite R in publications use:
 

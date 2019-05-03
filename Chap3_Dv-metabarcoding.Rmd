@@ -985,6 +985,13 @@ rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, s
 food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 food.web = as.data.frame(t(food.web))
 
+# Producing the bipartite network
+png("images/bipartite_network.png", width=800, height=500, units="px")
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
+dev.off()
+```
+
+```{r bipartite network with estimates of preys}
 # Setting up the estimate vectors as taxa distribution
 est.edna = abund.edna
 est.kick = abund.kick
@@ -1001,11 +1008,6 @@ est.web[is.na(est.web)] <- 0
 
 est.web = as.matrix(est.web)
 names(est.web) = colnames(est.web)
-
-# Producing the bipartite network
-png("images/bipartite_network.png", width=800, height=500, units="px")
-plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
-dev.off()
 
 # Producing the bipartite network with prey abundances
 png("images/bipartite_network_estimated.png", width=800, height=500, units="px")
