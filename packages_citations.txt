@@ -300,44 +300,12 @@ regression splines.
 To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)', or set
 'options(citation.bibtex.max=999)'.
 
- [1] "Chap3_Dv-metabarcoding.Rmd"                         "Chap3_sampling-map.Rmd"                            
- [3] "Chapter3_Dv_Gz_MATI_Rstudio_git_vers-control.Rproj" "data"                                              
- [5] "images"                                             "jupyter_notebooks"                                 
- [7] "log_session_analysis.txt"                           "maps"                                              
- [9] "packages_citations.txt"                             "R"                                                 
-[11] "R_images"                                           "README.md"                                         
-character(0)
- [1] "Chap3_Dv-metabarcoding.Rmd"                         "Chap3_sampling-map.Rmd"                            
- [3] "Chapter3_Dv_Gz_MATI_Rstudio_git_vers-control.Rproj" "data"                                              
- [5] "images"                                             "jupyter_notebooks"                                 
- [7] "log_session_analysis.txt"                           "maps"                                              
- [9] "packages_citations.txt"                             "R"                                                 
-[11] "R_images"                                           "README.md"                                         
-character(0)
-package ‘ade4’ successfully unpacked and MD5 sums checked
-package ‘Biobase’ successfully unpacked and MD5 sums checked
-package ‘BiocGenerics’ successfully unpacked and MD5 sums checked
-package ‘biomformat’ successfully unpacked and MD5 sums checked
-package ‘Biostrings’ successfully unpacked and MD5 sums checked
-package ‘data.table’ successfully unpacked and MD5 sums checked
-package ‘foreach’ successfully unpacked and MD5 sums checked
-package ‘IRanges’ successfully unpacked and MD5 sums checked
-package ‘iterators’ successfully unpacked and MD5 sums checked
-package ‘multtest’ successfully unpacked and MD5 sums checked
-package ‘rhdf5’ successfully unpacked and MD5 sums checked
-package ‘Rhdf5lib’ successfully unpacked and MD5 sums checked
-package ‘S4Vectors’ successfully unpacked and MD5 sums checked
-package ‘XVector’ successfully unpacked and MD5 sums checked
-package ‘zlibbioc’ successfully unpacked and MD5 sums checked
+package ‘BiocInstaller’ successfully unpacked and MD5 sums checked
 
 The downloaded binary packages are in
 	C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\downloaded_packages
-         checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' ...     checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' ...   v  checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' (1.3s)
-      -  preparing 'phyloseq': (1.3s)
-     checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
-      -  checking for LF line-endings in source and make files and shell scripts (557ms)
-      -  checking for empty or unneeded directories
-      -  looking to see if a 'data/datalist' file should be added
-      -  building 'phyloseq_1.27.6.tar.gz'
-     
-
+package ‘msa’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\downloaded_packages
+Update all/some/none? [a/s/n]: 

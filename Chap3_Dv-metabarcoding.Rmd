@@ -29,7 +29,10 @@ ls()
 ## Setting working directory and packages
 
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
-
+```{r}
+source("https://bioconductor.org/biocLite.R")
+biocLite("msa")
+```
 
 ```{r packages loading, include=F}
 pack.list = c("aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
