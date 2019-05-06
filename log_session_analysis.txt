@@ -10,34 +10,33 @@ locale:
 [5] LC_TIME=English_United Kingdom.1252    
 
 attached base packages:
-[1] grid      stats     graphics  grDevices utils     datasets  methods   base     
+ [1] stats4    parallel  grid      stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] phyloseq_1.27.6      UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3        spaa_0.2.2          
- [6] reshape2_1.4.3       plyr_1.8.4           mgcv_1.8-24          nlme_3.1-137         lmtest_0.9-37       
-[11] zoo_1.8-5            lme4_1.1-21          Matrix_1.2-14        iNEXT_2.0.19         gridExtra_2.3       
-[16] gplots_3.0.1.1       ggsignif_0.5.0       ggplot2_3.1.1        EcoSimR_0.1.0        MASS_7.3-50         
-[21] dplyr_0.8.0.1        usethis_1.5.0        devtools_2.0.2       bipartite_2.11       sna_2.4             
-[26] network_1.15         statnet.common_4.2.0 vegan_2.5-4          lattice_0.20-35      permute_0.9-5       
-[31] ape_5.3              aod_1.3.1           
+ [1] UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3        spaa_0.2.2           reshape2_1.4.3      
+ [6] plyr_1.8.4           phyloseq_1.27.6      msa_1.12.0           Biostrings_2.50.2    XVector_0.22.0      
+[11] IRanges_2.16.0       S4Vectors_0.20.1     BiocGenerics_0.28.0  mgcv_1.8-24          nlme_3.1-137        
+[16] lmtest_0.9-37        zoo_1.8-5            lme4_1.1-21          Matrix_1.2-14        iNEXT_2.0.19        
+[21] gridExtra_2.3        gplots_3.0.1.1       ggsignif_0.5.0       ggplot2_3.1.1        EcoSimR_0.1.0       
+[26] MASS_7.3-50          dplyr_0.8.0.1        usethis_1.5.0        devtools_2.0.2       bipartite_2.11      
+[31] sna_2.4              network_1.15         statnet.common_4.2.0 vegan_2.5-4          lattice_0.20-35     
+[36] permute_0.9-5        ape_5.3              aod_1.3.1           
 
 loaded via a namespace (and not attached):
- [1] bitops_1.0-6        fs_1.3.0            rprojroot_1.3-2     tools_3.5.1         backports_1.1.3    
- [6] R6_2.4.0            KernSmooth_2.23-15  lazyeval_0.2.2      BiocGenerics_0.28.0 colorspace_1.4-1   
-[11] ade4_1.7-13         withr_2.1.2         tidyselect_0.2.5    prettyunits_1.0.2   processx_3.3.0     
-[16] curl_3.3            compiler_3.5.1      Biobase_2.42.0      cli_1.1.0           desc_1.2.0         
-[21] labeling_0.3        caTools_1.17.1.2    scales_1.0.0        callr_3.2.0         stringr_1.4.0      
-[26] digest_0.6.18       minqa_1.2.4         XVector_0.22.0      pkgconfig_2.0.2     sessioninfo_1.1.1  
-[31] maps_3.3.0          rlang_0.3.4         rstudioapi_0.10     jsonlite_1.6        gtools_3.8.1       
-[36] magrittr_1.5        dotCall64_1.0-0     biomformat_1.10.1   Rhdf5lib_1.4.3      S4Vectors_0.20.1   
-[41] Rcpp_1.0.1          munsell_0.5.0       yaml_2.2.0          zlibbioc_1.28.0     rhdf5_2.26.2       
-[46] pkgbuild_1.0.3      parallel_3.5.1      gdata_2.18.0        crayon_1.3.4        Biostrings_2.50.2  
-[51] splines_3.5.1       multtest_2.38.0     knitr_1.22          ps_1.3.0            pillar_1.3.1       
-[56] igraph_1.2.4.1      boot_1.3-20         stats4_3.5.1        codetools_0.2-15    pkgload_1.0.2      
-[61] glue_1.3.1          data.table_1.12.2   remotes_2.0.4       spam_2.2-2          nloptr_1.2.1       
-[66] foreach_1.4.4       gtable_0.3.0        purrr_0.3.2         assertthat_0.2.1    xfun_0.5           
-[71] coda_0.19-2         survival_2.42-6     tibble_2.1.1        iterators_1.0.10    IRanges_2.16.0     
-[76] memoise_1.1.0       fields_9.7          cluster_2.0.7-1    
+ [1] bitops_1.0-6       fs_1.3.0           rprojroot_1.3-2    tools_3.5.1        backports_1.1.3   
+ [6] R6_2.4.0           KernSmooth_2.23-15 lazyeval_0.2.2     colorspace_1.4-1   ade4_1.7-13       
+[11] withr_2.1.2        tidyselect_0.2.5   prettyunits_1.0.2  processx_3.3.0     compiler_3.5.1    
+[16] Biobase_2.42.0     cli_1.1.0          desc_1.2.0         labeling_0.3       caTools_1.17.1.2  
+[21] scales_1.0.0       callr_3.2.0        stringr_1.4.0      digest_0.6.18      minqa_1.2.4       
+[26] pkgconfig_2.0.2    sessioninfo_1.1.1  maps_3.3.0         rlang_0.3.4        rstudioapi_0.10   
+[31] jsonlite_1.6       gtools_3.8.1       magrittr_1.5       dotCall64_1.0-0    biomformat_1.10.1 
+[36] Rhdf5lib_1.4.3     Rcpp_1.0.1         munsell_0.5.0      yaml_2.2.0         zlibbioc_1.28.0   
+[41] rhdf5_2.26.2       pkgbuild_1.0.3     gdata_2.18.0       crayon_1.3.4       splines_3.5.1     
+[46] multtest_2.38.0    knitr_1.22         ps_1.3.0           pillar_1.3.1       igraph_1.2.4.1    
+[51] boot_1.3-20        codetools_0.2-15   pkgload_1.0.2      glue_1.3.1         data.table_1.12.2 
+[56] remotes_2.0.4      foreach_1.4.4      spam_2.2-2         nloptr_1.2.1       gtable_0.3.0      
+[61] purrr_0.3.2        assertthat_0.2.1   xfun_0.5           coda_0.19-2        survival_2.42-6   
+[66] tibble_2.1.1       iterators_1.0.10   memoise_1.1.0      fields_9.7         cluster_2.0.7-1   
 
 To cite R in publications use:
 

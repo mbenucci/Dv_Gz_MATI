@@ -53,25 +53,24 @@ head(gw.sites)
 head(rb.sites)
 head(lakes.coords)
 
+# Removing not interested site
 lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
-
-### FROM HERE!!!
 ```
 
-## FROM HERE!!! ISSUES IN PLOTTING AES IN GGPLOT2 FOR MAPPING
+
 
 ```{r map plot}
-ggplot(lakes.coords, aes(Longitude, Latitude)) +
-  geom_point()
+uk_shape = readOGR("maps/shapefiles/GB_IRworld.shp")
 
+uk_map = fortify(uk_shape)
+
+ggplot(uk_map) +
+  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
+  geom_point(data=lakes.coords, aes(X, Y), color="black") +
+  theme_void()
+
+## FROM HERE!
 ```
-
-```{r}
-test[test@data$ADMIN == "United Kingdom",]
-
-```
-
-
 
 ## WRITING LOG FILE FOR R VERSION AND SESSION INFO
 
