@@ -62,16 +62,19 @@ lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
 ```{r map plot}
 uk_shape = readOGR("maps/shapefiles/GB_IRworld.shp")
 
-uk_map = fortify(uk_shape)
+# Because we have coordinates in National Grid, we convert into WGS84
+wgs84 = '+proj=longlat +datum=WGS84'
+uk_shape_wgs = spTransform(uk_shape, CRS(wgs84))
 
-View(uk_map)
+uk_map = fortify(uk_shape_wgs)
+
 png("maps/Site_locations.png", width=1000, height=800, units="px")
 ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=lakes.coords, aes(X, Y), color="black") +
-  theme_void()
+  geom_point(data=lakes.coords, aes(Longitude,Latitude), color="black") +
+  coord_cartesian(xlim=c(-10,2),ylim=c(50,60)) +
+  theme_minimal()
 dev.off()
-
 
 ## FROM HERE!
 ```
