@@ -57,6 +57,11 @@ head(lakes.coords)
 lakes.coords = lakes.coords[!(lakes.coords$ID == "Chasewater Reservoir"),]
 ```
 
+Adding the labels short name
+
+```{r}
+lakes.coords$Short.Name = c("GW","WB","RB")
+```
 
 
 ```{r map plot}
@@ -68,12 +73,14 @@ uk_shape_wgs = spTransform(uk_shape, CRS(wgs84))
 
 uk_map = fortify(uk_shape_wgs)
 
-png("maps/Site_locations.png", width=1000, height=800, units="px")
+# Saving map to file directly
+png("maps/Site_locations.png", width=600, height=820, units="px")
 ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=lakes.coords, aes(Longitude,Latitude), color="black") +
-  coord_cartesian(xlim=c(-10,2),ylim=c(50,60)) +
-  theme_minimal()
+  geom_point(data=lakes.coords, aes(Longitude,Latitude), color="black", cex=3) +
+  geom_text(data=lakes.coords, aes(Longitude,Latitude, label=Short.Name), nudge_x=-0.4, cex=4) +
+  coord_fixed(2) +
+  theme_void()
 dev.off()
 
 ## FROM HERE!
