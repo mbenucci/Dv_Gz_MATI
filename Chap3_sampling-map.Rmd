@@ -20,13 +20,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r directory setup, include=F}
 dir()
-rm(list=ls())
+#rm(list=ls())
 ls()
 ```
 
 ## Setting working directory and packages
 
-The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
+The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_map-creation.txt`.
 
 ```{r packages loading, include=T}
 pack.list = c("broom","devtools","dplyr","ggplot2","ggsn","leaflet","maps","maptools","mapview","raster","RColorBrewer","rgdal","rgeos","rworldmap","tmap")

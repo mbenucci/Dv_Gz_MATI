@@ -31,7 +31,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
-pack.list = c("AED","aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","UpSetR","vegan","zoo")
+pack.list = c("aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -224,9 +224,9 @@ pos.oct["Dikerogammarus_villosus",]/colSums(pos.oct)
 pos.oct = pos.oct[,-c(1:3)]
 ```
 
-Based on the levels of contamination in the Positive samples, the threshold levels were decided to be respectively 0.03% (May data set) and 0.5% (October data set).
+Based on the levels of contamination in the Positive samples, the threshold levels were decided to be respectively 0.5% (May data set) and 0.5% (October data set). In May data set we still detect _D. villosus_ contamination.
 
-```{r threshold}
+```{r threshold May}
 # Transposing the data frames and copying them to carry them over as N reads and ratios.
 clean.may = as.data.frame(t(clean.may))
 
@@ -236,7 +236,9 @@ filter.may[is.na(filter.may)] <- 0
 
 filter.may[][filter.may <= 0.0003] <- 0
 clean.may[][clean.may[,]/rowSums(clean.may) <= 0.0003] <- 0
+```
 
+```{r threshold October}
 clean.oct = as.data.frame(t(clean.oct))
 
 filter.oct = as.data.frame(clean.oct)
@@ -258,7 +260,7 @@ filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 
 # Remaining known contaminations
 
-Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence in the overal output, therefore it can be excluded.
+Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence, however being fairly widespread the decision is to remove all _D. villosus_ detections in the gut contents. The removal will happen further downstream to prevent mis-identifying the predators.
 
 ```{r remaining contaminations May}
 # Checking in which sample(s) _Osmia bicornis_ contamination is still present
@@ -471,7 +473,7 @@ filter.oct$predator_id[filter.oct$sample_id %in% c("RB403","RB412")] = "Crangony
 clean.oct$predator_id = filter.oct$predator_id
 ```
 
-Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
+Now that all variable have been added, the ratio and DNA reads of predators can be set to be equal to 0. This will allow further downstream analysis to calulate accurate indexes of prey diversity and diet breadth without the risk of overinflating.
 
 ```{r removing predator ratio}
 # Removal of predator ratios and DNA reads
@@ -540,6 +542,10 @@ clean.edna[is.na(clean.edna)] <- 0
 info.guts = clean.guts[,c(colnames(clean.guts) %in% c("time","site","sample_id","sample_type","predator_id"))]
 info.edna = clean.edna[,c(colnames(clean.edna) %in% c("time","site","sample_id","sample_type","predator_id"))]
 
+# Saving gut contents and eDNA files
+write.csv(clean.guts, "R/gut_contents_reads.csv")
+write.csv(clean.edna, "R/eDNA_reads.csv")
+
 # Cleaning empty taxa
 # gut content samples
 clean.guts = subset(clean.guts[,!c(colnames(clean.guts) %in% colnames(info.guts))], select=colSums(clean.guts[,!c(colnames(clean.guts) %in% colnames(info.guts))]) > 0)
@@ -549,13 +555,15 @@ clean.edna = subset(clean.edna[,!c(colnames(clean.edna) %in% colnames(info.edna)
 
 The predator DNA reads now are equal to 0 across all gut content samples. This allows for calculating the prey DNA ratio within each gut content sample, that will allow also for a niche overlap analysis.
 the prey species detected included also both _Crangonyx pseudogracilis_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
-Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the dataset.
+Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the gut contents dataset. _Dikerogammarus villosus_
 
-```{r}
+```{r cleaning gut contents data frame}
+# Removing high rank taxa
 clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
-clean.guts = clean.guts[,!c(colnames(clean.guts) %in% "Isopoda")]
+clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Dikerogammarus_villosus","Diptera","Cyclopidae"))]
 
+# converting reads into ratio
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
 ratio.guts[is.na(ratio.guts)] <- 0
 
@@ -596,6 +604,9 @@ abund.guts.site = as.data.frame(abund.guts %>% group_by(time, site, predator_id)
 abund.guts.site[grep("Gammarus_zaddachi", abund.guts.site$predator_id),"predator_id"] <- "G.zad"
 abund.guts.site[grep("Dikerogammarus_villosus", abund.guts.site$predator_id),"predator_id"] <- "D.vil"
 
+abund.guts[grep("Gammarus_zaddachi", abund.guts$predator_id),"predator_id"] <- "G.zad"
+abund.guts[grep("Dikerogammarus_villosus", abund.guts$predator_id),"predator_id"] <- "D.vil"
+
 # setting rownames and removing extra variables
 rownames(abund.guts.site) = paste(abund.guts.site$predator_id, abund.guts.site$site, abund.guts.site$time, sep="_")
 inext.guts = t(abund.guts.site[,!c(colnames(abund.guts.site) %in% c("site","time","predator_id"))])
@@ -625,16 +636,16 @@ gen.sp.edna = clean.edna[,!c(colnames(clean.edna) %in% c("Chironomidae","Chydori
 gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
 
-# removing `predator_id`, `sample_type` and `sample_id` variables and transforming eDNA detections into abundances
-abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("sample_type","predator_id"))]
-abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site"))] > 0] <- 1
+# removing `predator_id` variables and transforming eDNA detections into abundances
+abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("predator_id"))]
+abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
 # adding genus information to help in plotting
 melt.abund.edna = melt(abund.edna)
 melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
 
 # Rarefaction curves calculated on abundance data without genus information
-inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% "sample_id")] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id","sample_type"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
 rownames(inext.edna) = paste(inext.edna$site, inext.edna$time, sep="_")
 
 # removing `time`, `sample_id` and `site` variables as no more necessary.
@@ -644,156 +655,104 @@ inext.edna= t(inext.edna[,!c(colnames(inext.edna) %in% c("time","site"))])
 inext.edna = iNEXT(inext.edna, q=c(0,1), datatype = "abundance", se=T, endpoint=200)
 
 strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
+
+png("R_images/eDNA_species_rarefactions.png", width = 1000, height = 800, units = "px")
 ggiNEXT(inext.edna) +
   labs(y = "", x="Number of samples") +
-  theme(legend.position="bottom") +
+  theme(legend.position="right") +
   facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
   ggtitle("Species level rarefaction curves of eDNA samples")
+dev.off()
 ```
 
 ```{r PERMANOVA gut contents}
-# gut contents PERMANOVA
-adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","type","predator_id"))]
+# comparing D.vil and G.zad
+adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
 
-fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_time.guts = matrix(c(abund.guts$time), ncol=1)
+fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
-fact_all.nmds = matrix(c(abund.guts$site, abund.guts$time, abund.guts$predator_id), ncol=3)
 
-dist.guts = vegdist(adonis.guts, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
 
-adonis(dist.guts~fact_site.guts*fact_time.guts, permutations = 10000, method="euclidean")
-adonis(dist.guts~fact_predator.guts*fact_time.guts, permutations = 10000, method="euclidean")
-adonis(dist.guts~fact_predator.guts*fact_time.guts*fact_site.guts, permutations = 10000, method="euclidean")
+# comparing only D.vil
+adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
+
+fact_site.dvil = matrix(c(adonis.dvil$site), ncol=1)
+fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
+
+adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
+
+adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
 ```
 
-```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-meta.guts = metaMDS(dist.guts, trymax=200, distance="euclidean")
 
-# NMDS based on the abundance data (will give the species scores as well)
-meta.ad.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+```{r NMDS of gut contents both D.vil and G.zad}
+meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+```
+
+
+```{r NMDS on D.vil gut contents}
+meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 ```
 
 
 ```{r plotting guts nmds}
-nmds.guts = as.data.frame(scores(meta.ad.guts))
-nmds.guts$id = rownames(nmds.guts)
-nmds.guts$site = abund.guts[,"site"]
-nmds.guts$predator = abund.guts[,"predator_id"]
-nmds.guts$time = abund.guts[,"time"]
-
-nmds.sp.guts = as.data.frame(scores(meta.ad.guts,"species"))
-nmds.sp.guts$species = rownames(nmds.sp.guts)
-
-pdf("images/guts_NMDS.pdf")
-plot(meta.ad.guts, type="n", main="gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.2,1.2))
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.ad.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ad.guts,group=fact_site.guts[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.ad.guts,group=fact_site.guts[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+# full symbols for May, hollow symbols for October
+png("R_images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
 dev.off()
 ```
 
+```{r plotting guts nmds}
+# full symbols for May, hollow symbols for October
+png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1.8,1), ylim=c(-1,1))
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=T)
+ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+dev.off()
+```
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
-adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id"))]
+adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id","sample_type"))]
 
 fact_site.edna = matrix(c(abund.edna$site), ncol=1)
 fact_time.edna = matrix(c(abund.edna$time), ncol=1)
-fact_id.edna = matrix(c(abund.edna$sample_id), ncol=1)
-fact_all.nmds = matrix(c(abund.edna$site, abund.edna$time, abund.edna$sample_id), ncol=3)
 
-dist.edna = vegdist(adonis.edna, method="euclidean")
-
-adonis(dist.edna~fact_site.edna*fact_time.edna*fact_id.edna, permutations = 10000, method="euclidean")
+adonis(adonis.edna~fact_site.edna*fact_time.edna, permutations = 1000, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-meta.edna = metaMDS(dist.edna, trymax=200, distance="euclidean")
-
 # NMDS based on the abundance data (will give the species scores as well)
-meta.ad.edna = metaMDS(adonis.edna, trymax=200, distance="euclidean")
+meta.edna = metaMDS(adonis.edna, distance="bray")
 ```
 
 
 ```{r plotting eDNA nmds}
-nmds.edna = as.data.frame(scores(meta.ad.edna))
-nmds.edna$id = rownames(nmds.edna)
-nmds.edna$site = abund.edna[,"site"]
-nmds.edna$time = abund.edna[,"time"]
-nmds.edna$sample = abund.edna[,"sample_id"]
-
-nmds.sp.edna = as.data.frame(scores(meta.ad.edna,"species"))
-nmds.sp.edna$species = rownames(nmds.sp.edna)
-
-pdf("images/eDNA_NMDS.pdf")
-plot(meta.ad.edna, type="n", main="eDNA NMDS", xlim=c(-2.5,4), ylim=c(-1,1))
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=22)
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=15)
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
-points(meta.ad.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ad.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.ad.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
-dev.off()
-```
-
-
-```{r eDNA and guts comparison}
-# Sorting out variables and joining the two frames
-abund.edna$sample_type = "eDNA"
-abund.guts$sample_type = "gut"
-
-abund.full = full_join(abund.guts, abund.edna)
-abund.full[is.na(abund.full)] <- 0
-adonis.full = abund.full[,!c(colnames(abund.full) %in% c("time","site","sample_id","predator_id","sample_type"))]
-
-fact_site.full = matrix(c(abund.full$site), ncol=1)
-fact_time.full = matrix(c(abund.full$time), ncol=1)
-fact_type.full = matrix(c(abund.full$sample_type), ncol=1)
-fact_all.full = matrix(c(abund.full$site, abund.full$time, abund.full$sample_type), ncol=3)
-
-dist.full = vegdist(adonis.full, method="euclidean")
-
-adonis(dist.full~fact_site.full*fact_time.full*fact_type.full, permutations = 10000, method="euclidean")
-```
-
-```{r nmds based on distances and on abundance data}
-# NMDS based on the distance matrix
-meta.guts.edna = metaMDS(dist.full, trymax=200, distance="euclidean")
-
-# NMDS based on the abundance data (will give the species scores as well)
-meta.abund.guts.edna = metaMDS(adonis.full, trymax=200, distance="euclidean")
-```
-
-```{r plotting eDNA nmds}
-nmds.guts.edna = as.data.frame(scores(meta.abund.guts.edna))
-nmds.guts.edna$id = rownames(nmds.guts.edna)
-nmds.guts.edna$site = abund.full[,"site"]
-nmds.guts.edna$time = abund.full[,"time"]
-nmds.guts.edna$sample_type = abund.full[,"sample_type"]
-
-nmds.sp.guts.edna = as.data.frame(scores(meta.abund.guts.edna,"species"))
-nmds.sp.guts.edna$species = rownames(nmds.sp.guts.edna)
-
-pdf("images/guts-vs-eDNA_NMDS.pdf")
-plot(meta.abund.guts.edna, type="n", main="gut contents vs. eDNA NMDS", xlim=c(-2.5,5), ylim=c(-1,1))
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=22)
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=15)
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
-points(meta.abund.guts.edna, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.abund.guts.edna, group=fact_type.full[,1],col=c("blue","orange"),label=T)
-ordiellipse(meta.abund.guts.edna, group=fact_type.full[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+# full symbols for May, hollow symbols for October
+png("R_images/eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+plot(meta.edna, type="n", main="eDNA NMDS")#, xlim=c(-1,1.5), ylim=c(-1,1))
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=22)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=15)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 dev.off()
 ```
 
@@ -809,677 +768,275 @@ rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```
 
 ```{r adding the binomial}
-gw.may[is.na(gw.may)] <- gw.may$FAMILY
+data_structuring <- function(df){
+  df = as.data.frame(df)
+  df = df[,!c(colnames(df) %in% c("ORDER","FAMILY"))]
+  df = spread(df, TAXA, NUMBERS, fill=0)
+  return(df)
+}
 
-gw.may$Binomial = paste(gw.may$GENUS, gw.may$SPECIES, sep="_")
-gw.oct$Binomial = paste(gw.oct$GENUS, gw.oct$SPECIES, sep="_")
+gw.may.kick = data_structuring(gw.may)
+gw.oct.kick = data_structuring(gw.oct)
+wb.may.kick = data_structuring(wb.may)
+wb.oct.kick = data_structuring(wb.oct)
+rb.may.kick = data_structuring(rb.may)
+rb.oct.kick = data_structuring(rb.oct)
 
-View(gw.may)
-## FROM HERE!!!!
+# Adding variables
+
+gw.may.kick$time = "May"
+gw.oct.kick$time = "Oct"
+wb.may.kick$time = "May"
+wb.oct.kick$time = "Oct"
+rb.may.kick$time = "May"
+rb.oct.kick$time = "Oct"
+
+gw.may.kick$sample_type = "kick"
+gw.oct.kick$sample_type = "kick"
+wb.may.kick$sample_type = "kick"
+wb.oct.kick$sample_type = "kick"
+rb.may.kick$sample_type = "kick"
+rb.oct.kick$sample_type = "kick"
+
+gw.kick = full_join(gw.may.kick, gw.oct.kick)
+wb.kick = full_join(wb.may.kick, wb.oct.kick)
+rb.kick = full_join(rb.may.kick, rb.oct.kick)
+
+gw.kick[is.na(gw.kick)] <- 0
+wb.kick[is.na(wb.kick)] <- 0
+rb.kick[is.na(rb.kick)] <- 0
 ```
 
-
-
-Once We can now start plotting and running models!
+```{r checking and removing duplication in species}
+gw.kick$Dikerogammarus_sp. = gw.kick$Dikerogammarus_sp. + gw.kick$Dikerogammarus_spp.
+gw.kick = gw.kick[,!c(colnames(gw.kick) %in% "Dikerogammarus_spp.")]
+```
 
 ```{r}
-gut.ratio = dvmay.filter[dvmay.filter$sample_type == "gut",]
-gut.melt = melt(gut.ratio)
+# Removing unnecessary columns
+gw.kick = gw.kick[,!c(colnames(gw.kick) %in% c("TUBE.ID","DATE"))]
+wb.kick = wb.kick[,!c(colnames(wb.kick) %in% c("TUBE.ID","DATE"))]
+rb.kick = rb.kick[,!c(colnames(rb.kick) %in% c("TUBE.ID","DATE"))]
 
-head(gut.melt)
+gw.kick$sample_id = paste0(gw.kick$LOCATION, gw.kick$REPLICATE)
+wb.kick$sample_id = paste0(wb.kick$LOCATION, wb.kick$REPLICATE)
+rb.kick$sample_id = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
+```
 
-gut.ratio2 = dvoct.filter[dvoct.filter$sample_type == "gut",]
-gut.ratio2[3, "predator_id"] <- "Dikerogammarus_villosus"
-gut.melt2 = melt(gut.ratio2)
+```{r joining frames}
+abund.kick = full_join(gw.kick, wb.kick)
+abund.kick = full_join(abund.kick, rb.kick)
 
-gut.full = full_join(gut.melt, gut.melt2)
+colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
+```
 
-ggplot(gut.full, aes(time, value)) +
-  geom_jitter(aes(color=predator_ID)) +
-  facet_grid (.~site) +
-  ylab("prey DNA ratio") + xlab("sampling month")
+```{r rarefaction curves on kick-samples}
+# removing high order taxa
+colnames(abund.kick)
+abund.kick = abund.kick[,!c(colnames(abund.kick) %in% c("Trichoptera","Diptera","Oligochaeta","Ostracoda","Araneae","Coleoptera","Mollusca","Zygopotera","Plecoptera","Nematoda"))]
+
+# setting rownames and removing extra variables
+head(abund.kick)
+raref.kick = abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE","sample_type"))]
+
+# list of families in data set to be removed
+kick.fam = colnames(raref.kick[,grepl("idae", colnames(raref.kick)) == T])
+raref.sp.kick = raref.kick[,!c(colnames(raref.kick) %in% kick.fam)]
+
+# summarising data set by lake and season
+raref.sp.kick = as.data.frame(raref.sp.kick %>% group_by(site, time) %>% summarise_all(funs(sum)))
+
+rownames(raref.sp.kick) = paste(raref.sp.kick$site, raref.sp.kick$time, sep="_")
+raref.sp.kick[is.na(raref.sp.kick)] <- 0
+raref.sp.kick = t(raref.sp.kick[,!c(colnames(raref.sp.kick) %in% c("site","time"))])
+
+inext.kick = iNEXT(raref.sp.kick, q=c(0,1), datatype = "abundance", se=T, endpoint=1400)
+
+strip_labels=c("0"="Species Richness","1"="Shannon Diversity")
+png("R_images/kick-samples_rarefactions.png", width = 1000, height = 800, units = "px")
+ggiNEXT(inext.kick) +
+  labs(y = "", x="Number of individuals") +
+  theme(legend.position="right") +
+  facet_grid(order~., labeller=as_labeller(strip_labels), scales="free") +
+  ggtitle("Rarefaction curves of communities in kick samples")
+dev.off()
 ```
 
 ```{r}
-niche.frame = full_join(gut.ratio, gut.ratio2)
-niche.frame[is.na(niche.frame)] <- 0
+# Summarising kick-samples by sites
+abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
 
-niche.info = niche.frame[,c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]
+# Sorting out variables and joining the two frames
+abund.kick[is.na(abund.kick)] <- 0
+adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","sample_id","sample_type","site","REPLICATE"))]
 
-niche.frame = subset(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))], select = colSums(niche.frame[,!c(colnames(niche.frame) %in% c("time", "sample_id","site","sample_type","predator_id"))]) > 0)
+fact_site.kick = matrix(c(abund.kick$site), ncol=1)
+fact_time.kick = matrix(c(abund.kick$time), ncol=1)
 
-niche.frame[][niche.frame > 0] <- 1
-
-niche.frame = cbind(niche.frame, niche.info)
+adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="bray")
 ```
+
+```{r}
+meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
+```
+
+```{r NMDS plot of kick-samples}
+# full symbols for May, hollow symbols for October
+png("R_images/kick-samples_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=22)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=15)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
+points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.ab.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.ab.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+dev.off()
+```
+
+```{r merging kick-samples and eDNA frames}
+abund.kick.edna = full_join(abund.edna, abund.kick)
+abund.kick.edna[is.na(abund.kick.edna)] <- 0
+
+adonis.kick.edna = abund.kick.edna[,!c(colnames(abund.kick.edna) %in% c("site","sample_id","sample_type","time"))]
+
+fact_site.edki = matrix(c(abund.kick.edna$site), ncol=1)
+fact_time.edki = matrix(c(abund.kick.edna$time), ncol=1)
+fact_type.edki = matrix(c(abund.kick.edna$sample_type), ncol=1)
+
+adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 1000, method = "bray")
+```
+
+```{r}
+meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
+```
+
+
+```{r NMDS plot of kick-samples vs eDNA}
+# full symbols for May, hollow symbols for October
+png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
+plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-0.6,0.6))
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=15)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.kick.edna, group=fact_type.edki[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+dev.off()
+```
+
+# 4. Niche/Diet breadth
+
+After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
+
+```{r niche breadth of D.villosus}
+niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
+colnames(niche.dv)
 
 # summing prey DNA reads by predator ID, site and time.
+niche.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type"))] %>% group_by(predator_id, time, site) %>% summarise_all(funs(sum)))
+rownames(niche.dv) = paste(niche.dv$predator_id, niche.dv$site, niche.dv$time, sep="_")
 
-```{r}
-colnames(niche.frame)
-head(niche.frame)
+## Null model with ra2 algorithm since this is not a niche overlap analysis
+niche.dv.model = niche_null_model(speciesData=niche.dv[,!c(colnames(niche.dv) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
 
-nrow(niche.frame)
-
-niche.model = as.data.frame(niche.frame[,!c(colnames(niche.frame) %in% c("sample_type","sample_id"))] %>% group_by(site, time, predator_ID) %>% summarise_all(funs(sum)))
-
-# Becuase _C.f loridanus_ hasn't been confirmed in Rockland Broad, we decided to be conservative and pull both Crangonyx species up to the genus level.
-
-niche.model$Crangonyx = niche.model$Crangonyx_pseudogracilis + niche.model$Crangonyx_floridanus
-niche.model = niche.model[,!c(colnames(niche.model) %in% c("Crangonyx_pseudogracilis", "Crangonyx_floridanus"))]
-
-ncol(niche.model)
-
-niche.model = niche.model[-c(2,4,6),]
-niche.model = niche.model[,!c(colnames(niche.model) %in% c("Dikerogammarus_villosus","Porcellio_scaber"))]
-
-## test of the null model with ra2 algorithm
-niche.null.model = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra2", metric="pianka", suppressProg=T, nReps=5000)
-
-summary(niche.null.model)
-plot(niche.null.model,type="hist")
-plot(niche.null.model,type="niche")
-
-## test of the null model with ra3 algorithm
-niche.null.model3 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra3", metric="pianka", suppressProg=T, nReps=5000)
-
-summary(niche.null.model3)
-plot(niche.null.model3,type="hist")
-
-niche.model
-rowSums(niche.model[,4:ncol(niche.model)])
-
-## test of the null model with ra4 algorithm
-#niche.null.model4 = niche_null_model(speciesData=niche.model[,4:ncol(niche.model)], algo="ra4", metric="pianka", suppressProg=T, nReps=5000)
-
-#summary(niche.null.model4)
-#plot(niche.null.model4,type="hist")
-
+summary(niche.dv.model)
+png("R_images/Dvil_niche_breadth.png", width=500, height=500, units="px")
+plot(niche.dv.model, type="hist", main="Niche breadth of D.villosus across invaded sites")
+dev.off()
 ```
 
-```{r}
-head(niche.frame)
+```{r niche breadth index of D.villosus}
+breadth.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("time"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
 
-niche.nmds = as.data.frame(niche.frame)
+rownames(breadth.dv) = paste(breadth.dv$predator_id, breadth.dv$site, sep="_")
+breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))])
 
-niche.nmds = subset(niche.nmds, subset=rowSums(niche.nmds[,!c(colnames(niche.frame) %in% c("time","site","sample_id","predator_id","sample_type"))]) > 0)
+niche.width(breadth.dv, method="levins")
+niche.width(breadth.dv, method="shannon")
 
-matrix.niche = as.matrix(niche.nmds[,!c(colnames(niche.nmds) %in% c("time","site","sample_id","predator_id","sample_type"))])
-
-fact_site.niche = matrix(c(niche.nmds$site),ncol=1) 
-fact_time.niche = matrix(c(niche.nmds$time), ncol=1)
-fact_predator.niche = matrix(c(niche.nmds$predator_ID), ncol=1)
-fact_all.niche = matrix(c(niche.nmds$site, niche.nmds$time, niche.nmds$predator_ID), ncol=3)
-
-dist.niche = vegdist(matrix.niche, method="euclidean")
-
-adonis(dist.niche~fact_site.niche*fact_predator.niche, permutations = 10000, method="euclid")
-adonis(dist.niche~fact_time.niche*fact_predator.niche, permutations = 10000, method="euclid")
+(niche.width(breadth.dv, method="levins")[1] -1)/(nrow(breadth.dv) -1)
+(niche.width(breadth.dv, method="levins")[2] -1)/(nrow(breadth.dv) -1)
 ```
 
-```{r}
-meta.niche = metaMDS(dist.niche, zerodist=ignore, trymax=200)
-```
+```{r niche breadth of D.villosus vs G.zaddachi}
+breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
-```{r}
-plot(meta.niche,type="n",
-main="gut contents PERMANOVA")#, ylim=c(-0.7,0.9), xlim=c(-0.5,1))
-points(meta.niche, select=which(fact_site.niche[,1]=="WB"),col="black",pch=1)
-points(meta.niche, select=which(fact_site.niche[,1]=="GW"),col="blue",pch=22)
-points(meta.niche, select=which(fact_site.niche[,1]=="RB"),col="red",pch=25)
-ordispider(meta.niche,group=fact_site.niche[,1], col=c("green","orange","green4"),label=T)
-ordiellipse(meta.niche,group=fact_site.niche[,1],kind="ehull", lty=c(1,3),label=F,lwd=2)
-```
+rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
 
-```{r}
-plot(meta.niche,type="n",
-main="gut contents PERMANOVA")#, ylim=c(-0.7,0.9), xlim=c(-0.5,1))
-points(meta.niche, select=which(fact_site.niche[,1]=="WB"),col="black",pch=1)
-points(meta.niche, select=which(fact_site.niche[,1]=="GW"),col="blue",pch=22)
-points(meta.niche, select=which(fact_site.niche[,1]=="RB"),col="red",pch=25)
-ordispider(meta.niche,group=fact_predator.niche[,1],col=as.numeric(factor(fact_predator.niche[,1])),label=T)
-ordiellipse(meta.niche,group=fact_time.niche[,1],kind="ehull",lty=c(1,3), label=F,lwd=2)
+breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","site"))])
 
-#,lty=as.numeric(factor(fact_predator.niche[,1]))
-#c("green","orange","green4")
-```
+niche.width(breadth.dvgz, method="levins")
+niche.width(breadth.dvgz, method="shannon")
 
-# Food webs
+nrow(breadth.dvgz)
 
-```{r}
-niche.model
-
-niche.web = niche.model[-c(2,4,6),]
-
-rownames(niche.web) = c("Dv_GW-May","Dv_GW-Oct","Gz_RB-May","Gz_RB-Oct","Dv_WB-May","Dv_WB-Oct")
-
-niche.web = niche.web[,!c(colnames(niche.web) %in% c("site","time","predator_id","Dikerogammarus_villosus","Porcellio_scaber"))]
-
-niche.web = as.data.frame(t(niche.web))
-
-str(niche.web)
-
-niche.web = as.matrix(niche.web)
-```
-
-# NEED TO REMOVE Dv FROM WEB AND DIPTERA!!!!
-
-```{r tripartite web, fig.keep="last"}
-plotweb(niche.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), low.lablength=5, col.high="white", low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, text.rot=90)
+(niche.width(breadth.dvgz, method="levins")[1] -1)/(nrow(breadth.dvgz) -1)
+(niche.width(breadth.dvgz, method="levins")[2] -1)/(nrow(breadth.dvgz) -1)
+(niche.width(breadth.dvgz, method="levins")[3] -1)/(nrow(breadth.dvgz) -1)
 ```
 
 
-```{r end}
-sink("log_session_packages.txt")
+# 5. Food webs network
+
+```{r food web network plus bipartite}
+# Summing prey DNA reads by predator ID, site and time.
+food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type"))] %>% group_by(site, time, predator_id) %>% summarise_all(funs(sum)))
+rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, sep="_")
+
+food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
+food.web = as.data.frame(t(food.web))
+
+# Producing the bipartite network
+png("R_images/bipartite_network.png", width=800, height=500, units="px")
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
+dev.off()
+```
+
+```{r bipartite network with estimates of preys}
+# Setting up the estimate vectors as taxa distribution
+est.edna = abund.edna
+est.kick = abund.kick
+
+est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))][est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))] > 0] <- 1
+est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))][est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))] > 0] <- 1
+
+est.edna = as.data.frame(est.edna[,!c(colnames(est.edna) %in% c("sample_type","sample_id","site","time"))] %>% summarise_all(funs(sum)))
+est.kick = as.data.frame(est.kick[,!c(colnames(est.kick) %in% c("REPLICATE","sample_type","sample_id","site","time"))] %>% summarise_all(funs(sum)))
+
+# Joining eDNA and kick-samples estimates
+est.web = full_join(est.edna, est.kick)
+est.web[is.na(est.web)] <- 0
+
+est.web = as.matrix(est.web)
+names(est.web) = colnames(est.web)
+
+# Producing the bipartite network with prey abundances
+png("R_images/bipartite_network_estimated.png", width=800, height=500, units="px")
+plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5,  low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.12, text.rot=90, low.abun=est.web, low.abun.col="grey", col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
+dev.off()
+```
+
+
+```{r log session info}
+sink("log_session_analysis.txt")
 sessionInfo()
 citation()
 sink()
 ```
 
-## END
-
-
-
-# Testing for the main 2 predators _Dikerogammarus villosus_ (for WB and GW) and _Gammarus zaddachi_ (for RB).
-
-```{r}
-gut.full2 = subset(gut.full, subset=gut.full$value > 0)
-
-test.glm = lm(gut.full2$value ~ gut.full2$site, family = quasibinomial)
-test.glm2 = lm(gut.full2$value ~ gut.full2$predator_ID, family = quasibinomial)
-summary(test.glm)
-summary(test.glm2)
-
-plot(test.glm)
-plot(test.glm2)
-
-test.gam = gam(gut.full$value[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")] ~ gut.full$site[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")] + gut.full$predator_ID[gut.full$predator_ID == c("Dikerogammarus_villosus","Gammarus_zaddachi")])
-
-test.gam2 = gam(gut.full$value ~ gut.full$site + gut.full$predator_ID)
-
-summary(test.gam)
-summary(test.gam2)
-
-gam.check(test.gam)
-gam.check(test.gam2)
-
-#gut.full2 %>%
-#  mutate(variable = reorder(variable, value)) %>%
-#  ggplot( aes(x=variable, y=value, fill=variable, color=variable)) +
-#    geom_violin(width=2.1, size=0.2) +
-#    scale_fill_viridis(discrete=TRUE) +
-#    scale_color_viridis(discrete=TRUE) +
-#    facet_free(site~time) +
-#    theme_classic() +
-#    theme(legend.position="none") +
-#    coord_flip() +
-#    xlab("") +
-#    ylab("ratio(%)")
-```
-
-```{r}
-
-edna.ratio = dvmay.filter[dvmay.filter$sample_type == "eDNA",]
-edna.melt = melt(edna.ratio)
-edna.melt = subset(edna.melt, subset=edna.melt$value > 0)
-
-edna.ratio2 = dvoct.filter[dvoct.filter$sample_type == "eDNA",]
-edna.melt2 = melt(edna.ratio2)
-edna.melt2 = subset(edna.melt2, subset=edna.melt2$value > 0)
-
-edna.full = full_join(edna.melt, edna.melt2)
-
-head(edna.full)
-
-ggplot(abund.edna, aes(sample_id, value)) +
-  geom_jitter() +
-  geom_bar(stat="identity", position="fill", aes(fill=variable)) +
-  facet_grid (.~time) +
-  xlab("sampling month")
-
-```
-
-
-
-```{r splitting samples}
-guts.all = full_join(guts.may, guts.oct)
-guts.all[is.na(guts.all)] <- 0
-
-edna.all = full_join(edna.may, edna.oct)
-edna.all[is.na(edna.all)] <- 0
-
-chr = grep("samples_id|time", colnames(guts.all))
-guts.melt = subset(guts.all, select = colSums(guts.all[,-chr]) > 0)
-guts.melt$samples_id = guts.all$samples_id
-
-
-chr2 = grep("samples_id|time", colnames(edna.all))
-edna.melt = subset(edna.all, select = colSums(edna.all[,-chr2]) > 0)
-edna.melt$time = edna.all$time
-
-guts.melt2 = melt(guts.melt)
-edna.melt2 = melt(edna.melt)
-
-ggplot(guts.melt2, aes(samples_id, value)) +
-  geom_bar(stat="identity", aes(fill=variable)) +
-  facet_grid(time~.)
-```
-
-
-```{r}
-## DIVIDING THE DATA FRAME BY LAKE ##
-#guts.melt$site = gsub("[0-9]{1,3}","", guts.melt$samples_id)
-
-head(guts.melt)
-gw = grep("GW", guts.melt$samples_id, fixed=T)
-guts.gw = guts.melt[gw,]
-
-wb = grep("WB", guts.melt$samples_id, fixed=T)
-guts.wb = guts.melt[wb,]
-
-rb = grep("RB", guts.melt$samples_id, fixed=T)
-guts.rb = guts.melt[rb,]
-
-tssgw = grep("time|samples_id|site", colnames(guts.gw))
-gw.melt = subset(guts.gw, select=colSums(guts.gw[,-tssgw]) > 0)
-gw.melt = cbind(gw.melt, guts.gw[,tssgw])
-
-tsswb = grep("time|samples_id|site", colnames(guts.wb))
-wb.melt = subset(guts.wb, select=colSums(guts.wb[,-tsswb]) > 0)
-wb.melt = cbind(wb.melt, guts.wb[,tsswb])
-
-tssrb = grep("time|samples_id|site", colnames(guts.rb))
-rb.melt = subset(guts.rb, select=colSums(guts.rb[,-tssrb]) > 0)
-rb.melt = cbind(rb.melt, guts.rb[,tssrb])
-
-guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))]
-
-### writing output to file
-write.csv(guts.wb, "R/wroxham_gutcontents.csv")
-write.csv(guts.gw, "R/grafham_gutcontents.csv")
-write.csv(guts.rb, "R/rockland_gutcontents.csv")
-```
-
-## Model running
-Before running any model we need to make sure that we decide correctly whether to change the the proportions to pres/abs (1,0). In order to keep the semi-quantification at population level (the semi-quantification at individual is outside of our scopes) we add an extra information regarding the predator identity (we will need to remove the predator variable from the ratio).
-
-```{r}
-colnames(guts.gw)
-
-
-  
-
-
-
-gw.melt = melt(guts.gw)
-wb.melt = melt(guts.wb)
-rb.melt = melt(guts.rb)
-
-gw.melt$value[][gw.melt$value > 0] <- 1
-
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")] ~ gw.melt$variable[!(gw.melt$variable %in% "Dikerogammarus_villosus")] | gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")])
-gw.model <- lm(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")] ~ gw.melt$variable[!(gw.melt$variable %in% "Dikerogammarus_villosus")] * gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")])
-summary(gw.model)
-drop1(gw.model,test = "F")
-
-plot(gw.model, add.smooth = FALSE, which = 1)
-gwres <- resid(gw.model)
-hist(gwres, xlab = "Residuals", main = "")
-plot(gw.melt$value[!(gw.melt$variable %in% "Dikerogammarus_villosus")], gwres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(gwres ~ gw.melt$time[!(gw.melt$variable %in% "Dikerogammarus_villosus")], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-wb.melt$value[][wb.melt$value > 0] <- 1
-
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")] ~ wb.melt$variable[!(wb.melt$variable %in% "Dikerogammarus_villosus")] | wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")])
-wb.model <- lm(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")] ~ wb.melt$variable[!(wb.melt$variable %in% "Dikerogammarus_villosus")] * wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")])
-drop1(wb.model,test = "F")
-
-plot(wb.model, add.smooth = FALSE, which = 1)
-wbres <- resid(wb.model)
-hist(wbres, xlab = "Residuals", main = "")
-plot(wb.melt$value[!(wb.melt$variable %in% "Dikerogammarus_villosus")], wbres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(wbres ~ wb.melt$time[!(wb.melt$variable %in% "Dikerogammarus_villosus")], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-rb.melt$variable[rb.melt$value > 0.75]
-rb.melt$value[!(rb.melt$value > 0.9)]
-
-## Removing the predator we detect a significant correlation (p=0.00123) between prey species and season
-
-coplot(rb.melt$value[!(rb.melt$value > 0.75)] ~ rb.melt$variable[!(rb.melt$value > 0.75)] | rb.melt$time[!(rb.melt$value > 0.75)])
-rb.model <- lm(rb.melt$value[!(rb.melt$value > 0.75)] ~ rb.melt$variable[!(rb.melt$value > 0.75)] * rb.melt$time[!(rb.melt$value > 0.75)])
-drop1(rb.model,test = "F")
-
-plot(rb.model, add.smooth = FALSE, which = 1)
-rbres <- resid(rb.model)
-hist(rbres, xlab = "Residuals", main = "")
-plot(rb.melt$value[!(rb.melt$value > 0.75)], rbres, xlab = "prey detection",
-ylab = "Residuals")
-boxplot(rbres ~ rb.melt$time[!(rb.melt$value > 0.75)], xlab = "Month",
-ylab = "Residuals")
-```
-
-```{r}
-
-
-plot(glm(gw.melt$variable ~ gw.melt$samples_id*gw.melt$time, family = binomial))
-
-anosim(guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))], guts.gw$time, distance="euclid", permutations=1000)
-metaMDS(as.matrix(vegdist(guts.gw[,!(colnames(guts.gw) %in% c("time","samples_id","site"))], distance="euclid")), distance="euclid", trymax = 1000)
-
-anosim(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], guts.melt$site, distance="euclid")
-metaMDS(as.matrix(vegdist(guts.melt[,!(colnames(guts.melt) %in% c("time","samples_id","site"))], distance="euclid")), distance="euclid", trymax = 10000)
-```
-
-## OLD SCRIPT
-
-```{r}
-names(test)=ordered(names(test), levels=c("eWB1","eWB2","eWB3","eWB4","eWB5","eWB6",
-                                                "eGW1","eGW2","eGW3","eGW4","eGW5","eGW6"))
-
-test = melt(test)
-names(test)
-names(test)[1]="family"
-
-g<-ggplot(test, aes(variable,value,fill=family))
-g<-g+geom_bar(stat="identity", position="fill", width=0.75)
-#g<-g+geom_boxplot()
-g<-g+theme_bw()#scale_fill_brewer(palette="Set1")
-g<-g+xlab("eDNA sampling sites") + 
-ylab("Filtered DNA reads ratios")
-g<-g+theme(axis.text = element_text(size=15)) + 
-theme(axis.title = element_text(size=15))
-g
-
-## SAVE IMAGE ##
-
-#ggsave("eDNA-coiAug-barplot.emf", width=8, height=10)
-
-## TISSUE SAMPLES FOR THE TROPHIC WEB ##
-
-tissue = read.csv("CO1Aug_gutcontent_filtered.csv", header=T, row.names=1)
-head(tissue)
-
-colSums(tissue)
-rowSums(tissue)
-
-## CLEANING FROM EMPTY SAMPLES AND SPECIES ##
-
-dim(tissue)
-tissue = subset(tissue, select = c(colSums(tissue) > 0))
-dim(tissue)
-tissue = subset(tissue, subsett = c(rowSums(tissue) > 0))
-dim(tissue)
-
-## DIVIDING THE DATA FRAME BY LAKE ##
-
-tissue.plot = t(tissue)
-
-gw = grep("GW", colnames(tissue.plot), fixed=T)
-for (t in tissue.plot[,gw]){
-	tissue.gw = data.frame(subset(tissue.plot[,gw]))
+```{r packages citation}
+sink("packages_citations.txt")
+for (p in pack.list){
+ print(citation(p))
 }
-dim(tissue.gw)
-
-wb = grep("WB", colnames(tissue.plot), fixed=T)
-for (t in tissue.plot[,wb]){
-	tissue.wb = data.frame(subset(tissue.plot[,wb]))
-}
-dim(tissue.wb)
-
-## NEED TO CLEAN THE FRAMES FROM EMPTY CELLS ##
-######
-## Surely there's a loop that can be made, but for
-## now the manual version will do the job
-######
-
-rowSums(tissue.gw)
-rowSums(tissue.wb)
-
-dim(tissue.gw)
-tissue.gw = subset(tissue.gw, select=c(colSums(tissue.gw) > 0))
-dim(tissue.gw)
-tissue.gw = subset(tissue.gw, subset=c(rowSums(tissue.gw) > 0))
-dim(tissue.gw)
-
-dim(tissue.wb)
-tissue.wb = subset(tissue.wb, select=c(colSums(tissue.wb) > 0))
-dim(tissue.wb)
-tissue.wb = subset(tissue.wb, subset=c(rowSums(tissue.wb) > 0))
-dim(tissue.wb)
-
-rownames(tissue.gw)
-rownames(tissue.wb)
-tissue.wb=tissue.wb[!(rownames(tissue.wb)%in% "Anser_anser"),]
-############################################################
-## CHANGING THE NAME OF SAMPLE BY ADDING NAME OF PREDATOR ##
-############################################################
-
-tissue.gw
-g = which(tissue.gw >= 0.9, arr.ind=T)
-rownames(g)
-g[,2]
-colnames(tissue.gw) = paste(rownames(g), colnames(tissue.gw[which(colnames(tissue.gw) == g[,2]),]), sep="_")
-tissue.gw
-
-tissue.wb
-w = which(tissue.wb >= 0.7, arr.ind=T)
-rownames(w)
-w[,2]
-colnames(tissue.wb) = paste(rownames(w), colnames(tissue.wb[which(colnames(tissue.wb) == w[,2]),]), sep="_")
-tissue.wb
-
-write.csv(tissue.gw, "coi-eDNA/tissue_gw.csv")
-write.csv(tissue.wb, "coi-eDNA/tissue_wb.csv")
-
-## SWAPPING ALL VALUES ABOVE 0 TO 1 ##
-
-tissue.wb[,][tissue.wb[,] > 0] <- 1
-tissue.gw[,][tissue.gw[,] > 0] <- 1
-
-################################################
-## SETTING UP THE GW AND WB WEBS FRAMES USING ##
-## D. villosus GUT CONTENTS                   ##
-################################################
-
-colnames(tissue.wb)
-colnames(tissue.gw)
-
-wb.web = tissue.wb[!(rownames(tissue.wb)%in% "Dikerogammarus_villosus"),]
-gw.web = tissue.gw[!(rownames(tissue.gw)%in% "Dikerogammarus_villosus"),]
-
-wb.web$D_villosus_WB = rowSums(wb.web[,grep("Dikerogammarus_villosus", colnames(wb.web))])
-wb.web = subset(wb.web, select = c(colnames(wb.web)%in% 'D_villosus_WB'))
-
-gw.web$D_villosus_GW = rowSums(gw.web[,grep("Dikerogammarus_villosus", colnames(gw.web))])
-gw.web = subset(gw.web, select = c(colnames(gw.web)%in% 'D_villosus_GW'))
-
-## LOADING eDNA AND KICK-SAMPLE DATA FOR ESTIMATING ABUNDANCES ##
-
-dir()
-dna.water = read.csv("CO1Aug_water-samples_filtered.csv", header=T, row.names=1)
-
-head(dna.water)
-## dna.water$samples = substr(rownames(dna.water), 2, 
-## nchar(rownames(dna.water))-1)
-
-dna.water = t(dna.water)
-
-## MAKING ALL VALUES > 0 EQUAL TO 1 PLUS ##
-## EXTRACTING 'GW' AND 'WB' SAMPLES FROM THE FRAME ##
-
-dna.water[1:nrow(dna.water),][dna.water[1:nrow(dna.water),] > 0] <- 1
-
-colnames(dna.water)
-
-gw.list = grep("GW", colnames(dna.water), fixed=T)
-for (t in dna.water[,gw.list]){
-	gw.water = data.frame(subset(dna.water[,gw.list]))
-}
-wb.list = grep("WB", colnames(dna.water), fixed=T)
-for (t in dna.water[,wb.list]){
-	wb.water = data.frame(subset(dna.water[,wb.list]))
-}
-
-## IMPORTING MICROSCOPY DATA ##
-
-dir("coi-eDNA")
-#micros = read.csv("coi-eDNA/ID_gw-wb.csv", header=T)
-micros=read.csv("coi-eDNA/microscopy_gw-wb.csv", header=T, row.names=1)
-micros
-names(micros)
-str(micros)
-micros=data.frame(t(micros))
-
-#rownames(micros)= micros$BINOMIAL
-
-gwmic=micros[,grep("GW", colnames(micros))]
-wbmic=micros[,grep("WB", colnames(micros))]
-
-gwmic[1:nrow(gwmic),][gwmic[1:nrow(gwmic),] > 0] <- 1
-wbmic[1:nrow(wbmic),][wbmic[1:nrow(wbmic),] > 0] <- 1
-
-names(gwmic)
-names(wbmic)
-ncol(gwmic)
-ncol(wbmic)
-dim(gwmic)
-dim(wbmic)
-
-## JOINING AND CALCULATING TOTAL OCCUPANCY (COMBINING eDNA and MICROSCOPY) ##
-
-rownames(gwmic)
-rownames(gw.water)
-dim(gw.water)
-dim(gw.web)
-gwmic
-gwmic$species = rownames(gwmic)
-gw.water$species = rownames(gw.water)
-
-gw.joined = full_join(gwmic, gw.water, by="species")
-gw.joined[is.na(gw.joined)] <- 0
-gw.joined
-
-sites = "GW1|GW2|GW3|GW4|GW5|GW6"
-gw.joined$GW_occup = (rowSums(gw.joined[,grep(sites, colnames(gw.joined))])/6)
-gw.joined
-
-names(wbmic)
-names(wb.water)
-wbmic
-wbmic$species = rownames(wbmic)
-wb.water$species = rownames(wb.water)
-
-wb.joined = full_join(wbmic, wb.water, by="species")
-wb.joined[is.na(wb.joined)] <- 0
-wb.joined
-
-sites = "WB1|WB2|WB3|WB4|WB5|WB6"
-wb.joined$WB_occup = (rowSums(wb.joined[,grep(sites, colnames(wb.joined))])/6)
-wb.joined
-
-##################################
-## SETTING THE ESTIMATE VECTORS ##
-##################################
-
-gw.est = subset(gw.joined, select = c(colnames(gw.joined)%in% 'GW_occup'))
-wb.est = subset(wb.joined, select = c(colnames(wb.joined)%in% 'WB_occup'))
-
-gw.est
-wb.est
-
-gw.est = as.vector(gw.est[,1])
-names(gw.est) = c(gw.joined$species)
-names(gw.est)
-
-wb.est = as.vector(wb.est[,1])
-names(wb.est) = c(wb.joined$species)
-names(wb.est)
-
-###############################################
-## PLOTTING THE WEBS WITH THE eDNA ESTIMATES ##
-###############################################
-
-#dev.new()
-#par(mfrow=c(1,2))
-
-str(wb.web)
-str(wb.est)
-
-write.csv(gw.web, "DV_foodwebs_2018/gw_web.csv")
-write.csv(gw.est, "DV_foodwebs_2018/gw_est.csv")
-          
-write.csv(wb.web, "DV_foodwebs_2018/wb_web.csv")
-write.csv(wb.est, "DV_foodwebs_2018/wb_est.csv")
-
-## IMPROVING LABELS FOR PLOTS ##
-gw.web = read.csv("DV_foodwebs_2018/gw_web.csv", row.names = 1, header=T)
-gw.est = read.csv("DV_foodwebs_2018/gw_est.csv", row.names = 1, header=T)
-
-gw.est = as.vector(gw.est)
-gw.est = t(gw.est)
-names(gw.est) = colnames(gw.est)
-
-wb.web = read.csv("DV_foodwebs_2018/wb_web.csv", row.names = 1, header=T)
-wb.est = read.csv("DV_foodwebs_2018/wb_est.csv", row.names = 1, header=T)
-
-wb.est = as.vector(wb.est)
-wb.est = t(wb.est)
-names(wb.est) = colnames(wb.est)
-
-## GW WEB
-plotweb(gw.web, text.rot=45, adj.high=0, adj.low=1, low.spacing = 0.02, 
-arrow="down.center", low.abun=gw.est, abuns.type="additional", labsize=1.2)
-title(main="Grafham Water")
-
-## WB WEB
-plotweb(wb.web, text.rot=45, adj.high=0, adj.low=1, low.spacing = 0.03, 
-arrow="down.center", low.abun=wb.est, abuns.type="additional", labsize=1.2)
-title(main="Wroxham Broad")
-
-## WRITING LOG FILE FOR R VERSION AND SESSION INFO ##
-
-sink("log_bipartite-session.txt")
-sessionInfo()
-citation()
 sink()
-
-
 ```
 
 ```{r}
-
+print("end")
 ```
 
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
-
-```{r}
-
-```
