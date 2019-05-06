@@ -54,16 +54,16 @@ To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'to
 
 To cite package ‘devtools’ in publications use:
 
-  Hadley Wickham, Jim Hester and Winston Chang (2018). devtools: Tools to Make Developing R
-  Packages Easier. R package version 2.0.1. https://CRAN.R-project.org/package=devtools
+  Hadley Wickham, Jim Hester and Winston Chang (2019). devtools: Tools to Make Developing R
+  Packages Easier. R package version 2.0.2. https://CRAN.R-project.org/package=devtools
 
 A BibTeX entry for LaTeX users is
 
   @Manual{,
     title = {devtools: Tools to Make Developing R Packages Easier},
     author = {Hadley Wickham and Jim Hester and Winston Chang},
-    year = {2018},
-    note = {R package version 2.0.1},
+    year = {2019},
+    note = {R package version 2.0.2},
     url = {https://CRAN.R-project.org/package=devtools},
   }
 
@@ -112,7 +112,7 @@ A BibTeX entry for LaTeX users is
     publisher = {Springer-Verlag New York},
     year = {2016},
     isbn = {978-3-319-24277-4},
-    url = {http://ggplot2.org},
+    url = {https://ggplot2.tidyverse.org},
   }
 
 
@@ -300,3 +300,44 @@ regression splines.
 To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)', or set
 'options(citation.bibtex.max=999)'.
 
+ [1] "Chap3_Dv-metabarcoding.Rmd"                         "Chap3_sampling-map.Rmd"                            
+ [3] "Chapter3_Dv_Gz_MATI_Rstudio_git_vers-control.Rproj" "data"                                              
+ [5] "images"                                             "jupyter_notebooks"                                 
+ [7] "log_session_analysis.txt"                           "maps"                                              
+ [9] "packages_citations.txt"                             "R"                                                 
+[11] "R_images"                                           "README.md"                                         
+character(0)
+ [1] "Chap3_Dv-metabarcoding.Rmd"                         "Chap3_sampling-map.Rmd"                            
+ [3] "Chapter3_Dv_Gz_MATI_Rstudio_git_vers-control.Rproj" "data"                                              
+ [5] "images"                                             "jupyter_notebooks"                                 
+ [7] "log_session_analysis.txt"                           "maps"                                              
+ [9] "packages_citations.txt"                             "R"                                                 
+[11] "R_images"                                           "README.md"                                         
+character(0)
+package ‘ade4’ successfully unpacked and MD5 sums checked
+package ‘Biobase’ successfully unpacked and MD5 sums checked
+package ‘BiocGenerics’ successfully unpacked and MD5 sums checked
+package ‘biomformat’ successfully unpacked and MD5 sums checked
+package ‘Biostrings’ successfully unpacked and MD5 sums checked
+package ‘data.table’ successfully unpacked and MD5 sums checked
+package ‘foreach’ successfully unpacked and MD5 sums checked
+package ‘IRanges’ successfully unpacked and MD5 sums checked
+package ‘iterators’ successfully unpacked and MD5 sums checked
+package ‘multtest’ successfully unpacked and MD5 sums checked
+package ‘rhdf5’ successfully unpacked and MD5 sums checked
+package ‘Rhdf5lib’ successfully unpacked and MD5 sums checked
+package ‘S4Vectors’ successfully unpacked and MD5 sums checked
+package ‘XVector’ successfully unpacked and MD5 sums checked
+package ‘zlibbioc’ successfully unpacked and MD5 sums checked
+
+The downloaded binary packages are in
+	C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\downloaded_packages
+         checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' ...     checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' ...   v  checking for file 'C:\Users\marco\AppData\Local\Temp\Rtmp21ReU1\remotes2818782c574c\joey711-phyloseq-3fb790f/DESCRIPTION' (1.3s)
+      -  preparing 'phyloseq': (1.3s)
+     checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   v  checking DESCRIPTION meta-information
+      -  checking for LF line-endings in source and make files and shell scripts (557ms)
+      -  checking for empty or unneeded directories
+      -  looking to see if a 'data/datalist' file should be added
+      -  building 'phyloseq_1.27.6.tar.gz'
+     
+

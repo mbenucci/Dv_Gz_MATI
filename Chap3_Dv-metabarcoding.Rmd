@@ -30,6 +30,7 @@ ls()
 
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
+
 ```{r packages loading, include=F}
 pack.list = c("aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
