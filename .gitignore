@@ -4,6 +4,7 @@
 .Ruserdata
 .DS_Store
 data/.DS_Store
+maps/shapefiles/*
 maps/shapefiles/TL_SurfaceWater_Area.shx
 maps/shapefiles/TG_SurfaceWater_Area.dbf
 maps/shapefiles/TG_SurfaceWater_Area.prj
@@ -19,4 +20,3 @@ maps/shapefiles/GB_IRworld.sbn
 maps/shapefiles/GB_IRworld.sbx
 maps/shapefiles/GB_IRworld.shp
 maps/shapefiles/GB_IRworld.shx
-maps/shapefiles/
