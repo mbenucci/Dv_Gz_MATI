@@ -86,6 +86,26 @@ dev.off()
 ## FROM HERE!
 ```
 
+Importing the lakes shapefiles to plot the sampling points
+
+```{r wroxham shapefile}
+wroxham_shape = readOGR("maps/shapefiles/TG_SurfaceWater_Area.shp")
+
+# Because we have coordinates in National Grid, we convert into WGS84
+wroxham_wgs = spTransform(wroxham_shape, CRS(wgs84))
+wb_map = fortify(wroxham_wgs)
+
+png("maps/Wroxham_sampling_locations.png", width=600, height=820, units="px")
+ggplot(wb_map) +
+  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
+  geom_point(data=wb.sites, aes(Longitude, Latitude), color="red", cex=3) +
+  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, cex=4) +
+  xlim(1.40,1.424) + ylim(52.694,52.705) +
+  coord_fixed(2) +
+  theme_void()
+dev.off()
+```
+
 ## WRITING LOG FILE FOR R VERSION AND SESSION INFO
 
 ```{r log creation}
