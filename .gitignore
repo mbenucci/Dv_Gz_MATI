@@ -4,7 +4,6 @@
 .Ruserdata
 .DS_Store
 data/.DS_Store
-<<<<<<< HEAD
 maps/shapefiles/TL_SurfaceWater_Area.shx
 maps/shapefiles/TG_SurfaceWater_Area.dbf
 maps/shapefiles/TG_SurfaceWater_Area.prj
