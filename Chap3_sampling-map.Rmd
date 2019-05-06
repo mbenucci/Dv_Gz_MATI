@@ -64,10 +64,14 @@ uk_shape = readOGR("maps/shapefiles/GB_IRworld.shp")
 
 uk_map = fortify(uk_shape)
 
+View(uk_map)
+png("maps/Site_locations.png", width=1000, height=800, units="px")
 ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
   geom_point(data=lakes.coords, aes(X, Y), color="black") +
   theme_void()
+dev.off()
+
 
 ## FROM HERE!
 ```
