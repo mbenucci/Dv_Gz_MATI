@@ -99,8 +99,44 @@ png("maps/Wroxham_sampling_locations.png", width=600, height=820, units="px")
 ggplot(wb_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
   geom_point(data=wb.sites, aes(Longitude, Latitude), color="red", cex=3) +
-  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, cex=4) +
-  xlim(1.40,1.424) + ylim(52.694,52.705) +
+  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.0001, cex=4) +
+  xlim(1.40,1.429) + ylim(52.694,52.705) +
+  coord_fixed(2) +
+  theme_void()
+dev.off()
+```
+
+```{r grafham shapefile}
+grafham_shape = readOGR("maps/shapefiles/TL_SurfaceWater_Area.shp")
+gw.sites
+# Because we have coordinates in National Grid, we convert into WGS84
+grafham_wgs = spTransform(grafham_shape, CRS(wgs84))
+gw_map = fortify(grafham_wgs)
+
+png("maps/Grafham_sampling_locations.png", width=820, height=600, units="px")
+ggplot(gw_map) +
+  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
+  geom_point(data=gw.sites, aes(Longitude, Latitude), color="red", cex=3) +
+  geom_text(data=gw.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.001, cex=4) +
+  xlim(-0.35,-0.28) + ylim(52.278,52.315) +
+  coord_fixed(2) +
+  theme_void()
+dev.off()
+```
+
+```{r rockland shapefile}
+rockland_shape = readOGR("maps/shapefiles/TG_SurfaceWater_Area.shp")
+
+# Because we have coordinates in National Grid, we convert into WGS84
+rockland_wgs = spTransform(rockland_shape, CRS(wgs84))
+rb_map = fortify(rockland_wgs)
+
+png("maps/Rockland_sampling_locations.png", width=820, height=600, units="px")
+ggplot(rb_map) +
+  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
+  geom_point(data=rb.sites, aes(Longitude, Latitude), color="red", cex=3) +
+  geom_text(data=rb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.0001, cex=4) +
+  xlim(1.4364,1.4470) + ylim(52.5914,52.5972) +
   coord_fixed(2) +
   theme_void()
 dev.off()
