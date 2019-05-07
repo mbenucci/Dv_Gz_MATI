@@ -1,47 +1,57 @@
 R version 3.5.1 (2018-07-02)
-Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows >= 8 x64 (build 9200)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS High Sierra 10.13.6
 
 Matrix products: default
+BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
 
 locale:
-[1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252   
-[3] LC_MONETARY=English_United Kingdom.1252 LC_NUMERIC=C                           
-[5] LC_TIME=English_United Kingdom.1252    
+[1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
 
 attached base packages:
- [1] stats4    parallel  grid      stats     graphics  grDevices utils     datasets  methods   base     
+ [1] stats4    parallel  grid      stats     graphics  grDevices utils     datasets  methods  
+[10] base     
 
 other attached packages:
- [1] UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3        spaa_0.2.2           reshape2_1.4.3      
- [6] plyr_1.8.4           phyloseq_1.27.6      msa_1.12.0           Biostrings_2.50.2    XVector_0.22.0      
-[11] IRanges_2.16.0       S4Vectors_0.20.1     BiocGenerics_0.28.0  mgcv_1.8-24          nlme_3.1-137        
-[16] lmtest_0.9-37        zoo_1.8-5            lme4_1.1-21          Matrix_1.2-14        iNEXT_2.0.19        
-[21] gridExtra_2.3        gplots_3.0.1.1       ggsignif_0.5.0       ggplot2_3.1.1        EcoSimR_0.1.0       
-[26] MASS_7.3-50          dplyr_0.8.0.1        usethis_1.5.0        devtools_2.0.2       bipartite_2.11      
-[31] sna_2.4              network_1.15         statnet.common_4.2.0 vegan_2.5-4          lattice_0.20-35     
-[36] permute_0.9-5        ape_5.3              aod_1.3.1           
+ [1] UpSetR_1.3.3         tidyr_0.8.3          stringi_1.4.3        spaa_0.2.2          
+ [5] reshape2_1.4.3       plyr_1.8.4           phyloseq_1.25.2      msa_1.12.0          
+ [9] Biostrings_2.48.0    XVector_0.20.0       IRanges_2.14.12      S4Vectors_0.18.3    
+[13] BiocGenerics_0.26.0  mgcv_1.8-24          nlme_3.1-137         lmtest_0.9-36       
+[17] zoo_1.8-3            lme4_1.1-17          Matrix_1.2-14        iNEXT_2.0.17        
+[21] gridExtra_2.3        gplots_3.0.1         ggsignif_0.5.0       EcoSimR_0.1.0       
+[25] MASS_7.3-50          bipartite_2.11       sna_2.4              network_1.13.0.1    
+[29] statnet.common_4.1.4 vegan_2.5-3          lattice_0.20-35      permute_0.9-4       
+[33] ape_5.2              aod_1.3              rworldmap_1.3-6      rgeos_0.4-2         
+[37] rgdal_1.4-3          RColorBrewer_1.1-2   raster_2.8-19        maptools_0.9-5      
+[41] sp_1.3-1             maps_3.3.0           leaflet_2.0.2        ggplot2_3.1.1       
+[45] dplyr_0.7.6          usethis_1.4.0        devtools_2.0.2       broom_0.5.2         
 
 loaded via a namespace (and not attached):
- [1] bitops_1.0-6       fs_1.3.0           rprojroot_1.3-2    tools_3.5.1        backports_1.1.3   
- [6] R6_2.4.0           KernSmooth_2.23-15 lazyeval_0.2.2     colorspace_1.4-1   ade4_1.7-13       
-[11] withr_2.1.2        tidyselect_0.2.5   prettyunits_1.0.2  processx_3.3.0     compiler_3.5.1    
-[16] Biobase_2.42.0     cli_1.1.0          desc_1.2.0         labeling_0.3       caTools_1.17.1.2  
-[21] scales_1.0.0       callr_3.2.0        stringr_1.4.0      digest_0.6.18      minqa_1.2.4       
-[26] pkgconfig_2.0.2    sessioninfo_1.1.1  maps_3.3.0         rlang_0.3.4        rstudioapi_0.10   
-[31] jsonlite_1.6       gtools_3.8.1       magrittr_1.5       dotCall64_1.0-0    biomformat_1.10.1 
-[36] Rhdf5lib_1.4.3     Rcpp_1.0.1         munsell_0.5.0      yaml_2.2.0         zlibbioc_1.28.0   
-[41] rhdf5_2.26.2       pkgbuild_1.0.3     gdata_2.18.0       crayon_1.3.4       splines_3.5.1     
-[46] multtest_2.38.0    knitr_1.22         ps_1.3.0           pillar_1.3.1       igraph_1.2.4.1    
-[51] boot_1.3-20        codetools_0.2-15   pkgload_1.0.2      glue_1.3.1         data.table_1.12.2 
-[56] remotes_2.0.4      foreach_1.4.4      spam_2.2-2         nloptr_1.2.1       gtable_0.3.0      
-[61] purrr_0.3.2        assertthat_0.2.1   xfun_0.5           coda_0.19-2        survival_2.42-6   
-[66] tibble_2.1.1       iterators_1.0.10   memoise_1.1.0      fields_9.7         cluster_2.0.7-1   
+ [1] backports_1.1.2    spam_2.2-0         igraph_1.2.2       lazyeval_0.2.2     splines_3.5.1     
+ [6] crosstalk_1.0.0    digest_0.6.18      foreach_1.4.4      htmltools_0.3.6    gdata_2.18.0      
+[11] magrittr_1.5       memoise_1.1.0      cluster_2.0.7-1    remotes_2.0.2      prettyunits_1.0.2 
+[16] jpeg_0.1-8         colorspace_1.4-1   callr_3.2.0        crayon_1.3.4       jsonlite_1.6      
+[21] bindr_0.1.1        survival_2.42-6    iterators_1.0.10   glue_1.3.1         gtable_0.3.0      
+[26] zlibbioc_1.26.0    pkgbuild_1.0.2     Rhdf5lib_1.2.1     scales_1.0.0       DBI_1.0.0         
+[31] Rcpp_1.0.1         xtable_1.8-3       units_0.6-2        foreign_0.8-71     dotCall64_0.9-5.2 
+[36] htmlwidgets_1.3    httr_1.4.0         pkgconfig_2.0.2    labeling_0.3       tidyselect_0.2.5  
+[41] rlang_0.3.4        later_0.8.0        munsell_0.5.0      tools_3.5.1        cli_1.1.0         
+[46] generics_0.0.2     ggmap_3.0.0        ade4_1.7-13        biomformat_1.8.0   stringr_1.4.0     
+[51] yaml_2.2.0         processx_3.3.0     knitr_1.20         fs_1.2.6           caTools_1.17.1.1  
+[56] purrr_0.2.5        satellite_1.0.1    RgoogleMaps_1.4.3  bindrcpp_0.2.2     mime_0.6          
+[61] compiler_3.5.1     rstudioapi_0.9.0   png_0.1-7          e1071_1.7-1        tibble_2.1.1      
+[66] ps_1.3.0           desc_1.2.0         fields_9.6         classInt_0.3-1     nloptr_1.0.4      
+[71] multtest_2.36.0    pillar_1.3.1       data.table_1.12.0  bitops_1.0-6       httpuv_1.5.1      
+[76] R6_2.4.0           promises_1.0.1     KernSmooth_2.23-15 sessioninfo_1.1.1  codetools_0.2-15  
+[81] gtools_3.8.1       assertthat_0.2.1   pkgload_1.0.2      rhdf5_2.24.0       rprojroot_1.3-2   
+[86] rjson_0.2.20       withr_2.1.2        coda_0.19-1        class_7.3-14       minqa_1.2.4       
+[91] Biobase_2.40.0     shiny_1.3.0        base64enc_0.1-3   
 
 To cite R in publications use:
 
-  R Core Team (2018). R: A language and environment for statistical computing. R Foundation for
-  Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+  R Core Team (2018). R: A language and environment for statistical computing. R Foundation
+  for Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
 
 A BibTeX entry for LaTeX users is
 
@@ -54,6 +64,6 @@ A BibTeX entry for LaTeX users is
     url = {https://www.R-project.org/},
   }
 
-We have invested a lot of time and effort in creating R, please cite it when using it for data
-analysis. See also ‘citation("pkgname")’ for citing R packages.
+We have invested a lot of time and effort in creating R, please cite it when using it for
+data analysis. See also â€˜citation("pkgname")â€™ for citing R packages.
 
