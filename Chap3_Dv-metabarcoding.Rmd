@@ -1036,6 +1036,9 @@ full.info = full.data[,c(colnames(full.data) %in% c("sample_type","predator_id",
 full.data = full.data[,!c(colnames(full.data) %in% c("sample_type","predator_id","site","time"))]
 full.data[is.na(full.data)] <- 0
 
+# Ordering data set by alphabetical order
+full.data[,order(colnames(full.data))]
+
 # Binding the frame together using specific order of the metadata
 final.data = bind_cols(full.info[,c(4,3,1,2)], full.data)
 
@@ -1043,7 +1046,7 @@ final.data = bind_cols(full.info[,c(4,3,1,2)], full.data)
 final.data = t(final.data)
 
 #Saving final output
-write.csv(final.data, "R/Data_summary_table.csv", sep="/t")
+write.csv(final.data, "R/Data_summary_table.csv")
 ```
 
 
