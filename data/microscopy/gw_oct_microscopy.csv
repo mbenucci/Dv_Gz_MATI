@@ -1,7 +1,7 @@
 TUBE ID	DATE	LOCATION	REPLICATE	ORDER	FAMILY	TAXA	NUMBERS
 GW101	02/10/2017	GW	1	Mollusca	Dreissenidae	Dreissena_polymorpha	4
 GW102	02/10/2017	GW	1	Mollusca	Physiidae	Physa_acuta	14
-GW103	02/10/2017	GW	1	Mollusca	Hydrobiidae	Potamopyrgus_jenkinsi	2
+GW103	02/10/2017	GW	1	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	2
 GW104	02/10/2017	GW	1	Diptera	Chironomidae	Chironomidae	5
 GW105	02/10/2017	GW	1	Mollusca	Lymnaeidae	Radix_balthica	3
 GW106	02/10/2017	GW	1	Crustacea	Gammaridae	Dikerogammarus_villosus	12
@@ -16,7 +16,7 @@ GW202	02/10/2017	GW	2	Crustacea	Asellidae	Asellus_aquaticus	7
 GW203	02/10/2017	GW	2	Hirudinea	Glossiphonidae	Helobdella_stagnalis	9
 GW204	02/10/2017	GW	2	Hirudinea	Glossiphonidae	Glossiphonia_complanata	3
 GW205	02/10/2017	GW	2	Mollusca	Physiidae	Physa_acuta	24
-GW206	02/10/2017	GW	2	Mollusca	Hydrobiidae	Potamopyrgus_jenkinsi	12
+GW206	02/10/2017	GW	2	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	12
 GW207	02/10/2017	GW	2	Mollusca	Lymnaeidae	Lymnea_sp.	4
 GW208	02/10/2017	GW	2	Mollusca	Hydrobiidae	Bithynia_tentaculata	8
 GW209	02/10/2017	GW	2	Hemiptera	Corixidae	Corixidae	2
@@ -35,14 +35,14 @@ GW315	02/10/2017	GW	3	Zygoptera	Coenagrionidae	Coenagrionidae	2
 GW316	02/10/2017	GW	3	Crustacea	Asellidae	Asellus_aquaticus	1
 GW317	02/10/2017	GW	3	Coleoptera	Haliplidae	Haliplidae	1
 GW318	02/10/2017	GW	3	Diptera	Ceratopogonidae	Ceratopogonidae	1
-GW319	02/10/2017	GW	3	Mollusca	Hydrobiidae	Potamopyrgus_jenkinsi	6
+GW319	02/10/2017	GW	3	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	6
 GW320	02/10/2017	GW	3	Crustacea	Gammaridae	Gammarus_sp.	2
 GW321	02/10/2017	GW	3	Mollusca	Lymnaeidae	Lymnea_sp.	2
 GW322	02/10/2017	GW	3	Oligochaeta	Oligochaeta	Oligochaeta	3
 GW401	02/10/2017	GW	4	Coleoptera	Haliplidae	Haliplidae	1
 GW402	02/10/2017	GW	4	Mollusca	Lymnaeidae	Radix_balthica	1
 GW403	02/10/2017	GW	4	Mollusca	Physiidae	Physa_acuta	5
-GW404	02/10/2017	GW	4	Mollusca	Hydrobiidae	Potamopyrgus_jenkinsi	3
+GW404	02/10/2017	GW	4	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	3
 GW405	02/10/2017	GW	4	Mollusca	Lymnaeidae	Lymnaeidae	1
 GW406	02/10/2017	GW	4	Nematoda	Nematoda	Nematoda	5
 GW407	02/10/2017	GW	4	Crustacea	Gammaridae	Dikerogammarus_villosus	77
