@@ -434,8 +434,6 @@ For the `predator_id`, the taxa ID was extracted from the taxa with ratio greate
 # May
 ednamay = grep("e", rownames(filter.may))
 predmay = which(filter.may[-ednamay,!c(colnames(filter.may) %in% c("time","site","sample_id","sample_type"))] >= 0.9, arr.ind=T)
-#rownames(predmay)
-#colnames(filter.may[rownames(predmay), as.vector(predmay[,2])])
 
 filter.may$predator_id = "NA"
 filter.may[ednamay,"predator_id"] = "water"
@@ -444,8 +442,6 @@ filter.may[rownames(predmay),"predator_id"] = gsub("[.]?[0-9]{1,3}$", "", colnam
 # October
 ednaoct = grep("e", rownames(filter.oct))
 predoct = which(filter.oct[-ednaoct,1:74] >= 0.9, arr.ind=T)
-#rownames(predoct)
-#colnames(filter.oct[rownames(predoct), as.vector(predoct[,2])])
 
 filter.oct$predator_id = "NA"
 filter.oct[ednaoct,"predator_id"] = "water"
@@ -513,8 +509,8 @@ filter.oct[o.row,unique(o.col)]
 Now that predators DNA ratio have been removed, the focus can move towards the prey id. Both _Crangonyx pseudogracilis_ and _C. floridanus_ appear detected in the data set; however despite recent records of this latter, its detection in the lakes included in this study couldn't be confirmed. The DNA reads belonging to those 2 species have been joined together. 
 
 ```{r}
-clean.may$Crangonyx = clean.may$Crangonyx_floridanus + clean.may$Crangonyx_pseudogracilis
-clean.oct$Crangonyx = clean.oct$Crangonyx_floridanus + clean.oct$Crangonyx_pseudogracilis
+#clean.may$Crangonyx = clean.may$Crangonyx_floridanus + clean.may$Crangonyx_pseudogracilis
+#clean.oct$Crangonyx = clean.oct$Crangonyx_floridanus + clean.oct$Crangonyx_pseudogracilis
 ```
 
 Saving the files into ".csv"
@@ -559,8 +555,8 @@ Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquat
 
 ```{r cleaning gut contents data frame}
 # Removing high rank taxa
-clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
-clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
+#clean.guts$Crangonyx = clean.guts$Crangonyx_floridanus + clean.guts$Crangonyx_pseudogracilis
+#clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Crangonyx_pseudogracilis","Crangonyx_floridanus"))]
 clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Dikerogammarus_villosus","Diptera","Cyclopidae"))]
 
 # converting reads into ratio
