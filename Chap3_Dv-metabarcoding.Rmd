@@ -1023,17 +1023,27 @@ dev.off()
 ```
 
 ```{r generating data summary table}
-colnames(abund.guts)
-colnames(abund.edna)
-colnames(abund.kick)
-
 guts.summary = as.data.frame(abund.guts %>% group_by(site,time,predator_id) %>% summarise_all(funs(sum)))
 guts.summary$sample_type = "gut contents"
 edna.summary = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
-kick.summary = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_id"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
+kick.summary = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
 
-test = data.frame(c(guts.summary[,c(colnames(abund.guts) %in% c("sample_type","predator_id","site","time"))]),c(guts.summary[,!c(colnames(abund.guts) %in% c("sample_type","predator_id","site","time"))]))
-View(test)
+full.data = full_join(guts.summary, edna.summary)
+full.data = full_join(full.data, kick.summary)
+
+# Splitting the metadata from data, so that we can remove the NAs into the data set.
+full.info = full.data[,c(colnames(full.data) %in% c("sample_type","predator_id","site","time"))]
+full.data = full.data[,!c(colnames(full.data) %in% c("sample_type","predator_id","site","time"))]
+full.data[is.na(full.data)] <- 0
+
+# Binding the frame together using specific order of the metadata
+final.data = bind_cols(full.info[,c(4,3,1,2)], full.data)
+
+# Transposing and saving the data frame, we will rearrange the order of the metadata later
+final.data = t(final.data)
+
+#Saving final output
+write.csv(final.data, "R/Data_summary_table.csv", sep="/t")
 ```
 
 
