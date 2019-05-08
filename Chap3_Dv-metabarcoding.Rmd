@@ -79,8 +79,8 @@ taxa.split.oct = data.frame(taxa.split.oct)
 
 ```{r taxa_output, include=TRUE}
 # Writing taxonomy outputs
-write.csv(taxa.split.may, "R/CO1DvMay17_taxonomy.csv")
-write.csv(taxa.split.oct, "R/CO1DvOct17_taxonomy.csv")
+write.csv(taxa.split.may, "R_outputs/CO1DvMay17_taxonomy.csv")
+write.csv(taxa.split.oct, "R_outputs/CO1DvOct17_taxonomy.csv")
 ```
 
 Each initial input file was generated as the result of two separate taxonomic assignment operations. First DNA centroids were assigned against reference database, the DNA reads that resulted unassigned were then assigned against the NCBI nucleotide (nt) database (available at: `ftp://ftp.ncbi.nlm.nih.gov/blast/db/` - updated to early September 2018).
@@ -516,10 +516,10 @@ Now that predators DNA ratio have been removed, the focus can move towards the p
 Saving the files into ".csv"
 
 ```{r saving files}
-write.csv(clean.may, "R/May_reads_filtered.csv")
-write.csv(filter.may, "R/May_ratio_filtered.csv")
-write.csv(clean.oct, "R/Oct_reads_filtered.csv")
-write.csv(filter.oct, "R/Oct_ratio_filtered.csv")
+write.csv(clean.may, "R_outputs/May_reads_filtered.csv")
+write.csv(filter.may, "R_outputs/May_ratio_filtered.csv")
+write.csv(clean.oct, "R_outputs/Oct_reads_filtered.csv")
+write.csv(filter.oct, "R_outputs/Oct_ratio_filtered.csv")
 ```
 
 # 2. Detection of prey DNA in gut contents
@@ -539,8 +539,8 @@ info.guts = clean.guts[,c(colnames(clean.guts) %in% c("time","site","sample_id",
 info.edna = clean.edna[,c(colnames(clean.edna) %in% c("time","site","sample_id","sample_type","predator_id"))]
 
 # Saving gut contents and eDNA files
-write.csv(clean.guts, "R/gut_contents_reads.csv")
-write.csv(clean.edna, "R/eDNA_reads.csv")
+write.csv(clean.guts, "R_outputs/gut_contents_reads.csv")
+write.csv(clean.edna, "R_outputs/eDNA_reads.csv")
 
 # Cleaning empty taxa
 # gut content samples
@@ -1039,7 +1039,7 @@ final.data = bind_cols(full.info[,c(4,3,1,2)], full.data)
 final.data = t(final.data)
 
 #Saving final output
-write.csv(final.data, "R/Data_summary_table.csv")
+write.csv(final.data, "R_outputs/Data_summary_table.csv")
 ```
 
 
