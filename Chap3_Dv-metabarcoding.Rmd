@@ -139,6 +139,16 @@ ggplot(full.read.depth, aes(time, value)) +
   theme_bw() + labs(x="Data sets", y="Sample read depth (N reads)")
 ```
 
+```{r mean read depth + se}
+# May
+mean(may.read.depth$value)
+sd(may.read.depth$value)/sqrt(length(may.read.depth$value))
+
+# Oct
+mean(oct.read.depth$value)
+sd(oct.read.depth$value)/sqrt(length(oct.read.depth$value))
+```
+
 The sample N reads appear to be highly dispersed, this causes the mean-sd values to result negative. After checking for normality and log-transforming the data sets, the read depth threshold could be applied.
 
 
@@ -801,11 +811,6 @@ rb.kick = full_join(rb.may.kick, rb.oct.kick)
 gw.kick[is.na(gw.kick)] <- 0
 wb.kick[is.na(wb.kick)] <- 0
 rb.kick[is.na(rb.kick)] <- 0
-```
-
-```{r checking and removing duplication in species}
-gw.kick$Dikerogammarus_sp. = gw.kick$Dikerogammarus_sp. + gw.kick$Dikerogammarus_spp.
-gw.kick = gw.kick[,!c(colnames(gw.kick) %in% "Dikerogammarus_spp.")]
 ```
 
 ```{r}
