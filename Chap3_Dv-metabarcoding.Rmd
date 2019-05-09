@@ -267,7 +267,6 @@ clean.oct = subset(clean.oct, select = colSums(clean.oct) > 0)
 filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 ```
 
-
 # Remaining known contaminations
 
 Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence, however being fairly widespread the decision is to remove all _D. villosus_ detections in the gut contents. The removal will happen further downstream to prevent mis-identifying the predators.
@@ -713,13 +712,14 @@ dev.off()
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
 png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1.8,1), ylim=c(-1,1))
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1,2), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
 ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=T)
 ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+text(0.5,-1,label=paste("Stress:", meta.dv.guts$stress))
 dev.off()
 ```
 
@@ -990,8 +990,8 @@ rownames(food.web) = gsub("[a-z]{4,12}_",".", rownames(food.web))
 
 # Grafham Water
 png("R_images/bipartite_networks_Grafham.png", width=800, height=500, units="px")
-plotweb(food.web[-ig,grep("GW", colnames(food.web))], y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue"))
-plotweb(food.web[ig,grep("GW", colnames(food.web))], y.width.low=0.05, y.width.high=0.1, low.spacing=0.05, adj.low=c(0.5,1.1), arrow="down")
+plotweb(food.web[,grep("GW", colnames(food.web))], y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue"))
+#plotweb(food.web[ig,grep("GW", colnames(food.web))], y.width.low=0.05, y.width.high=0.1, low.spacing=0.05, adj.low=c(0.5,1.1), arrow="down")
 dev.off()
 
 # Wroxham Broad
