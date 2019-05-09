@@ -558,7 +558,7 @@ _Dikerogammarus villosus_ resulted to be fairly spread as contamination across t
 
 ```{r cleaning gut contents data frame}
 # Removing high rank taxa and Dikerogammarus villosus
-clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Diptera","Cyclopidae","Dikerogammarus_villosus"))]
+clean.guts = clean.guts[,!c(colnames(clean.guts) %in% c("Isopoda","Diptera","Dikerogammarus_villosus","Cyclopidae"))]
 
 # converting reads into ratio
 ratio.guts = clean.guts[,]/rowSums(clean.guts)
@@ -663,15 +663,6 @@ dev.off()
 ```
 
 ```{r PERMANOVA gut contents}
-# comparing D.vil and G.zad
-adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
-
-fact_time.guts = matrix(c(abund.guts$time), ncol=1)
-fact_site.guts = matrix(c(abund.guts$site), ncol=1)
-fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
-
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
-
 # comparing only D.vil
 adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
 
@@ -681,32 +672,23 @@ fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
 adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
 
 adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
+
+# comparing D.vil and G.zad
+adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
+
+fact_time.guts = matrix(c(abund.guts$time), ncol=1)
+fact_site.guts = matrix(c(abund.guts$site), ncol=1)
+fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
+
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
 ```
-
-
-```{r NMDS of gut contents both D.vil and G.zad}
-meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
-```
-
 
 ```{r NMDS on D.vil gut contents}
 meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 ```
 
-
-```{r plotting guts nmds}
-# full symbols for May, hollow symbols for October
-png("R_images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS")#, xlim=c(-2,1.5), ylim=c(-1.2,1.2))
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
-ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-dev.off()
+```{r NMDS of gut contents both D.vil and G.zad}
+meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 ```
 
 ```{r plotting guts nmds}
@@ -719,7 +701,23 @@ points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
 ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=T)
 ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-text(0.5,-1,label=paste("Stress:", meta.dv.guts$stress))
+text(-1,-0.8,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
+dev.off()
+```
+
+```{r plotting guts nmds}
+# full symbols for May, hollow symbols for October
+png("R_images/guts_predator_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+text(-1.5,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
 dev.off()
 ```
 
@@ -751,6 +749,7 @@ points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="M
 points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+text(0,-1, label=paste0("Stress: ", round(meta.edna$stress, 4)))
 dev.off()
 ```
 
@@ -885,6 +884,7 @@ points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.ab.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.ab.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+text(-0.6,-0.4, label=paste0("Stress: ", round(meta.ab.kick$stress,6)))
 dev.off()
 ```
 
@@ -909,7 +909,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 ```{r NMDS plot of kick-samples vs eDNA}
 # full symbols for May, hollow symbols for October
 png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
-plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-0.6,0.6))
+plot(meta.kick.edna, type="n", main="kick-samples NMDS", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -918,6 +918,7 @@ points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.kick.edna, group=fact_type.edki[,1],col=c("blue","orange"),label=T)
 ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+text(0.5,-0.8, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
 dev.off()
 ```
 
