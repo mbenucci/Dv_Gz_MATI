@@ -1,6 +1,6 @@
 TUBE ID	DATE	LOCATION	REPLICATE	ORDER	FAMILY	TAXA	NUMBERS
 WB101	04/10/2017	WB	1	Oligochaeta	Oligochaeta	Oligochaeta	22
-WB102	04/10/2017	WB	1	Mollusca	Lymnaeidae	Lymnea_truncatula	21
+WB102	04/10/2017	WB	1	Mollusca	Lymnaeidae	Lymnaea_truncatula	21
 WB103	04/10/2017	WB	1	Diptera	Chironomidae	Chironomidae	1
 WB106	04/10/2017	WB	1	Crustacea	Gammaridae	Dikerogammarus_villosus	4
 WB107	04/10/2017	WB	1	Diptera	Psychodidae	Psychodidae	1
@@ -16,7 +16,7 @@ WB208	04/10/2017	WB	2	Crustacea	Crangonyctidae	Crangonyx_sp.	1
 WB209	04/10/2017	WB	2	Crustacea	Gammaridae	Dikerogammarus_villosus	3
 WB301	04/10/2017	WB	3	Crustacea	Corophiidae	Corophium_sp.	27
 WB302	04/10/2017	WB	3	Crustacea	Gammaridae	Dikerogammarus_villosus	15
-WB303	04/10/2017	WB	3	Mollusca	Lymnaeidae	Lymnea_truncatula	1
+WB303	04/10/2017	WB	3	Mollusca	Lymnaeidae	Lymnaea_truncatula	1
 WB305	04/10/2017	WB	3	Megaloptera	Sialidae	Sialidae	1
 WB310	04/10/2017	WB	3	Mollusca	Dreissenidae	Dreissena_polymorpha	1
 WB401	04/10/2017	WB	4	Mollusca	Hydrobiidae	Bithynia_tentaculata	72
@@ -29,12 +29,12 @@ WB407	04/10/2017	WB	4	Mollusca	Dreissenidae	Dreissena_polymorpha	7
 WB408	04/10/2017	WB	4	Crustacea	Corophiidae	Corophium_sp.	52
 WB409	04/10/2017	WB	4	Crustacea	Gammaridae	Dikerogammarus_villosus	16
 WB410	04/10/2017	WB	4	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	23
-WB411	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnea_stagnalis	3
+WB411	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnaea_stagnalis	3
 WB412	04/10/2017	WB	4	Mollusca	Neritidae	Theodoxus_fluviatilis	3
 WB415	04/10/2017	WB	4	Mollusca	Valvatidae	Valvata_piscinalis	4
 WB416	04/10/2017	WB	4	Zygoptera	Coenagrionidae	Coenagrionidae	4
 WB417	04/10/2017	WB	4	Crustacea	Gammaridae	Gammarus_sp.	4
-WB430	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnea_auricolaria	1
+WB430	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnaea_auricolaria	1
 WB431	04/10/2017	WB	4	Mollusca	Lymnaeidae	Radix_balthica	1
 WB432	04/10/2017	WB	4	Mollusca	Dreissenidae	Dreissena_polymorpha	17
 WB502	04/10/2017	WB	5	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	4

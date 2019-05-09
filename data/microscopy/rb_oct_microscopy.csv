@@ -18,8 +18,8 @@ RB203	04/10/17	RB	2	Mollusca	Sphaeriidae	Sphaerium_sp.	1
 RB204	04/10/17	RB	2	Crustacea	Gammaridae	Gammarus_sp.	3
 RB206	04/10/17	RB	2	Mollusca	Hydrobiidae	Hydrobiidae	1
 RB208	04/10/17	RB	2	Mollusca	Lymnaeidae	Radix_peregra	2
-RB211	04/10/17	RB	2	Mollusca	Physiidae	Physa_acuta	1
-RB213	04/10/17	RB	2	Mollusca	Lymnaeidae	Radix_auricolaria	1
+RB211	04/10/17	RB	2	Mollusca	Physiidae	Physella_acuta	1
+RB213	04/10/17	RB	2	Mollusca	Lymnaeidae	Radix_auricularia	1
 RB301	04/10/17	RB	3	Crustacea	Corophiidae	Corophium_sp.	39
 RB303	04/10/17	RB	3	Mollusca	Valvatidae	Valvata_piscinalis	1
 RB304	04/10/17	RB	3	Zygoptera	Coenagrionidae	Coenagrionidae	1
@@ -38,14 +38,14 @@ RB414	04/10/17	RB	4	Hirudinea	Glossiphoniidae	Helobdella_stagnalis	2
 RB502	04/10/17	RB	5	Diptera	Chironomidae	Chironomidae	6
 RB504	04/10/17	RB	5	Crustacea	Corophiidae	Corophium_sp.	2
 RB506	04/10/17	RB	5	Ephemeroptera	Caenidae	Caenis_sp.	1
-RB507	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnea_stagnalis	1
+RB507	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnaea_stagnalis	1
 RB508	04/10/17	RB	5	Mollusca	Hydrobiidae	Hydrobiidae	1
 RB511	04/10/17	RB	5	Mollusca	Hydrobiidae	Bithynia_tentaculata	1
 RB514	04/10/17	RB	5	Trichoptera	Trichoptera	Trichoptera	1
 RB515	04/10/17	RB	5	Zygoptera	Coenagrionidae	Coenagrionidae	1
 RB516	04/10/17	RB	5	Crustacea	Asellidae	Asellus_aquaticus	2
 RB517	04/10/17	RB	5	Mollusca	Sphaeriidae	Sphaerium_sp.	3
-RB518	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnea_stagnalis	1
+RB518	04/10/17	RB	5	Mollusca	Lymnaeidae	Lymnaea_stagnalis	1
 RB601	04/10/17	RB	6	Hirudinea	Glossiphoniidae	Glossiphonia_complanata	1
 RB602	04/10/17	RB	6	Ephemeroptera	Caenidae	Caenis_sp.	1
 RB603	04/10/17	RB	6	Mollusca	Sphaeriidae	Pisidium_sp.	1
@@ -55,7 +55,7 @@ RB606	04/10/17	RB	6	Mollusca	Hydrobiidae	Bithynia_sp.	1
 RB607	04/10/17	RB	6	Oligochaeta	Oligochaeta	Oligochaeta	4
 RB609	04/10/17	RB	6	Crustacea	Corophiidae	Corophium_sp.	67
 RB610	04/10/17	RB	6	Mollusca	Cyrenidae	Corbicula_fluminea	1
-RB611	04/10/17	RB	6	Mollusca	Lymnaeidae	Lymnea_truncatula	2
+RB611	04/10/17	RB	6	Mollusca	Lymnaeidae	Lymnaea_truncatula	2
 RB614	04/10/17	RB	6	Crustacea	Gammaridae	Gammarus_zaddachi	25
 RB615	04/10/17	RB	6	Diptera	Chironomidae	Chironomidae	1
 RB616	04/10/17	RB	6	Mollusca	Cyrenidae	Corbicula_fluminea	1
