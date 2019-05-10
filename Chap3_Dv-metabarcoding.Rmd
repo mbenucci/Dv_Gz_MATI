@@ -670,7 +670,7 @@ fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
 
 adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
 
-adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 1000, method = "euclidean")
+adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 9999, method = "euclidean")
 
 # comparing D.vil and G.zad
 adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
@@ -679,7 +679,7 @@ fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 1000, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 9999, method="euclidean")
 ```
 
 ```{r NMDS on D.vil gut contents}
@@ -727,7 +727,7 @@ adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_i
 fact_site.edna = matrix(c(abund.edna$site), ncol=1)
 fact_time.edna = matrix(c(abund.edna$time), ncol=1)
 
-adonis(adonis.edna~fact_site.edna*fact_time.edna, permutations = 1000, method="bray")
+adonis(adonis.edna~fact_site.edna*fact_time.edna, permutations = 9999, method="bray")
 ```
 
 ```{r nmds based on distances and on abundance data}
@@ -864,7 +864,7 @@ adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","sample_id","sam
 fact_site.kick = matrix(c(abund.kick$site), ncol=1)
 fact_time.kick = matrix(c(abund.kick$time), ncol=1)
 
-adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 1000, method="bray")
+adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 9999, method="bray")
 ```
 
 ```{r}
@@ -897,7 +897,7 @@ fact_site.edki = matrix(c(abund.kick.edna$site), ncol=1)
 fact_time.edki = matrix(c(abund.kick.edna$time), ncol=1)
 fact_type.edki = matrix(c(abund.kick.edna$sample_type), ncol=1)
 
-adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 1000, method = "bray")
+adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 9999, method = "bray")
 ```
 
 ```{r}
