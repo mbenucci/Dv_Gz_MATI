@@ -982,18 +982,7 @@ nrow(breadth.dvgz)
 (niche.width(breadth.dvgz, method="levins")[2] -1)/(nrow(breadth.dvgz) -1)
 (niche.width(breadth.dvgz, method="levins")[3] -1)/(nrow(breadth.dvgz) -1)
 
-niche.overlap(breadth.dvgz, method = "levins")
-```
-
-```{r}
-#x=breadt.dvil[1,]
-#test_fun <- function(df, index){
-#  test_shan = table(df[i])/length(df[i])
-#  -sum(log(test_shan)*test_shan)
-#}
-#test_boot = boot(adonis.dvil, test_fun, R=100)
-
-#stressplot(test_boot)
+niche.overlap(breadth.dvgz, method="levins")
 ```
 
 # 5. Food webs network
