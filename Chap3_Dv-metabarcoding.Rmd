@@ -31,7 +31,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
-pack.list = c("aod","ape","bipartite","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
+pack.list = c("aod","ape","bipartite","boot","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -692,14 +692,25 @@ meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 
 ```{r plotting d.villosus guts nmds}
 # full symbols for May, hollow symbols for October
-png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS", xlim=c(-1,2), ylim=c(-1,1))
+png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by time", xlim=c(-1,2), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
-ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=T)
-ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
+ordiellipse(meta.dv.guts,group=fact_time.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
+text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
+dev.off()
+# full symbols for May, hollow symbols for October
+png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 500, height = 500, units = "px")
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by site", xlim=c(-1,2), ylim=c(-1,1))
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
+ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
 text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
 dev.off()
 ```
@@ -974,6 +985,16 @@ nrow(breadth.dvgz)
 niche.overlap(breadth.dvgz, method = "levins")
 ```
 
+```{r}
+#x=breadt.dvil[1,]
+#test_fun <- function(df, index){
+#  test_shan = table(df[i])/length(df[i])
+#  -sum(log(test_shan)*test_shan)
+#}
+#test_boot = boot(adonis.dvil, test_fun, R=100)
+
+#stressplot(test_boot)
+```
 
 # 5. Food webs network
 
@@ -1075,4 +1096,3 @@ sink()
 ```{r}
 print("end")
 ```
-

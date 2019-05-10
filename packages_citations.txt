@@ -52,6 +52,18 @@ To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'to
 or set 'options(citation.bibtex.max=999)'.
 
 
+To cite the 'boot' package in publications use:
+
+  Angelo Canty and Brian Ripley (2017). boot: Bootstrap R (S-Plus) Functions. R package
+  version 1.3-20.
+
+  Davison, A. C. & Hinkley, D. V. (1997) Bootstrap Methods and Their Applications.
+  Cambridge University Press, Cambridge. ISBN 0-521-57391-2
+
+To see these entries in BibTeX format, use 'print(<citation>, bibtex=TRUE)', 'toBibtex(.)',
+or set 'options(citation.bibtex.max=999)'.
+
+
 To cite package ‘devtools’ in publications use:
 
   Hadley Wickham, Jim Hester and Winston Chang (2019). devtools: Tools to Make Developing R
