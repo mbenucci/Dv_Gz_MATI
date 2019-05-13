@@ -962,8 +962,10 @@ breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))
 niche.width(breadth.dv, method="levins")
 niche.width(breadth.dv, method="shannon")
 
-(niche.width(breadth.dv, method="levins")[1] -1)/(nrow(breadth.dv) -1)
-(niche.width(breadth.dv, method="levins")[2] -1)/(nrow(breadth.dv) -1)
+(niche.width(breadth.dv, method="levins")[1]-1)/(nrow(breadth.dv)-1)
+(niche.width(breadth.dv, method="levins")[2]-1)/(nrow(breadth.dv)-1)
+
+niche.overlap(breadth.dv, method="levins")
 ```
 
 ```{r niche breadth of D.villosus vs G.zaddachi}
@@ -976,14 +978,49 @@ breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","s
 niche.width(breadth.dvgz, method="levins")
 niche.width(breadth.dvgz, method="shannon")
 
-nrow(breadth.dvgz)
-
-(niche.width(breadth.dvgz, method="levins")[1] -1)/(nrow(breadth.dvgz) -1)
-(niche.width(breadth.dvgz, method="levins")[2] -1)/(nrow(breadth.dvgz) -1)
-(niche.width(breadth.dvgz, method="levins")[3] -1)/(nrow(breadth.dvgz) -1)
+(niche.width(breadth.dvgz, method="levins")[1]-1)/(nrow(breadth.dvgz)-1)
+(niche.width(breadth.dvgz, method="levins")[2]-1)/(nrow(breadth.dvgz)-1)
+(niche.width(breadth.dvgz, method="levins")[3]-1)/(nrow(breadth.dvgz)-1)
 
 niche.overlap(breadth.dvgz, method="levins")
+niche.overlap(breadth.dvgz, method="pianka")
 ```
+
+```{r test bootstrap}
+shan_fun = function(data,i){
+  pi <- table(data[i])/length(data[i])
+  B = 1/sum(pi^2)
+  (B-1)/(35-1)
+}
+
+dvil_gw1 = breadth.dv[,1]
+dvil_wb2 = breadth.dv[,2]
+
+c_gw1 = rep(1:length(dvil_gw1),dvil_gw1)
+c_wb2 = rep(1:length(dvil_wb2),dvil_wb2)
+
+b_gw1 = boot(c_gw1, shan_fun, R=300)
+b_gw1
+
+b_wb2 = boot(c_wb2, shan_fun, R=300)
+b_wb2
+
+
+boot_bgw1 = as.data.frame(b_gw1$t)
+boot_bwb2 = as.data.frame(b_wb2$t)
+
+boot_bgw1$type = "D.vil_GW"
+boot_bwb2$type = "D.vil_WB"
+
+guts_boot = full_join(boot_bgw1, boot_bwb2)
+
+ggplot(guts_boot, aes(type, V1)) +
+  geom_boxplot() +
+  geom_jitter(alpha=0.3) +
+  theme_bw() +
+  labs(y="Standardised Levin's index (boot-strapped)")
+```
+
 
 # 5. Food webs network
 
