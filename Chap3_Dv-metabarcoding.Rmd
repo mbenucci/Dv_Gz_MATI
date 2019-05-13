@@ -987,10 +987,15 @@ niche.overlap(breadth.dvgz, method="pianka")
 ```
 
 ```{r test bootstrap}
-shan_fun = function(data,i){
+standardised_levins = function(data,i){
   pi <- table(data[i])/length(data[i])
   B = 1/sum(pi^2)
   (B-1)/(35-1)
+}
+
+shannon = function(data,i){
+  pi <- table(data[i])/length(data[i])
+  -sum(log(pi)*pi)
 }
 
 dvil_gw1 = breadth.dv[,1]
@@ -999,13 +1004,22 @@ dvil_wb2 = breadth.dv[,2]
 c_gw1 = rep(1:length(dvil_gw1),dvil_gw1)
 c_wb2 = rep(1:length(dvil_wb2),dvil_wb2)
 
-b_gw1 = boot(c_gw1, shan_fun, R=300)
+b_gw1 = boot(c_gw1, standardised_levins, R=1000)
 b_gw1
 
-b_wb2 = boot(c_wb2, shan_fun, R=300)
+b_wb2 = boot(c_wb2, standardised_levins, R=1000)
 b_wb2
 
+shan_gw1 = boot(c_gw1, shannon, R=1000)
+shan_gw1
 
+shan_wb2 = boot(c_wb2, shannon, R=1000)
+shan_wb2
+
+```
+
+
+```{r plot of levins boot-strap}
 boot_bgw1 = as.data.frame(b_gw1$t)
 boot_bwb2 = as.data.frame(b_wb2$t)
 
