@@ -661,6 +661,46 @@ ggiNEXT(inext.edna) +
 dev.off()
 ```
 
+```{r shannon diversity in eDNA}
+head(abund.edna)
+abund.edna$sample_id
+edna_diversity = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_type","site"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
+
+rownames(edna_diversity) = paste(edna_diversity$sample_id, edna_diversity$time, sep="_")
+sp_richness = rowSums(edna_diversity[,!c(colnames(edna_diversity) %in% c("sample_id","time"))])
+
+# GW May
+gwmay_rich = sp_richness[grep("GW._May", names(sp_richness))]
+mean(gwmay_rich)
+sd(gwmay_rich)/sqrt(length(gwmay_rich))
+
+# GW Oct
+gwoct_rich = sp_richness[grep("GW._Oct", names(sp_richness))]
+mean(gwoct_rich)
+sd(gwoct_rich)/sqrt(length(gwoct_rich))
+
+# RB May
+rbmay_rich = sp_richness[grep("RB._May", names(sp_richness))]
+mean(rbmay_rich)
+sd(rbmay_rich)/sqrt(length(rbmay_rich))
+
+# RB Oct
+rboct_rich = sp_richness[grep("RB._Oct", names(sp_richness))]
+mean(rboct_rich)
+sd(rboct_rich)/sqrt(length(rboct_rich))
+
+# WB May
+wbmay_rich = sp_richness[grep("WB._May", names(sp_richness))]
+mean(wbmay_rich)
+sd(wbmay_rich)/sqrt(length(wbmay_rich))
+
+# WB Oct
+wboct_rich = sp_richness[grep("WB._Oct", names(sp_richness))]
+mean(wboct_rich)
+sd(wboct_rich)/sqrt(length(wboct_rich))
+```
+
+
 ```{r PERMANOVA gut contents}
 # comparing only D.vil
 adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
@@ -864,7 +904,50 @@ ggiNEXT(inext.kick) +
 dev.off()
 ```
 
-```{r}
+```{r species richness kick-samples}
+head(abund.kick)
+abund.kick$sample_id
+
+kick_diversity = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_type","site","REPLICATE"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
+
+rownames(kick_diversity) = paste(kick_diversity$sample_id, kick_diversity$time, sep="_")
+kick_diversity[,!c(colnames(kick_diversity) %in% c("time","sample_id"))][kick_diversity[,!c(colnames(kick_diversity) %in% c("time","sample_id"))] > 0] <- 1
+
+sp_rich.kick = rowSums(kick_diversity[,!c(colnames(kick_diversity) %in% c("sample_id","time"))])
+
+# GW May
+gwmay_kickrich = sp_rich.kick[grep("GW._May", names(sp_rich.kick))]
+mean(gwmay_kickrich)
+sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
+
+# GW Oct
+gwoct_kickrich = sp_rich.kick[grep("GW._Oct", names(sp_rich.kick))]
+mean(gwoct_kickrich)
+sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
+
+# RB May
+rbmay_kickrich = sp_rich.kick[grep("RB._May", names(sp_rich.kick))]
+mean(rbmay_kickrich)
+sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
+
+# RB Oct
+rboct_kickrich = sp_rich.kick[grep("RB._Oct", names(sp_rich.kick))]
+mean(rboct_kickrich)
+sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
+
+# WB May
+wbmay_kickrich = sp_rich.kick[grep("WB._May", names(sp_rich.kick))]
+mean(wbmay_kickrich)
+sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
+
+# WB Oct
+wboct_kickrich = sp_rich.kick[grep("WB._Oct", names(sp_rich.kick))]
+mean(wboct_kickrich)
+sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
+```
+
+
+```{r PERMANOVA of kick-samples}
 # Summarising kick-samples by sites
 abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
 
