@@ -730,7 +730,7 @@ meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
 meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 ```
 
-```{r plotting d.villosus guts nmds}
+```{r nmds of d.villosus guts}
 # full symbols for May, hollow symbols for October
 png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by time", xlim=c(-1,2), ylim=c(-1,1))
@@ -742,6 +742,9 @@ ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
 ordiellipse(meta.dv.guts,group=fact_time.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
 text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
 dev.off()
+```
+
+```{r nmds of d.villosus guts by site}
 # full symbols for May, hollow symbols for October
 png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by site", xlim=c(-1,2), ylim=c(-1,1))
@@ -755,7 +758,7 @@ text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
 dev.off()
 ```
 
-```{r plotting guts nmds}
+```{r nmds of d.villosus and g.zaddachi guts}
 # full symbols for May, hollow symbols for October
 png("R_images/guts_predator_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
@@ -803,7 +806,7 @@ text(0,-1, label=paste0("Stress: ", round(meta.edna$stress, 4)))
 dev.off()
 ```
 
-# 3. Comparison between eDNA, kick-samples and gut contents detections
+# 3. Community composition of kick-samples and comparison with eDNA
 
 ```{r input files microscopy}
 gw.may = read.csv("data/microscopy/gw_may_microscopy.csv", sep="\t")
@@ -905,9 +908,6 @@ dev.off()
 ```
 
 ```{r species richness kick-samples}
-head(abund.kick)
-abund.kick$sample_id
-
 kick_diversity = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_type","site","REPLICATE"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
 
 rownames(kick_diversity) = paste(kick_diversity$sample_id, kick_diversity$time, sep="_")
