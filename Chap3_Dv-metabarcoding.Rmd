@@ -732,7 +732,7 @@ meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
 
 ```{r plotting d.villosus guts nmds}
 # full symbols for May, hollow symbols for October
-png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 800, height = 800, units = "px")
+png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by time", xlim=c(-1,2), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
@@ -743,7 +743,7 @@ ordiellipse(meta.dv.guts,group=fact_time.dvil[,1],kind="ehull",lty=c(1,5),label=
 text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
 dev.off()
 # full symbols for May, hollow symbols for October
-png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 800, height = 800, units = "px")
+png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by site", xlim=c(-1,2), ylim=c(-1,1))
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
 points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
@@ -757,7 +757,7 @@ dev.off()
 
 ```{r plotting guts nmds}
 # full symbols for May, hollow symbols for October
-png("R_images/guts_predator_NMDS_euclidean.png", width = 800, height = 800, units = "px")
+png("R_images/guts_predator_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
@@ -789,7 +789,7 @@ meta.edna = metaMDS(adonis.edna, distance="bray")
 
 ```{r plotting eDNA nmds}
 # full symbols for May, hollow symbols for October
-png("R_images/eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
+png("R_images/eDNA_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.edna, type="n", main="eDNA NMDS")#, xlim=c(-1,1.5), ylim=c(-1,1))
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
@@ -967,7 +967,7 @@ meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
 
 ```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
-png("R_images/kick-samples_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
+png("R_images/kick-samples_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
 points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
@@ -1001,7 +1001,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 
 ```{r NMDS plot of kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
-png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
+png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.kick.edna, type="n", main="a) Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
@@ -1009,14 +1009,15 @@ points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=15)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.kick.edna, group=fact_type.edki[,1],col=c("blue","orange"),label=T)
+orditorp(meta.kick.edna, display="species")
+ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
 text(0.5,-0.8, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
 dev.off()
 ```
 
 ```{r NMDS plot by site of kick-samples and eDNA}
-png("R_images/kick-eDNA_site-NMDS_bray-curtis.png", width = 800, height = 800, units = "px")
+png("R_images/kick-eDNA_site-NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.kick.edna, type="n", main="b) Community NMDS\neDNA and kick-samples by site", xlim=c(-1,1), ylim=c(-1.1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
@@ -1086,7 +1087,7 @@ niche.overlap(breadth.dvgz, method="levins")
 niche.overlap(breadth.dvgz, method="pianka")
 ```
 
-```{r test bootstrap}
+```{r bootstrap on niche breadth of d.villosus}
 standardised_levins = function(data,i){
   pi <- table(data[i])/length(data[i])
   B = 1/sum(pi^2)
@@ -1118,8 +1119,12 @@ shan_wb2
 
 ```
 
+```{r}
+t.test(b_gw1$t, b_wb2$t)
+```
 
-```{r plot of levins boot-strap}
+
+```{r plot of levins bootstrap}
 boot_bgw1 = as.data.frame(b_gw1$t)
 boot_bwb2 = as.data.frame(b_wb2$t)
 
@@ -1132,7 +1137,7 @@ ggplot(guts_boot, aes(type, V1)) +
   geom_boxplot() +
   geom_jitter(alpha=0.3) +
   theme_bw() +
-  labs(y="Standardised Levin's index (boot-strapped)")
+  labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus")
 ```
 
 
