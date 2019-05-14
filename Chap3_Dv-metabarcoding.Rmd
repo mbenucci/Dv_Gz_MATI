@@ -1002,7 +1002,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 ```{r NMDS plot of kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
 png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.kick.edna, type="n", main="a) Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1,1), ylim=c(-1,1))
+plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -1018,7 +1018,7 @@ dev.off()
 
 ```{r NMDS plot by site of kick-samples and eDNA}
 png("R_images/kick-eDNA_site-NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.kick.edna, type="n", main="b) Community NMDS\neDNA and kick-samples by site", xlim=c(-1,1), ylim=c(-1.1,1))
+plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by site", xlim=c(-1,1), ylim=c(-1.1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -1041,15 +1041,13 @@ After analysisng the detection of prey species in the gut contents, and after ha
 niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
 colnames(niche.dv)
 
-# summing prey DNA reads by predator ID, site and time.
-niche.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type"))] %>% group_by(predator_id, time, site) %>% summarise_all(funs(sum)))
-rownames(niche.dv) = paste(niche.dv$predator_id, niche.dv$site, niche.dv$time, sep="_")
+# summing prey DNA reads by predator ID and site.
+breadth.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("time","sample_type"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
+
+rownames(breadth.dv) = paste(breadth.dv$predator_id, breadth.dv$site, sep="_")
 ```
 
 ```{r niche breadth index of D.villosus}
-breadth.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("time"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
-
-rownames(breadth.dv) = paste(breadth.dv$predator_id, breadth.dv$site, sep="_")
 breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))])
 
 niche.width(breadth.dv, method="levins")
