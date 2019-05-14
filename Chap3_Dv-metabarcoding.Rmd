@@ -1037,21 +1037,13 @@ dev.off()
 
 After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
 
-```{r niche breadth of D.villosus}
+```{r setting up niche data frame of D.villosus}
 niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
 colnames(niche.dv)
 
 # summing prey DNA reads by predator ID, site and time.
 niche.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("sample_type"))] %>% group_by(predator_id, time, site) %>% summarise_all(funs(sum)))
 rownames(niche.dv) = paste(niche.dv$predator_id, niche.dv$site, niche.dv$time, sep="_")
-
-## Null model with ra2 algorithm since this is not a niche overlap analysis
-niche.dv.model = niche_null_model(speciesData=niche.dv[,!c(colnames(niche.dv) %in% c("site","time","predator_id"))], algo="ra2", metric="pianka", suppressProg=T, nReps=5000, saveSeed=T)
-
-summary(niche.dv.model)
-png("R_images/Dvil_niche_breadth.png", width=800, height=800, units="px")
-plot(niche.dv.model, type="hist", main="Niche breadth of D.villosus across invaded sites")
-dev.off()
 ```
 
 ```{r niche breadth index of D.villosus}
