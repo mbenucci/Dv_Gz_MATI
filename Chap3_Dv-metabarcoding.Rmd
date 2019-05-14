@@ -1002,7 +1002,7 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
 ```{r NMDS plot of kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
 png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
-plot(meta.kick.edna, type="n", main="Community sampling NMDS", xlim=c(-1,1), ylim=c(-1,1))
+plot(meta.kick.edna, type="n", main="a) Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -1017,7 +1017,7 @@ dev.off()
 
 ```{r NMDS plot by site of kick-samples and eDNA}
 png("R_images/kick-eDNA_site-NMDS_bray-curtis.png", width = 500, height = 500, units = "px")
-plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples", xlim=c(-1,1), ylim=c(-1,1))
+plot(meta.kick.edna, type="n", main="b) Community NMDS\neDNA and kick-samples by site", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
