@@ -719,7 +719,7 @@ fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 
-adonis(adonis.guts~fact_predator.guts*fact_time.guts, permutations = 9999, method="euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 9999, method="euclidean")
 ```
 
 ```{r NMDS on D.vil gut contents}
@@ -1059,24 +1059,6 @@ niche.width(breadth.dv, method="shannon")
 niche.overlap(breadth.dv, method="levins")
 ```
 
-```{r niche breadth of D.villosus vs G.zaddachi}
-breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
-
-rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
-
-breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","site"))])
-
-niche.width(breadth.dvgz, method="levins")
-niche.width(breadth.dvgz, method="shannon")
-
-(niche.width(breadth.dvgz, method="levins")[1]-1)/(nrow(breadth.dvgz)-1)
-(niche.width(breadth.dvgz, method="levins")[2]-1)/(nrow(breadth.dvgz)-1)
-(niche.width(breadth.dvgz, method="levins")[3]-1)/(nrow(breadth.dvgz)-1)
-
-niche.overlap(breadth.dvgz, method="levins")
-niche.overlap(breadth.dvgz, method="pianka")
-```
-
 ```{r bootstrap on niche breadth of d.villosus}
 standardised_levins = function(data,i){
   pi <- table(data[i])/length(data[i])
@@ -1106,7 +1088,6 @@ shan_gw1
 
 shan_wb2 = boot(c_wb2, shannon, R=1000)
 shan_wb2
-
 ```
 
 ```{r}
@@ -1130,6 +1111,75 @@ ggplot(guts_boot, aes(type, V1)) +
   labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus")
 ```
 
+
+```{r niche breadth of D.villosus vs G.zaddachi}
+breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
+
+rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
+
+breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","site"))])
+
+niche.width(breadth.dvgz, method="levins")
+niche.width(breadth.dvgz, method="shannon")
+
+# D.villosus GW
+(niche.width(breadth.dvgz, method="levins")[1]-1)/(nrow(breadth.dvgz)-1)
+# D.villosus WB
+(niche.width(breadth.dvgz, method="levins")[2]-1)/(nrow(breadth.dvgz)-1)
+# G.zaddachi
+(niche.width(breadth.dvgz, method="levins")[3]-1)/(nrow(breadth.dvgz)-1)
+
+niche.overlap(breadth.dvgz, method="levins")
+niche.overlap(breadth.dvgz, method="pianka")
+```
+
+```{r bootstrap of D.vil niche vs G.zad niche}
+dvil1 = breadth.dvgz[,1]
+dvil2 = breadth.dvgz[,2]
+gzad = breadth.dvgz[,3]
+
+c_dvil1 = rep(1:length(dvil1),dvil1)
+c_dvil2 = rep(1:length(dvil2),dvil2)
+c_gzad = rep(1:length(gzad),gzad)
+
+b_dvil1 = boot(c_dvil1, standardised_levins, R=1000)
+b_dvil1
+
+b_dvil2 = boot(c_dvil2, standardised_levins, R=1000)
+b_dvil2
+
+b_gzad = boot(c_gzad, standardised_levins, R=1000)
+b_gzad
+
+shan_dvil1 = boot(c_dvil1, shannon, R=1000)
+shan_dvil1
+
+shan_dvil2 = boot(c_dvil2, shannon, R=1000)
+shan_dvil2
+
+shan_gzad = boot(c_gzad, shannon, R=1000)
+shan_gzad
+```
+
+
+```{r plot of levins bootstrap for dvil and gzad}
+boot_bdvil1 = as.data.frame(b_dvil1$t)
+boot_bdvil2 = as.data.frame(b_dvil2$t)
+boot_bgzad = as.data.frame(b_gzad$t)
+
+boot_bdvil1$type = "D.villosus_GW"
+boot_bdvil2$type = "D.villosus_WB"
+boot_bgzad$type = "G.zaddachi"
+
+dv.gz_boot = full_join(boot_bdvil1, boot_bdvil2)
+dv.gz_boot = full_join(dv.gz_boot, boot_bgzad)
+
+ggplot(dv.gz_boot, aes(type, V1)) +
+  geom_boxplot() +
+  geom_jitter(alpha=0.3) +
+  theme_bw() +
+  labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus against G. zaddachi")
+```
 
 # 5. Food webs network
 
