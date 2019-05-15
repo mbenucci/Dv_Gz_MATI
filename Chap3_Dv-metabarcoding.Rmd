@@ -1179,11 +1179,13 @@ boot_bgzad$type = "G.zaddachi"
 dv.gz_boot = full_join(boot_bdvil1, boot_bdvil2)
 dv.gz_boot = full_join(dv.gz_boot, boot_bgzad)
 
+png("R_images/bootstrap_levins_dv_gz.png", width = 3000, height = 3000, units = "px", res = 300)
 ggplot(dv.gz_boot, aes(type, V1)) +
   geom_boxplot() +
   geom_jitter(alpha=0.3) +
   theme_bw() +
   labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus against G. zaddachi")
+dev.off()
 ```
 
 # 5. Food webs network
@@ -1197,6 +1199,8 @@ food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 food.web = as.data.frame(t(food.web))
 
 rownames(food.web) = gsub("[a-z]{4,12}_",".", rownames(food.web))
+
+food.web
 
 # Grafham Water
 png("R_images/bipartite_networks_Grafham.png", width=800, height=500, units="px")
@@ -1216,30 +1220,6 @@ dev.off()
 # Producing the bipartite network
 png("R_images/bipartite_network.png", width=800, height=500, units="px")
 plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
-dev.off()
-```
-
-```{r bipartite network with estimates of preys}
-# Setting up the estimate vectors as taxa distribution
-est.edna = abund.edna
-est.kick = abund.kick
-
-est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))][est.edna[,!c(colnames(est.edna) %in% c("site","time","sample_type","sample_id"))] > 0] <- 1
-est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))][est.kick[,!c(colnames(est.kick) %in% c("site","time","sample_type","sample_id","REPLICATE"))] > 0] <- 1
-
-est.edna = as.data.frame(est.edna[,!c(colnames(est.edna) %in% c("sample_type","sample_id","site","time"))] %>% summarise_all(funs(sum)))
-est.kick = as.data.frame(est.kick[,!c(colnames(est.kick) %in% c("REPLICATE","sample_type","sample_id","site","time"))] %>% summarise_all(funs(sum)))
-
-# Joining eDNA and kick-samples estimates
-est.web = full_join(est.edna, est.kick)
-est.web[is.na(est.web)] <- 0
-
-est.web = as.matrix(est.web)
-names(est.web) = colnames(est.web)
-
-# Producing the bipartite network with prey abundances
-png("R_images/bipartite_network_estimated.png", width=800, height=500, units="px")
-plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5,  low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.12, text.rot=90, low.abun=est.web, low.abun.col="grey", col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
 dev.off()
 ```
 
