@@ -1038,17 +1038,21 @@ dev.off()
 After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
 
 ```{r setting up niche data frame of D.villosus}
-niche.dv = abund.guts[abund.guts$predator_id == "D.vil",]
-colnames(niche.dv)
+breadth.dv = abund.guts[abund.guts$predator_id == "D.vil",]
+colnames(breadth.dv)
 
 # summing prey DNA reads by predator ID and site.
-breadth.dv = as.data.frame(niche.dv[,!c(colnames(niche.dv) %in% c("time","sample_type"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
+breadth.dv = as.data.frame(breadth.dv[,!c(colnames(breadth.dv) %in% c("time","sample_type"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
 
 rownames(breadth.dv) = paste(breadth.dv$predator_id, breadth.dv$site, sep="_")
 ```
 
 ```{r niche breadth index of D.villosus}
 breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))])
+niche.dv = breadth.dv
+
+breadth.dv[,1] = breadth.dv[,1]/102
+breadth.dv[,2] = breadth.dv[,2]/114
 
 niche.width(breadth.dv, method="levins")
 niche.width(breadth.dv, method="shannon")
@@ -1071,8 +1075,8 @@ shannon = function(data,i){
   -sum(log(pi)*pi)
 }
 
-dvil_gw1 = breadth.dv[,1]
-dvil_wb2 = breadth.dv[,2]
+dvil_gw1 = niche.dv[,1]
+dvil_wb2 = niche.dv[,2]
 
 c_gw1 = rep(1:length(dvil_gw1),dvil_gw1)
 c_wb2 = rep(1:length(dvil_wb2),dvil_wb2)
@@ -1119,6 +1123,12 @@ rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep=
 
 breadth.dvgz = t(breadth.dvgz[,!c(colnames(breadth.dvgz) %in% c("predator_id","site"))])
 
+niche.dvgz = breadth.dvgz
+
+breadth.dvgz[,1] = breadth.dvgz[,1]/102 
+breadth.dvgz[,2] = breadth.dvgz[,2]/114
+breadth.dvgz[,3] = breadth.dvgz[,3]/107
+
 niche.width(breadth.dvgz, method="levins")
 niche.width(breadth.dvgz, method="shannon")
 
@@ -1134,9 +1144,9 @@ niche.overlap(breadth.dvgz, method="pianka")
 ```
 
 ```{r bootstrap of D.vil niche vs G.zad niche}
-dvil1 = breadth.dvgz[,1]
-dvil2 = breadth.dvgz[,2]
-gzad = breadth.dvgz[,3]
+dvil1 = niche.dvgz[,1]
+dvil2 = niche.dvgz[,2]
+gzad = niche.dvgz[,3]
 
 c_dvil1 = rep(1:length(dvil1),dvil1)
 c_dvil2 = rep(1:length(dvil2),dvil2)
@@ -1160,7 +1170,6 @@ shan_dvil2
 shan_gzad = boot(c_gzad, shannon, R=1000)
 shan_gzad
 ```
-
 
 ```{r plot of levins bootstrap for dvil and gzad}
 boot_bdvil1 = as.data.frame(b_dvil1$t)
