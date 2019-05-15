@@ -1236,7 +1236,7 @@ dev.off()
 
 # Producing the bipartite network
 png("R_images/bipartite_network.png", width=4000, height=2500, units="px", res=300)
-plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high=c("blue","blue","green","green","orange","orange"), col.low=c("yellow","yellow","tan4","tan4","darkorchid3","darkorchid3","red","yellow","cyan3","cyan3","cyan3","red","tan4","tan4","white","red","red","red","yellow","darkcyan","darkcyan","tan4","tan4","grey48","darkgreen","darkgreen","khaki3","yellow","yellow","darkorchid3"))
+plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=c("yellow","yellow","tan4","tan4","darkorchid3","darkorchid3","red","yellow","cyan3","cyan3","cyan3","red","tan4","tan4","white","red","red","red","yellow","darkcyan","darkcyan","tan4","tan4","grey48","darkgreen","darkgreen","khaki3","yellow","yellow","darkorchid3"))
 dev.off()
 
 # Producing the legend
