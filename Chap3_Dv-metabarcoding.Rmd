@@ -1094,10 +1094,6 @@ shan_wb2 = boot(c_wb2, shannon, R=1000)
 shan_wb2
 ```
 
-```{r}
-t.test(b_gw1$t, b_wb2$t)
-```
-
 
 ```{r plot of levins bootstrap}
 boot_bgw1 = as.data.frame(b_gw1$t)
