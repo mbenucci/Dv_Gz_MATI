@@ -1215,7 +1215,7 @@ col.network=c("yellow","yellow","tan4","tan4","darkorchid3","darkorchid3","red",
 ```{r legend order}
 name.legend=c("Daphnia","C.brevilabris","P.pediculus","C.floridanus","C.pseudogracilis","C.multisetosum","G.tigrinus","G.zaddachi","Chironomidae","Cricotopus","C.luridus","C.laricomalis","C.sp._BOLD:AAI4299","T.medius","Hydra","H.oligactis","D.polymorpha","P.acuta","S.crystallina","A.chlorotica","B.vejdovskyanum","C.diastrophus","L.hoffmeisteri","P.moldaviensis","S.lacustris","T.tubifex","S.sthenum","A.sieboldi","E.dilatata","L.phaeopa")
 
-col.legend=c("cyan3","cyan3","cyan3","white","red","red","red","red","red","yellow","yellow","yellow","yellow","yellow","yellow","darkcyan","darkcyan","darkorchid3","darkorchid3","darkorchid3","tan4","tan4","tan4","tan4","tan4","tan4","grey48","darkgreen","darkgreen","khaki3")
+col.legend=c("cyan3","cyan3","cyan3","red","red","red","red","red","yellow","yellow","yellow","yellow","yellow","yellow","darkcyan","darkcyan","darkorchid3","darkorchid3","darkorchid3","tan4","tan4","tan4","tan4","tan4","tan4","tan4","grey48","darkgreen","darkgreen","khaki3")
 ```
 
 
