@@ -1197,11 +1197,28 @@ rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, s
 
 food.web = food.web[,!c(colnames(food.web) %in% c("site","time","predator_id"))]
 food.web = as.data.frame(t(food.web))
+food.web = subset(food.web, subset=rowSums(food.web) > 0)
+prey.names = rownames(food.web)
+rownames(food.web) = gsub("[a-z]{3,12}_",".", rownames(food.web))
+#paste(prey.names, "=", rownames(food.web))
+```
 
-rownames(food.web) = gsub("[a-z]{4,12}_",".", rownames(food.web))
+```{r prey and predator order}
+seq.high=c("D.vil_GW_May","D.vil_GW_Oct","D.vil_WB_May","D.vil_WB_Oct","G.zad_RB_May","G.zad_RB_Oct")
 
-food.web
+seq.low=c("C.luridus","C.laricomalis","T.tubifex","A.chlorotica","P.acuta","D.polymorpha","G.tigrinus","Cricotopus","C.brevilabris","Daphnia","P.pediculus","G.zaddachi","P.moldaviensis","B.vejdovskyanum","L.hoffmeisteri","C.floridanus","C.pseudogracilis","C.multisetosum","C.sp._BOLD:AAI4299","Hydra","H.oligactis","C.diastrophus","S.lacustris","S.sthenum","A.sieboldi","E.dilatata","L.phaeopa","Chironomidae","T.medius","S.crystallina")
 
+col.network=c("yellow","yellow","tan4","tan4","darkorchid3","darkorchid3","red","yellow","cyan3","cyan3","cyan3","red","tan4","tan4","white","red","red","red","yellow","darkcyan","darkcyan","tan4","tan4","grey48","darkgreen","darkgreen","khaki3","yellow","yellow","darkorchid3")
+```
+
+```{r legend order}
+name.legend=c("Daphnia","C.brevilabris","P.pediculus","L.hoffmeisteri","C.floridanus","C.pseudogracilis","C.multisetosum","G.tigrinus","G.zaddachi","Chironomidae","Cricotopus","C.luridus","C.laricomalis","C.sp._BOLD:AAI4299","T.medius","Hydra","H.oligactis","D.polymorpha","P.acuta","S.crystallina","A.chlorotica","B.vejdovskyanum","C.diastrophus","P.moldaviensis","S.lacustris","T.tubifex","S.sthenum","A.sieboldi","E.dilatata","L.phaeopa")
+
+col.legend=c("cyan3","cyan3","cyan3","white","red","red","red","red","red","yellow","yellow","yellow","yellow","yellow","yellow","darkcyan","darkcyan","darkorchid3","darkorchid3","darkorchid3","tan4","tan4","tan4","tan4","tan4","tan4","grey48","darkgreen","darkgreen","khaki3")
+```
+
+
+```{r plotting the networks}
 # Grafham Water
 png("R_images/bipartite_networks_Grafham.png", width=800, height=500, units="px")
 plotweb(food.web[,grep("GW", colnames(food.web))], y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue"))
@@ -1218,8 +1235,14 @@ plotweb(food.web[,grep("RB", colnames(food.web))], method="cca", y.width.low=0.1
 dev.off()
 
 # Producing the bipartite network
-png("R_images/bipartite_network.png", width=800, height=500, units="px")
-plotweb(food.web, y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue","blue","orange","orange","green","green"))
+png("R_images/bipartite_network.png", width=4000, height=2500, units="px", res=300)
+plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high=c("blue","blue","green","green","orange","orange"), col.low=c("yellow","yellow","tan4","tan4","darkorchid3","darkorchid3","red","yellow","cyan3","cyan3","cyan3","red","tan4","tan4","white","red","red","red","yellow","darkcyan","darkcyan","tan4","tan4","grey48","darkgreen","darkgreen","khaki3","yellow","yellow","darkorchid3"))
+dev.off()
+
+# Producing the legend
+png("R_images/bipartite_network_legend.png", width=4000, height=2500, units="px", res=300)
+plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)),high.plot=F, low.plot=F, col.interaction = "white", bor.col.interaction = "white")
+legend("center", xpd=T, legend=name.legend, fill=col.legend, bty="n", border="black")
 dev.off()
 ```
 
