@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 #.libPaths(c("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx", .libPaths("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx")))
 
 ## R(v3.5.1 - Ubuntu)
-.libPaths(c("/home/mb/Dropbox/PhD\ Hull/PhD\ docs/Thesis/R_stats/rlib3.5_unix", .libPaths("/home/mb/Dropbox/PhD\ Hull/PhD\ docs/Thesis/R_stats/rlib3.5_unix")))
+.libPaths(c("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix", .libPaths("/home/mb/Dropbox/PhD\ Hull/PhD\ docs/Thesis/R_stats/rlib3.5_unix")))
 ```
 
 ```{r directory setup, include=FALSE}
@@ -31,10 +31,12 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
-pack.list = c("aod","ape","bipartite","boot","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","phyloseq","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
+pack.list = c("aod","ape","bipartite","boot","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
+
+# "phyloseq",
 ```
 
 ```{r session}
