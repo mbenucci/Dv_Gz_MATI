@@ -1065,55 +1065,6 @@ niche.width(breadth.dv, method="shannon")
 niche.overlap(breadth.dv, method="levins")
 ```
 
-```{r bootstrap on niche breadth of d.villosus}
-standardised_levins = function(data,i){
-  pi <- table(data[i])/length(data[i])
-  B = 1/sum(pi^2)
-  (B-1)/(35-1)
-}
-
-shannon = function(data,i){
-  pi <- table(data[i])/length(data[i])
-  -sum(log(pi)*pi)
-}
-
-dvil_gw1 = niche.dv[,1]
-dvil_wb2 = niche.dv[,2]
-
-c_gw1 = rep(1:length(dvil_gw1),dvil_gw1)
-c_wb2 = rep(1:length(dvil_wb2),dvil_wb2)
-
-b_gw1 = boot(c_gw1, standardised_levins, R=1000)
-b_gw1
-
-b_wb2 = boot(c_wb2, standardised_levins, R=1000)
-b_wb2
-
-shan_gw1 = boot(c_gw1, shannon, R=1000)
-shan_gw1
-
-shan_wb2 = boot(c_wb2, shannon, R=1000)
-shan_wb2
-```
-
-
-```{r plot of levins bootstrap}
-boot_bgw1 = as.data.frame(b_gw1$t)
-boot_bwb2 = as.data.frame(b_wb2$t)
-
-boot_bgw1$type = "D.vil_GW"
-boot_bwb2$type = "D.vil_WB"
-
-guts_boot = full_join(boot_bgw1, boot_bwb2)
-
-ggplot(guts_boot, aes(type, V1)) +
-  geom_boxplot() +
-  geom_jitter(alpha=0.3) +
-  theme_bw() +
-  labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus")
-```
-
-
 ```{r niche breadth of D.villosus vs G.zaddachi}
 breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
@@ -1141,56 +1092,7 @@ niche.overlap(breadth.dvgz, method="levins")
 niche.overlap(breadth.dvgz, method="pianka")
 ```
 
-```{r bootstrap of D.vil niche vs G.zad niche}
-dvil1 = niche.dvgz[,1]
-dvil2 = niche.dvgz[,2]
-gzad = niche.dvgz[,3]
-
-c_dvil1 = rep(1:length(dvil1),dvil1)
-c_dvil2 = rep(1:length(dvil2),dvil2)
-c_gzad = rep(1:length(gzad),gzad)
-
-b_dvil1 = boot(c_dvil1, standardised_levins, R=1000)
-b_dvil1
-
-b_dvil2 = boot(c_dvil2, standardised_levins, R=1000)
-b_dvil2
-
-b_gzad = boot(c_gzad, standardised_levins, R=1000)
-b_gzad
-
-shan_dvil1 = boot(c_dvil1, shannon, R=1000)
-shan_dvil1
-
-shan_dvil2 = boot(c_dvil2, shannon, R=1000)
-shan_dvil2
-
-shan_gzad = boot(c_gzad, shannon, R=1000)
-shan_gzad
-```
-
-```{r plot of levins bootstrap for dvil and gzad}
-boot_bdvil1 = as.data.frame(b_dvil1$t)
-boot_bdvil2 = as.data.frame(b_dvil2$t)
-boot_bgzad = as.data.frame(b_gzad$t)
-
-boot_bdvil1$type = "D.villosus_GW"
-boot_bdvil2$type = "D.villosus_WB"
-boot_bgzad$type = "G.zaddachi"
-
-dv.gz_boot = full_join(boot_bdvil1, boot_bdvil2)
-dv.gz_boot = full_join(dv.gz_boot, boot_bgzad)
-
-png("R_images/bootstrap_levins_dv_gz.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(dv.gz_boot, aes(type, V1)) +
-  geom_boxplot() +
-  geom_jitter(alpha=0.3) +
-  theme_bw() +
-  labs(y="Standaridsed Levin's index", x="Predator", title="Bootstrapped Standardised Levin's index for D. villosus against G. zaddachi")
-dev.off()
-```
-
-# 5. Food webs network
+# 5. Food web bipartite network
 
 ```{r food web network plus bipartite}
 # Summing prey DNA reads by predator ID, site and time.
@@ -1219,23 +1121,7 @@ name.legend=c("Daphnia","C.brevilabris","P.pediculus","C.floridanus","C.pseudogr
 col.legend=c("cyan3","cyan3","cyan3","red","red","red","red","red","yellow","yellow","yellow","yellow","yellow","yellow","darkcyan","darkcyan","darkorchid3","darkorchid3","darkorchid3","tan4","tan4","tan4","tan4","tan4","tan4","tan4","grey48","darkgreen","darkgreen","khaki3")
 ```
 
-
 ```{r plotting the networks}
-# Grafham Water
-#png("R_images/bipartite_networks_Grafham.png", width=800, height=500, units="px")
-#plotweb(food.web[,grep("GW", colnames(food.web))], y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("blue"))
-#dev.off()
-
-# Wroxham Broad
-#png("R_images/bipartite_networks_Wroxham.png", width=800, height=500, units="px")
-#plotweb(food.web[,grep("WB", colnames(food.web))], y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("green"))
-#dev.off()
-
-# Rockland Broad
-#png("R_images/bipartite_networks_Rockland.png", width=800, height=500, units="px")
-#plotweb(food.web[,grep("RB", colnames(food.web))], method="cca", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="white", col.interaction=c("orange"))
-#dev.off()
-
 # Producing the bipartite network
 png("R_images/bipartite_network.png", width=4000, height=2500, units="px", res=300)
 plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=col.network)
