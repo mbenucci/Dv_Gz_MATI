@@ -712,6 +712,7 @@ fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
 
 adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
 
+adonis.dvil = vegdist(as.matrix(adonis.dvil), method = "euclidean")
 adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 9999, method = "euclidean")
 
 # comparing D.vil and G.zad
@@ -721,6 +722,7 @@ fact_time.guts = matrix(c(abund.guts$time), ncol=1)
 fact_site.guts = matrix(c(abund.guts$site), ncol=1)
 fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
 
+adonis.guts = vegdist(as.matrix(adonis.guts), method = "euclidean")
 adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 9999, method="euclidean")
 ```
 
@@ -778,23 +780,28 @@ dev.off()
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
+# abund.edna$sample_id
+rownames(abund.edna)=paste(abund.edna$sample_id, abund.edna$time, sep="_")
+
 adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id","sample_type"))]
 
 fact_site.edna = matrix(c(abund.edna$site), ncol=1)
 fact_time.edna = matrix(c(abund.edna$time), ncol=1)
 
-adonis(adonis.edna~fact_site.edna*fact_time.edna, permutations = 9999, method="bray")
+adonis.edna = vegdist(as.matrix(adonis.edna))
+
+adonis(adonis.edna~fact_site.edna*fact_time.edna, permutations = 9999, method="jaccard")
 ```
 
 ```{r nmds based on distances and on abundance data}
 # NMDS based on the abundance data (will give the species scores as well)
-meta.edna = metaMDS(adonis.edna, distance="bray")
+meta.edna = metaMDS(adonis.edna, distance="jaccard")
 ```
 
 
 ```{r plotting eDNA nmds}
 # full symbols for May, hollow symbols for October
-png("R_images/eDNA_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
+png("R_images/eDNA_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.edna, type="n", main="eDNA NMDS")#, xlim=c(-1,1.5), ylim=c(-1,1))
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
@@ -910,81 +917,79 @@ dev.off()
 ```
 
 ```{r species richness kick-samples}
-kick_diversity = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_type","site","REPLICATE"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
+occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_type","REPLICATE"))] %>% group_by(time,site,sample_id) %>% summarise_all(funs(sum)))
 
-rownames(kick_diversity) = paste(kick_diversity$sample_id, kick_diversity$time, sep="_")
-kick_diversity[,!c(colnames(kick_diversity) %in% c("time","sample_id"))][kick_diversity[,!c(colnames(kick_diversity) %in% c("time","sample_id"))] > 0] <- 1
+rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
+occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site"))][occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site"))] > 0] <- 1
+occupancy.kick[is.na(occupancy.kick)] <- 0
 
-sp_rich.kick = rowSums(kick_diversity[,!c(colnames(kick_diversity) %in% c("sample_id","time"))])
+richness.kick = rowSums(occupancy.kick[,!c(colnames(occupancy.kick) %in% c("sample_id","site","time"))])
 
 # GW May
-gwmay_kickrich = sp_rich.kick[grep("GW._May", names(sp_rich.kick))]
+gwmay_kickrich = richness.kick[grep("GW._May", names(richness.kick))]
 mean(gwmay_kickrich)
 sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
 
 # GW Oct
-gwoct_kickrich = sp_rich.kick[grep("GW._Oct", names(sp_rich.kick))]
+gwoct_kickrich = richness.kick[grep("GW._Oct", names(richness.kick))]
 mean(gwoct_kickrich)
 sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
 
 # RB May
-rbmay_kickrich = sp_rich.kick[grep("RB._May", names(sp_rich.kick))]
+rbmay_kickrich = richness.kick[grep("RB._May", names(richness.kick))]
 mean(rbmay_kickrich)
 sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
 
 # RB Oct
-rboct_kickrich = sp_rich.kick[grep("RB._Oct", names(sp_rich.kick))]
+rboct_kickrich = richness.kick[grep("RB._Oct", names(richness.kick))]
 mean(rboct_kickrich)
 sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
 
 # WB May
-wbmay_kickrich = sp_rich.kick[grep("WB._May", names(sp_rich.kick))]
+wbmay_kickrich = richness.kick[grep("WB._May", names(richness.kick))]
 mean(wbmay_kickrich)
 sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
 
 # WB Oct
-wboct_kickrich = sp_rich.kick[grep("WB._Oct", names(sp_rich.kick))]
+wboct_kickrich = richness.kick[grep("WB._Oct", names(richness.kick))]
 mean(wboct_kickrich)
 sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
 ```
 
 
 ```{r PERMANOVA of kick-samples}
-# Summarising kick-samples by sites
-abund.kick = as.data.frame(abund.kick %>% group_by(site, REPLICATE, time, sample_type, sample_id) %>% summarise_all(funs(sum)))
+adonis.kick = occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site"))]
 
-# Sorting out variables and joining the two frames
-abund.kick[is.na(abund.kick)] <- 0
-adonis.kick = abund.kick[,!c(colnames(abund.kick) %in% c("time","sample_id","sample_type","site","REPLICATE"))]
+fact_site.kick = matrix(c(occupancy.kick$site), ncol=1)
+fact_time.kick = matrix(c(occupancy.kick$time), ncol=1)
 
-fact_site.kick = matrix(c(abund.kick$site), ncol=1)
-fact_time.kick = matrix(c(abund.kick$time), ncol=1)
+adonis.kick = vegdist(as.matrix(adonis.kick))
 
-adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 9999, method="bray")
+adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 9999, method="jaccard")
 ```
 
 ```{r}
-meta.ab.kick = metaMDS(adonis.kick, trymax=200, distance="bray")
+meta.kick = metaMDS(adonis.kick, trymax=200, distance="jaccard")
 ```
 
 ```{r NMDS plot of kick-samples}
 # full symbols for May, hollow symbols for October
-png("R_images/kick-samples_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.ab.kick, type="n", main="kick-samples NMDS")#, xlim=c(-2.5,5), ylim=c(-1,1))
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=22)
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=15)
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
-points(meta.ab.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.ab.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.ab.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
-text(-0.5,-0.4, label=paste0("Stress: ", round(meta.ab.kick$stress,6)))
+png("R_images/kick-samples_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(meta.kick, type="n", main="kick-samples NMDS", xlim=c(-0.6,0.6), ylim=c(-0.6,0.6))
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=22)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=15)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+text(-0.5,-0.4, label=paste0("Stress: ", round(meta.kick$stress,6)))
 dev.off()
 ```
 
 ```{r merging kick-samples and eDNA frames}
-abund.kick.edna = full_join(abund.edna, abund.kick)
+abund.kick.edna = full_join(abund.edna, occupancy.kick)#abund.kick)
 abund.kick.edna[is.na(abund.kick.edna)] <- 0
 
 adonis.kick.edna = abund.kick.edna[,!c(colnames(abund.kick.edna) %in% c("site","sample_id","sample_type","time","REPLICATE"))]
@@ -993,18 +998,20 @@ fact_site.edki = matrix(c(abund.kick.edna$site), ncol=1)
 fact_time.edki = matrix(c(abund.kick.edna$time), ncol=1)
 fact_type.edki = matrix(c(abund.kick.edna$sample_type), ncol=1)
 
-adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 9999, method = "bray")
+#adonis.kick.edna = vegdist(as.matrix(adonis.kick.edna))
+
+adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 9999, method = "jaccard")
 ```
 
 ```{r}
-meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "bray")
+meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "jaccard")
 ```
 
 
 ```{r NMDS plot of kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
-png("R_images/kick-eDNA_NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1,1), ylim=c(-1,1))
+png("R_images/kick-eDNA_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1.5,1.5), ylim=c(-1,1.1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
@@ -1014,58 +1021,16 @@ points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1
 orditorp(meta.kick.edna, display="species")
 ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
-text(0.5,-0.8, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
+text(0, -1, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
 dev.off()
 ```
-
-```{r NMDS plot by site of kick-samples and eDNA}
-png("R_images/kick-eDNA_site-NMDS_bray-curtis.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by site", xlim=c(-1,1), ylim=c(-1.1,1))
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=15)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
-orditorp(meta.kick.edna, display="species")
-ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.kick.edna, group=fact_site.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
-text(0.5,-0.8, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
-dev.off()
-```
-
 
 # 4. Niche/Diet breadth
 
 After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
 
-```{r setting up niche data frame of D.villosus}
-breadth.dv = abund.guts[abund.guts$predator_id == "D.vil",]
-colnames(breadth.dv)
-
-# summing prey DNA reads by predator ID and site.
-breadth.dv = as.data.frame(breadth.dv[,!c(colnames(breadth.dv) %in% c("time","sample_type"))] %>% group_by(site,predator_id) %>% summarise_all(funs(sum)))
-
-rownames(breadth.dv) = paste(breadth.dv$predator_id, breadth.dv$site, sep="_")
-```
-
-```{r niche breadth index of D.villosus}
-breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("site","predator_id"))])
-niche.dv = breadth.dv
-
-breadth.dv[,1] = breadth.dv[,1]/102
-breadth.dv[,2] = breadth.dv[,2]/114
-
-niche.width(breadth.dv, method="levins")
-niche.width(breadth.dv, method="shannon")
-
-(niche.width(breadth.dv, method="levins")[1]-1)/(nrow(breadth.dv)-1)
-(niche.width(breadth.dv, method="levins")[2]-1)/(nrow(breadth.dv)-1)
-
-niche.overlap(breadth.dv, method="levins")
-```
-
-```{r niche breadth of D.villosus vs G.zaddachi}
+```{r niche breadth of amphipods across sites}
+# Summin
 breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
 rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
@@ -1090,6 +1055,27 @@ niche.width(breadth.dvgz, method="shannon")
 
 niche.overlap(breadth.dvgz, method="levins")
 niche.overlap(breadth.dvgz, method="pianka")
+```
+
+```{r niche breadth of amphipods species (no sites)}
+# summing prey DNA reads by predator ID
+breadth.dv = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","sample_type","site"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
+
+rownames(breadth.dv) = breadth.dv$predator_id
+
+breadth.dv = t(breadth.dv[,!c(colnames(breadth.dv) %in% c("predator_id"))])
+
+breadth.dv[,1] = breadth.dv[,1]/216
+breadth.dv[,2] = breadth.dv[,2]/107
+
+niche.width(breadth.dv, method="levins")
+niche.width(breadth.dv, method="shannon")
+
+(niche.width(breadth.dv, method="levins")[1]-1)/(nrow(breadth.dv)-1)
+(niche.width(breadth.dv, method="levins")[2]-1)/(nrow(breadth.dv)-1)
+
+niche.overlap(breadth.dv, method="levins")
+niche.overlap(breadth.dv, method="pianka")
 ```
 
 # 5. Food web bipartite network
