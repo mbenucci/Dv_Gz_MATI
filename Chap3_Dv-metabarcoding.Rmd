@@ -591,12 +591,12 @@ ggplot(melt.guts, aes(time, value)) +
 
 ```{r prey detection rarefaction curves}
 # removing `sample_type` and `sample_id` variables and transforming detections into abundances
-ratio.guts = ratio.guts[,!c(colnames(ratio.guts) %in% c("sample_type","sample_id"))]
-ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id"))][ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id"))] > 0] <- 1
+ratio.guts = ratio.guts[,!c(colnames(ratio.guts) %in% c("sample_type"))]
+ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id"))][ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id"))] > 0] <- 1
 
 # rarefaction curves
 abund.guts = as.data.frame(ratio.guts)
-abund.guts.site = as.data.frame(abund.guts %>% group_by(time, site, predator_id) %>% summarise_all(funs(sum)))
+abund.guts.site = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_id"))] %>% group_by(time, site, predator_id) %>% summarise_all(funs(sum)))
 
 # replacing predator id with initials
 abund.guts.site[grep("Gammarus_zaddachi", abund.guts.site$predator_id),"predator_id"] <- "G.zad"
@@ -604,7 +604,7 @@ abund.guts.site[grep("Dikerogammarus_villosus", abund.guts.site$predator_id),"pr
 
 abund.guts[grep("Gammarus_zaddachi", abund.guts$predator_id),"predator_id"] <- "G.zad"
 abund.guts[grep("Dikerogammarus_villosus", abund.guts$predator_id),"predator_id"] <- "D.vil"
-colnames(abund.guts)
+
 # setting rownames and removing extra variables
 rownames(abund.guts.site) = paste(abund.guts.site$predator_id, abund.guts.site$site, abund.guts.site$time, sep="_")
 inext.guts = t(abund.guts.site[,!c(colnames(abund.guts.site) %in% c("site","time","predator_id"))])
@@ -619,7 +619,81 @@ ggiNEXT(inext.guts) +
   ggtitle("Species level rarefaction curves of preys in gut contents")
 ```
 
-# 3. Diversity analysis of eDNA samples plus comparison with gut contents
+```{r PERMANOVA gut contents}
+# comparing only D.vil
+adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
+
+fact_site.dvil = matrix(c(adonis.dvil$site), ncol=1)
+fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
+
+adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id","sample_id"))]
+
+adonis.dvil = vegdist(as.matrix(adonis.dvil), method = "euclidean")
+adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 9999, method = "euclidean")
+
+# comparing D.vil and G.zad
+adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id","sample_id"))]
+
+fact_time.guts = matrix(c(abund.guts$time), ncol=1)
+fact_site.guts = matrix(c(abund.guts$site), ncol=1)
+fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
+
+adonis.guts = vegdist(as.matrix(adonis.guts), method = "euclidean")
+adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 9999, method="euclidean")
+```
+
+```{r NMDS on D.vil gut contents}
+meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
+```
+
+```{r NMDS of gut contents both D.vil and G.zad}
+meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
+```
+
+```{r nmds of d.villosus guts}
+# full symbols for May, hollow symbols for October
+png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by time", xlim=c(-1,2), ylim=c(-1,1))
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
+ordiellipse(meta.dv.guts,group=fact_time.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
+text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
+dev.off()
+```
+
+```{r nmds of d.villosus guts by site}
+# full symbols for May, hollow symbols for October
+png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by site", xlim=c(-1,2), ylim=c(-1,1))
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
+points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
+ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
+ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
+text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
+dev.off()
+```
+
+```{r nmds of d.villosus and g.zaddachi guts}
+# full symbols for May, hollow symbols for October
+png("R_images/guts_predator_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+text(-1.5,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
+dev.off()
+```
+# 3. Diversity analysis of eDNA samples
 To avoid over-estimating the diversity present in the eDNA samples, the data set need to be cleaned a bit further. For this purpose assignment at higher taxonomic rank (mainly Order), were removed from the dataset, while assignments to Family, were spearated from the assignments to Genus and Species level. 
 
 ```{r eDNA samples rarefaction curves}
@@ -700,82 +774,6 @@ sd(wbmay_rich)/sqrt(length(wbmay_rich))
 wboct_rich = sp_richness[grep("WB._Oct", names(sp_richness))]
 mean(wboct_rich)
 sd(wboct_rich)/sqrt(length(wboct_rich))
-```
-
-
-```{r PERMANOVA gut contents}
-# comparing only D.vil
-adonis.dvil = abund.guts[abund.guts$predator_id == "D.vil",]
-
-fact_site.dvil = matrix(c(adonis.dvil$site), ncol=1)
-fact_time.dvil = matrix(c(adonis.dvil$time), ncol=1)
-
-adonis.dvil = adonis.dvil[,!c(colnames(adonis.dvil) %in% c("time","site","sample_type","predator_id"))]
-
-adonis.dvil = vegdist(as.matrix(adonis.dvil), method = "euclidean")
-adonis(adonis.dvil~fact_site.dvil*fact_time.dvil, permutations = 9999, method = "euclidean")
-
-# comparing D.vil and G.zad
-adonis.guts = abund.guts[,!c(colnames(abund.guts) %in% c("time","site","sample_type","predator_id"))]
-
-fact_time.guts = matrix(c(abund.guts$time), ncol=1)
-fact_site.guts = matrix(c(abund.guts$site), ncol=1)
-fact_predator.guts = matrix(c(abund.guts$predator_id), ncol=1)
-
-adonis.guts = vegdist(as.matrix(adonis.guts), method = "euclidean")
-adonis(adonis.guts~fact_predator.guts*fact_site.guts*fact_time.guts, permutations = 9999, method="euclidean")
-```
-
-```{r NMDS on D.vil gut contents}
-meta.dv.guts = metaMDS(adonis.dvil, trymax = 200, distance = "euclidean")
-```
-
-```{r NMDS of gut contents both D.vil and G.zad}
-meta.guts = metaMDS(adonis.guts, trymax=200, distance="euclidean")
-```
-
-```{r nmds of d.villosus guts}
-# full symbols for May, hollow symbols for October
-png("R_images/guts_Dvil_time_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by time", xlim=c(-1,2), ylim=c(-1,1))
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
-ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
-ordiellipse(meta.dv.guts,group=fact_time.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
-text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
-dev.off()
-```
-
-```{r nmds of d.villosus guts by site}
-# full symbols for May, hollow symbols for October
-png("R_images/guts_Dvil_only_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.dv.guts, type="n", main="D.villosus gut contents NMDS by site", xlim=c(-1,2), ylim=c(-1,1))
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="May"),col="black",pch=20)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="WB" & fact_time.dvil[,1]=="Oct"),col="black",pch=1)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="May"),col="blue",pch=22)
-points(meta.dv.guts, select=which(fact_site.dvil[,1]=="GW" & fact_time.dvil[,1]=="Oct"),col="blue",pch=15)
-ordispider(meta.dv.guts,group=fact_site.dvil[,1],col=c("blue","green"),label=F)
-ordiellipse(meta.dv.guts,group=fact_site.dvil[,1],kind="ehull",lty=c(1,5),label=T,lwd=1)
-text(-0.5,-1.1,label=paste("Stress:", round(meta.dv.guts$stress, 6)))
-dev.off()
-```
-
-```{r nmds of d.villosus and g.zaddachi guts}
-# full symbols for May, hollow symbols for October
-png("R_images/guts_predator_NMDS_euclidean.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.guts, type="n", main="D.villosus and G.zaddachi gut contents NMDS", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=22)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=15)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
-ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-text(-1.5,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
-dev.off()
 ```
 
 ```{r PERMANOVA eDNA}
@@ -1039,6 +1037,8 @@ dev.off()
 ```{r merging guts, and community data sets}
 # Previously the sample type for the gut contents data frame was removed, so we first add it again.
 abund.guts$sample_type = "guts"
+
+
 abund.kick.edna$sample_type
 
 occup.gut.edna.kick = full_join(abund.guts, abund.kick.edna)
@@ -1086,7 +1086,7 @@ After analysisng the detection of prey species in the gut contents, and after ha
 
 ```{r niche breadth of amphipods across sites}
 # Summing
-breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
+breadth.dvgz = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","sample_type","sample_id"))] %>% group_by(predator_id, site) %>% summarise_all(funs(sum)))
 
 rownames(breadth.dvgz) = paste(breadth.dvgz$predator_id, breadth.dvgz$site, sep="_")
 
@@ -1114,7 +1114,7 @@ niche.overlap(breadth.dvgz, method="pianka")
 
 ```{r niche breadth of amphipods species (no sites)}
 # summing prey DNA reads by predator ID
-breadth.dv = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","sample_type","site"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
+breadth.dv = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("time","sample_type","site","sample_id"))] %>% group_by(predator_id) %>% summarise_all(funs(sum)))
 
 rownames(breadth.dv) = breadth.dv$predator_id
 
@@ -1137,7 +1137,7 @@ niche.overlap(breadth.dv, method="pianka")
 
 ```{r food web network plus bipartite}
 # Summing prey DNA reads by predator ID, site and time.
-food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type"))] %>% group_by(site, predator_id, time) %>% summarise_all(funs(sum)))
+food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type","sample_id"))] %>% group_by(site, predator_id, time) %>% summarise_all(funs(sum)))
 rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, sep="_")
 
 food.web = food.web[,!c(colnames(food.web) %in% c("site","predator_id","time"))]
@@ -1176,8 +1176,7 @@ dev.off()
 ```
 
 ```{r generating data summary table}
-guts.summary = as.data.frame(abund.guts %>% group_by(site,time,predator_id) %>% summarise_all(funs(sum)))
-guts.summary$sample_type = "gut contents"
+guts.summary = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_id"))] %>% group_by(site,time,predator_id,sample_type) %>% summarise_all(funs(sum)))
 edna.summary = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
 kick.summary = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
 
