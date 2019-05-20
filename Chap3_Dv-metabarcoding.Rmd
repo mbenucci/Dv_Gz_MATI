@@ -1071,7 +1071,7 @@ points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="M
 points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=15)
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.full, group=fact_type.full[,1],col=c("blue","orange","green"),label=T)
+ordispider(meta.full, group=fact_type.full[,1],col=c("black","gray60"),label=T)
 ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,3,4),label=F,lwd=1)
 text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
 dev.off()
