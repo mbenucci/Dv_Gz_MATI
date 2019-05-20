@@ -1010,19 +1010,15 @@ meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "jaccard")
 
 ```{r NMDS plot of kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
-test = rownames(meta.kick.edna$species)
 
-for (s in rownames(meta.kick.edna$species)){
-  if (grepl("sp.", s) == F){
-    rownames(meta.kick.edna$species)[grep(s, rownames(meta.kick.edna$species))] <- gsub("^[a-z]{3,13}_",".", s)
-  } else {
-    rownames(meta.kick.edna$species)[grep(s, rownames(meta.kick.edna$species))] <- s
-  }
+for (s in grep("_", rownames(meta.kick.edna$species))){
+  if (grepl("_sp.|cf.", rownames(meta.kick.edna$species)[s]) == T){
+    rownames(meta.kick.edna$species)[s] = rownames(meta.kick.edna$species)[s]
+    } else {
+      print(rownames(meta.kick.edna$species)[s])
+      rownames(meta.kick.edna$species)[s] = gsub("[a-z]{3,13}_",".", rownames(meta.kick.edna$species)[s])
+    }
 }
-
-#rownames(meta.kick.edna$species)[grep("Placobdella_costata", rownames(meta.kick.edna$species))]
-View(test)
-View(rownames(meta.kick.edna$species))
 
 png("R_images/kick-eDNA_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1.5,1.5), ylim=c(-1,1.1))
