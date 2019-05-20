@@ -1064,7 +1064,7 @@ meta.full = metaMDS(adonis.guts.edna.kick, trymax = 200, methods = "jaccard")
 # full symbols for May, hollow symbols for October
 
 png("R_images/guts_community_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(meta.full, type="n", main="Gut contents and Community NMDS", xlim=c(-2,2), ylim=c(-2,2))
+plot(meta.full, type="n", main="Gut contents and Community NMDS", xlim=c(-1,1), ylim=c(-1,1))
 points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
 points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
 points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=22)
