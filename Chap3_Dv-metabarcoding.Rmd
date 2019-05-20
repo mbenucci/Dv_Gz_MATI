@@ -737,8 +737,6 @@ dev.off()
 ```
 
 ```{r shannon diversity in eDNA}
-head(abund.edna)
-abund.edna$sample_id
 edna_diversity = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_type","site"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
 
 rownames(edna_diversity) = paste(edna_diversity$sample_id, edna_diversity$time, sep="_")
@@ -814,6 +812,8 @@ dev.off()
 
 # 3. Community composition from kick-samples.
 
+Microscopy data from the community collected with the kick-samples are available in 6 separate files belonging to each lake from either sampling season.
+
 ```{r input files microscopy}
 gw.may = read.csv("data/microscopy/gw_may_microscopy.csv", sep="\t")
 gw.oct = read.csv("data/microscopy/gw_oct_microscopy.csv", sep="\t")
@@ -822,6 +822,8 @@ wb.oct = read.csv("data/microscopy/wb_oct_microscopy.csv", sep="\t")
 rb.may = read.csv("data/microscopy/rb_may_microscopy.csv", sep="\t")
 rb.oct = read.csv("data/microscopy/rb_oct_microscopy.csv", sep="\t")
 ```
+
+Before analysis the data we remove the high rank taxa.
 
 ```{r adding the binomial}
 data_structuring <- function(df){
@@ -1054,7 +1056,7 @@ adonis(adonis.guts.edna.kick~fact_type.full, permutations = 9999, method = "jacc
 ```
 
 ```{r}
-meta.full = metaMDS(adonis.guts.edna.kick, trymax = 200, methods = "Jaccard")
+meta.full = metaMDS(adonis.guts.edna.kick, trymax = 200, methods = "jaccard")
 ```
 
 
