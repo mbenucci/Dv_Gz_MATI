@@ -1033,7 +1033,9 @@ dev.off()
 ```
 
 ```{r envfit of communities from October}
+# loading the file
 
+read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1)
 
 
 

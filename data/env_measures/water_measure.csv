@@ -1,4 +1,4 @@
-site,temp,,,pH,,,cond(uS),,,time
+site,temp1,temp2,temp3,pH1,pH2,pH3,cond1(uS),cond2(uS),cond3(uS),time
 GW1,16,16,16,8.6,8.6,8.6,854,852,852,Oct
 GW2,15.9,16,16,8.3,8.5,8.6,858,855,856,Oct
 GW3,15.6,15.7,15.5,8.3,8.4,8.4,866,867,866,Oct
