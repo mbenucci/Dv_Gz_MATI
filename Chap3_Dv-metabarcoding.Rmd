@@ -1131,7 +1131,7 @@ niche.overlap(breadth.dv, method="levins")
 niche.overlap(breadth.dv, method="pianka")
 ```
 
-# 5. Food web bipartite network
+# 7. Food web bipartite network
 
 For the bipartite network we use the gut contents data frame with the detections of preys. We need to first summarise the data by site and season, then we can transpose the data frame to have the prey along the rows and the predators along the columns. We simplify the names of the preys from the extended binomial name simply to allow a better reading in the bipartite plot.
 
@@ -1149,6 +1149,8 @@ food.web = subset(food.web, subset=rowSums(food.web) > 0)
 rownames(food.web) = gsub("[a-z]{3,12}_",".", rownames(food.web))
 ```
 
+Setting up the order of the top and bottom levels in the bipartite plot, this will allow to colour code the taxa. The taxa in this plot were organised by higher rank (e.g. Diptera, Amphipoda, Oligochaeta, etc.). While the order of the taxa in the plot is organised according to the interactions, in the legend the order was organised by high rank to make it more accessible and easy to read.
+
 ```{r plot order}
 seq.high=c("D.vil_GW_May","D.vil_GW_Oct","D.vil_WB_May","D.vil_WB_Oct","G.zad_RB_May","G.zad_RB_Oct")
 
@@ -1163,6 +1165,8 @@ name.legend=c("Daphnia","C.brevilabris","P.pediculus","C.floridanus","C.pseudogr
 col.legend=c("cyan3","cyan3","cyan3","red","red","red","red","red","yellow","yellow","yellow","yellow","yellow","yellow","darkcyan","darkcyan","darkorchid3","darkorchid3","darkorchid3","tan4","tan4","tan4","tan4","tan4","tan4","tan4","grey48","darkgreen","darkgreen","khaki3")
 ```
 
+After having set up the orders of taxa in top and bottom levels with their corresponding colours, the bipartite plot and the legend can be generated. The legend was generated separately due to limits in the plot dimensions, which if reduced would have made either the plot, or the legend non readable. The legend and the plot were merged externally to R.
+
 ```{r plotting the networks}
 # Producing the bipartite network
 png("R_images/bipartite_network.png", width=4000, height=2500, units="px", res=300)
@@ -1175,6 +1179,10 @@ plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, s
 legend("center", xpd=T, legend=name.legend, fill=col.legend, bty="n", border="black")
 dev.off()
 ```
+
+# 8. Generating data summary table
+
+This last chunk is only to create the base for the summary table presented in supplementary informaton. This uses the presence/absence data for the gut contents and the eDNA samples, while it uses the actual abundance for the kick-samples. The table was then expanded externally to R to include more summarising informations.
 
 ```{r generating data summary table}
 guts.summary = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_id"))] %>% group_by(site,time,predator_id,sample_type) %>% summarise_all(funs(sum)))
