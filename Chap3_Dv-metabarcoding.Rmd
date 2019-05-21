@@ -1042,11 +1042,49 @@ rownames(occup.oct) = occup.oct$sample_id
 colnames(occup.oct)
 occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
 
-ord = metaMDS(occup.oct, distance = "jaccard", trymax = 200)
+test = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp2+temp3)/3,
+                            pH_mean = (pH1+pH2+pH3)/3,
+                            cond_mean = (cond1.uS.+cond2.uS.+cond3.uS.)/3))
 
-## NOTE TO FIX THE ENVFIT!!!!!! CHECK TUTORIALS 
+rownames(occup.oct)
 
-envfit(ord, water.measure)
+rownames(test) = rownames(water.measure)
+
+test.comm = as.data.frame(t(occup.oct))
+
+sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
+                        GW2 = GW2+eGW2,
+                        GW3 = GW3+eGW3,
+                        GW4 = GW4+eGW4,
+                        GW5 = eGW5,
+                        GW6 = GW6+eGW6,
+                        WB1 = WB1+eWB1,
+                        WB2 = WB2+eWB2,
+                        WB3 = WB3+eWB3,
+                        WB4 = WB4+eWB4,
+                        WB5 = WB5+eWB5,
+                        WB6 = WB6+eWB6,
+                        RB1 = RB1+eRB1,
+                        RB2 = RB2+eRB2,
+                        RB3 = RB3,
+                        RB4 = RB4+eRB4,
+                        RB5 = RB5+eRB5,
+                        RB6 = RB6+eRB6))
+
+sum.comm = as.data.frame(t(sum.comm))
+colnames(sum.comm) = colnames(occup.oct)
+
+sum.comm
+test
+
+rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
+
+ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
+
+fit.oct = envfit(ord, test, permu = 9999, na.rm=T)
+
+plot(ord, display="sites")
+plot(fit.oct)
 ```
 
 
