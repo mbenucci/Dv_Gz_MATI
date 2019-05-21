@@ -1039,17 +1039,14 @@ water.measure = read.csv("data/env_measures/water_measure.csv", sep=",", header=
 occup.oct = occup.kick.edna[occup.kick.edna$time == "Oct",]
 
 rownames(occup.oct) = occup.oct$sample_id
-colnames(occup.oct)
+
 occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
 
 test = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp2+temp3)/3,
                             pH_mean = (pH1+pH2+pH3)/3,
                             cond_mean = (cond1.uS.+cond2.uS.+cond3.uS.)/3))
 
-rownames(occup.oct)
-
 rownames(test) = rownames(water.measure)
-
 test.comm = as.data.frame(t(occup.oct))
 
 sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
@@ -1077,7 +1074,6 @@ colnames(sum.comm) = colnames(occup.oct)
 rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
-ord$species
 fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
 
 png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, units = "px", res = 300)
