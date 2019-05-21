@@ -1074,17 +1074,17 @@ sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
 sum.comm = as.data.frame(t(sum.comm))
 colnames(sum.comm) = colnames(occup.oct)
 
-sum.comm
-test
-
 rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
+ord$species
+fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
 
-fit.oct = envfit(ord, test, permu = 9999, na.rm=T)
-
-plot(ord, display="sites")
-plot(fit.oct)
+png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(ord, display="species")
+plot(fit.oct, labels = list(rownames(ord$species)))
+ordiellipse(ord, group=rownames(ord$points), label=T, kind="ehull")
+dev.off()
 ```
 
 
