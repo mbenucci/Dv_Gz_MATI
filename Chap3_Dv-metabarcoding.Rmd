@@ -1032,6 +1032,7 @@ text(0, -1, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
 dev.off()
 ```
 
+
 # 7. Comparison of gut contents detection against community composition
 
 ```{r merging guts, and community data sets}
