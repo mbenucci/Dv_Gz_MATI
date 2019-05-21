@@ -269,7 +269,7 @@ clean.oct = subset(clean.oct, select = colSums(clean.oct) > 0)
 filter.oct = subset(filter.oct, select = colSums(filter.oct) > 0)
 ```
 
-# Remaining known contaminations
+# 2. Checking for remaining known contaminations
 
 Checking for remaining contamination, _Harmonia axyridis_ is still present in one samples of May data set (RB501) with 7 reads (3.9%). Similarly, _Osmia bicornis_ is still present in few samples; however excluding the POSITIVE samples, the remaining contamination is in very low amount. Despite the contamination filter threshold didn't manage to remove these issues, the DNA read count is low enough to allow removal without major changes in the final output. Similar situation happened for the Primer contamination labeled `cont.13` which managed to pass the initial QC threshold despite having 17 reads (11 belonging to _O. bicornis_ and 6 belonging to _D. villosus_). The read count is low enough to feel confident in not having an influence, however being fairly widespread the decision is to remove all _D. villosus_ detections in the gut contents. The removal will happen further downstream to prevent mis-identifying the predators.
 
@@ -526,7 +526,7 @@ write.csv(clean.oct, "R_outputs/Oct_reads_filtered.csv")
 write.csv(filter.oct, "R_outputs/Oct_ratio_filtered.csv")
 ```
 
-# 2. Detection of prey DNA in gut contents
+# 3. Detection of prey DNA in gut contents
 
 Dividing gut contents and eDNA samples.
 
@@ -692,7 +692,7 @@ ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label
 text(-1.5,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
 dev.off()
 ```
-# 3. Diversity analysis of eDNA samples
+# 4. Diversity analysis of eDNA samples
 To avoid over-estimating the diversity present in the eDNA samples, the data set need to be cleaned a bit further. For this purpose assignment at higher taxonomic rank (mainly Order), were removed from the dataset, while assignments to Family, were spearated from the assignments to Genus and Species level. 
 
 ```{r eDNA samples rarefaction curves}
@@ -810,7 +810,7 @@ text(0,-1, label=paste0("Stress: ", round(meta.edna$stress, 4)))
 dev.off()
 ```
 
-# 3. Community composition from kick-samples.
+# 5. Community composition from kick-samples.
 
 Microscopy data from the community collected with the kick-samples are available in 6 separate files belonging to each lake from either sampling season.
 
@@ -986,7 +986,7 @@ text(-0.5,-0.4, label=paste0("Stress: ", round(meta.kick$stress,6)))
 dev.off()
 ```
 
-#4. Community composition of eDNA and kick-samples
+# 6. Community composition of eDNA and kick-samples
 
 ```{r merging kick-samples and eDNA frames}
 abund.kick.edna = full_join(abund.edna, occupancy.kick)
@@ -1032,7 +1032,7 @@ text(0, -1, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
 dev.off()
 ```
 
-# 5. Comparison of gut contents detection against community composition
+# 7. Comparison of gut contents detection against community composition
 
 ```{r merging guts, and community data sets}
 # Previously the sample type for the gut contents data frame was removed, so we first add it again.
@@ -1078,7 +1078,7 @@ dev.off()
 ```
 
 
-# 6. Niche/Diet breadth
+# 8. Niche/Diet breadth
 
 After analysisng the detection of prey species in the gut contents, and after having analysed the communities compositions from eDNA and kick samples. The niche breadth of _D. villosus_ across the 2 invaded sites can be analysed. Further, the comparison of niche overlap between _D. villosus_ and _G. zaddachi_ can be calculated.
 
@@ -1131,9 +1131,9 @@ niche.overlap(breadth.dv, method="levins")
 niche.overlap(breadth.dv, method="pianka")
 ```
 
-# 7. Food web bipartite network
+# 9. Food web bipartite network
 
-For the bipartite network we use the gut contents data frame with the detections of preys. We need to first summarise the data by site and season, then we can transpose the data frame to have the prey along the rows and the predators along the columns. We simplify the names of the preys from the extended binomial name simply to allow a better reading in the bipartite plot.
+For the bipartite network the gut contents data frame with the detections of preys can now be used. The gut contents data first needs to be summarised by site and season, then the data frame can be transposed to have a matrix with the prey along the rows and the predators along the columns. The prey taxa names (bottom level) will also be simplified from the extended binomial names only to allow a better reading in the bipartite plot.
 
 ```{r food web network plus bipartite}
 # Summing prey DNA reads by predator ID, site and time.
@@ -1180,7 +1180,7 @@ legend("center", xpd=T, legend=name.legend, fill=col.legend, bty="n", border="bl
 dev.off()
 ```
 
-# 8. Generating data summary table
+# 10. Generating data summary table
 
 This last chunk is only to create the base for the summary table presented in supplementary informaton. This uses the presence/absence data for the gut contents and the eDNA samples, while it uses the actual abundance for the kick-samples. The table was then expanded externally to R to include more summarising informations.
 
