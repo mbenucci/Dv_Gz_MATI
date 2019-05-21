@@ -708,15 +708,15 @@ gen.sp.edna = gen.sp.edna[]/rowSums(gen.sp.edna)
 gen.sp.edna = cbind(gen.sp.edna, info.edna)
 
 # removing `predator_id` variables and transforming eDNA detections into abundances
-abund.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("predator_id"))]
-abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))][abund.edna[,!c(colnames(abund.edna) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
+occupancy.edna = gen.sp.edna[,!c(colnames(gen.sp.edna) %in% c("predator_id"))]
+occupancy.edna[,!c(colnames(occupancy.edna) %in% c("time","sample_id","site","sample_type"))][occupancy.edna[,!c(colnames(occupancy.edna) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
 # adding genus information to help in plotting
-melt.abund.edna = melt(abund.edna)
-melt.abund.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.abund.edna$variable)
+melt.occupancy.edna = melt(occupancy.edna)
+melt.occupancy.edna$genus = gsub("([_]{1}[A-Za-z0-9-]{+}.{+}[.]{0,1}){0,+}$","", melt.occupancy.edna$variable)
 
 # Rarefaction curves calculated on abundance data without genus information
-inext.edna = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id","sample_type"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
+inext.edna = as.data.frame(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_id","sample_type"))] %>% group_by(site, time) %>% summarise_all(funs(sum)))
 rownames(inext.edna) = paste(inext.edna$site, inext.edna$time, sep="_")
 
 # removing `time`, `sample_id` and `site` variables as no more necessary.
@@ -737,7 +737,7 @@ dev.off()
 ```
 
 ```{r shannon diversity in eDNA}
-edna_diversity = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_type","site"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
+edna_diversity = as.data.frame(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_type","site"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
 
 rownames(edna_diversity) = paste(edna_diversity$sample_id, edna_diversity$time, sep="_")
 sp_richness = rowSums(edna_diversity[,!c(colnames(edna_diversity) %in% c("sample_id","time"))])
@@ -775,13 +775,13 @@ sd(wboct_rich)/sqrt(length(wboct_rich))
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
-# abund.edna$sample_id
-rownames(abund.edna)=paste(abund.edna$sample_id, abund.edna$time, sep="_")
+# occupancy.edna$sample_id
+rownames(occupancy.edna)=paste(occupancy.edna$sample_id, occupancy.edna$time, sep="_")
 
-adonis.edna = abund.edna[,!c(colnames(abund.edna) %in% c("time","site","sample_id","sample_type"))]
+adonis.edna = occupancy.edna[,!c(colnames(occupancy.edna) %in% c("time","site","sample_id","sample_type"))]
 
-fact_site.edna = matrix(c(abund.edna$site), ncol=1)
-fact_time.edna = matrix(c(abund.edna$time), ncol=1)
+fact_site.edna = matrix(c(occupancy.edna$site), ncol=1)
+fact_time.edna = matrix(c(occupancy.edna$time), ncol=1)
 
 adonis.edna = vegdist(as.matrix(adonis.edna))
 
@@ -915,6 +915,7 @@ dev.off()
 ```
 
 ```{r species richness kick-samples}
+
 occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLICATE"))] %>% group_by(time,site,sample_id,sample_type) %>% summarise_all(funs(sum)))
 
 rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
@@ -989,14 +990,14 @@ dev.off()
 # 6. Community composition of eDNA and kick-samples
 
 ```{r merging kick-samples and eDNA frames}
-abund.kick.edna = full_join(abund.edna, occupancy.kick)
-abund.kick.edna[is.na(abund.kick.edna)] <- 0
+occup.kick.edna = full_join(occupancy.edna, occupancy.kick)
+occup.kick.edna[is.na(occup.kick.edna)] <- 0
 
-adonis.kick.edna = abund.kick.edna[,!c(colnames(abund.kick.edna) %in% c("site","sample_id","sample_type","time","REPLICATE"))]
+adonis.kick.edna = occup.kick.edna[,!c(colnames(occup.kick.edna) %in% c("site","sample_id","sample_type","time","REPLICATE"))]
 
-fact_site.edki = matrix(c(abund.kick.edna$site), ncol=1)
-fact_time.edki = matrix(c(abund.kick.edna$time), ncol=1)
-fact_type.edki = matrix(c(abund.kick.edna$sample_type), ncol=1)
+fact_site.edki = matrix(c(occup.kick.edna$site), ncol=1)
+fact_time.edki = matrix(c(occup.kick.edna$time), ncol=1)
+fact_type.edki = matrix(c(occup.kick.edna$sample_type), ncol=1)
 
 adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 9999, method = "jaccard")
 ```
@@ -1034,11 +1035,7 @@ dev.off()
 
 ```{r envfit of communities from October}
 # loading the file
-
-read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1)
-
-
-
+water.measure = read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1)
 ```
 
 
@@ -1048,9 +1045,9 @@ read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1
 ```{r merging guts, and community data sets}
 # Previously the sample type for the gut contents data frame was removed, so we first add it again.
 abund.guts.site$sample_type = "guts"
-abund.kick.edna$sample_type
+occup.kick.edna$sample_type
 
-occup.gut.edna.kick = full_join(abund.guts.site, abund.kick.edna)
+occup.gut.edna.kick = full_join(abund.guts.site, occup.kick.edna)
 occup.gut.edna.kick[is.na(occup.gut.edna.kick)] <- 0
 
 occup.gut.edna.kick = as.data.frame(occup.gut.edna.kick[,!c(colnames(occup.gut.edna.kick) %in% c("predator_id"))] %>% group_by(sample_type,site,time,sample_id) %>% summarise_all(funs(sum)))
@@ -1197,7 +1194,7 @@ This last chunk is only to create the base for the summary table presented in su
 
 ```{r generating data summary table}
 guts.summary = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_id"))] %>% group_by(site,time,predator_id,sample_type) %>% summarise_all(funs(sum)))
-edna.summary = as.data.frame(abund.edna[,!c(colnames(abund.edna) %in% c("sample_id"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
+edna.summary = as.data.frame(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_id"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
 kick.summary = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("sample_id","REPLICATE"))] %>% group_by(site,time, sample_type) %>% summarise_all(funs(sum)))
 
 full.data = full_join(guts.summary, edna.summary)
