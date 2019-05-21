@@ -1036,6 +1036,17 @@ dev.off()
 ```{r envfit of communities from October}
 # loading the file
 water.measure = read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1)
+occup.oct = occup.kick.edna[occup.kick.edna$time == "Oct",]
+
+rownames(occup.oct) = occup.oct$sample_id
+colnames(occup.oct)
+occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
+
+ord = metaMDS(occup.oct, distance = "jaccard", trymax = 200)
+
+## NOTE TO FIX THE ENVFIT!!!!!! CHECK TUTORIALS 
+
+envfit(ord, water.measure)
 ```
 
 
