@@ -35,8 +35,6 @@ pack.list = c("aod","ape","bipartite","boot","devtools","dplyr","EcoSimR","ggplo
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
-
-# "phyloseq",
 ```
 
 ```{r session}
