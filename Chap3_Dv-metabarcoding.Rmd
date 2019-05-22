@@ -1039,17 +1039,14 @@ water.measure = read.csv("data/env_measures/water_measure.csv", sep=",", header=
 occup.oct = occup.kick.edna[occup.kick.edna$time == "Oct",]
 
 rownames(occup.oct) = occup.oct$sample_id
-colnames(occup.oct)
+
 occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
 
 test = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp2+temp3)/3,
                             pH_mean = (pH1+pH2+pH3)/3,
                             cond_mean = (cond1.uS.+cond2.uS.+cond3.uS.)/3))
 
-rownames(occup.oct)
-
 rownames(test) = rownames(water.measure)
-
 test.comm = as.data.frame(t(occup.oct))
 
 sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
@@ -1074,17 +1071,16 @@ sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
 sum.comm = as.data.frame(t(sum.comm))
 colnames(sum.comm) = colnames(occup.oct)
 
-sum.comm
-test
-
 rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
+fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
 
-fit.oct = envfit(ord, test, permu = 9999, na.rm=T)
-
-plot(ord, display="sites")
-plot(fit.oct)
+png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, units = "px", res = 300)
+plot(ord, display="species")
+plot(fit.oct, labels = list(rownames(ord$species)))
+ordiellipse(ord, group=rownames(ord$points), label=T, kind="ehull")
+dev.off()
 ```
 
 
@@ -1119,7 +1115,6 @@ meta.full = metaMDS(adonis.guts.edna.kick, trymax = 200, methods = "jaccard")
 
 ```{r NMDS plot of guts against kick-samples and eDNA}
 # full symbols for May, hollow symbols for October
-
 png("R_images/guts_community_NMDS_jaccard.png", width = 3000, height = 3000, units = "px", res = 300)
 plot(meta.full, type="n", main="Gut contents and Community NMDS", xlim=c(-0.5,0.5), ylim=c(-0.6,0.7))
 points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
@@ -1129,8 +1124,48 @@ points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="O
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.full, group=fact_type.full[,1],col=c("black","gray60"),label=T)
-ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,3,4),label=F,lwd=1)
+ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,4,3),label=F,lwd=1)
 text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
+dev.off()
+```
+
+```{r barplot of guts and community}
+occup.melt = melt(occup.gut.edna.kick)
+
+# Adding order groups to the data frame
+occup.melt$order = "NA"
+occup.melt[grep("Limnesia|Platynothrus", occup.melt$variable),"order"] = "Arachnida"
+occup.melt[grep("Chydoridae|Chydorus|Daphnia|Daphniidae|Diaphanosoma|Eubosmina|Eurycercus|Macrothrix|Polyphemus", occup.melt$variable),"order"] = "Cladocera"
+occup.melt[grep("Dytiscidae|Elmidae|Haliplidae|Limnius|Platambus", occup.melt$variable), "order"] = "Coleoptera"
+occup.melt[grep("Ploima|Xenylla|Podura", occup.melt$variable), "order"] = "Collembola"
+occup.melt[grep("Asellus|Corophium|Crangonyx|Dikerogammarus|Gammaridae|Gammarus", occup.melt$variable), "order"] = "Crustacea"
+occup.melt[grep("Acanthocyclops|Cyclops|Eucyclops|Eudiaptomus|Eurytemora|Mesocyclops", occup.melt$variable), "order"] = "Cyclopoida"
+occup.melt[grep("Polypedilum|Brachycera|Ceratopogonidae|Chironomidae|Chironomus|Cricotopus|Culicoides|Dolichopodidae|Nematocera|Polypedilum|Procladius|Tanytarsus|Psychodidae|Tipulidae", occup.melt$variable), "order"]= "Diptera"
+occup.melt[grep("Caenis|Cloeon", occup.melt$variable), "order"] = "Ephemeroptera"
+occup.melt[grep("Chaetonotus", occup.melt$variable), "order"] = "Gastrotricha"
+occup.melt[grep("Corixa|Corixidae|Micronecta|Nepa|Notonecta|Plea|Velliidae", occup.melt$variable), "order"] = "Hemiptera"
+occup.melt[grep("Placobdella|Erpobdella|Glossiphonia|Helobdella", occup.melt$variable), "order"] = "Hirudinea"
+occup.melt[grep("Hydra", occup.melt$variable), "order"] = "Hydrozoa"
+occup.melt[grep("Sialidae", occup.melt$variable), "order"] = "Megaloptera"
+occup.melt[grep("Theodoxus|Stagnicola|Valvatidae|Segmentina|Anodonta|Bithynia|Bithyniidae|Corbicula|Dreissena|Hydrobiidae|Lymnaea|Lymnaeidae|Physa|Physella|Pisidium|Planorbidae|Planorbis|Radix|Sida|Sphaerium|Unio|Valvata|Potamopyrgus", occup.melt$variable), "order"] = "Mollusca"
+occup.melt[grep("Plectus", occup.melt$variable), "order"] = "Nematoda"
+occup.melt[grep("Bothrioneurum|Allolobophora_chlorotica|Chaetogaster|Lumbricillus|Nais|Ophidonais|Polyarthra|Potamothrix|Stylaria|Synchaeta|Tubifex|Tubificidae|Limnodrilus|Uncinais|Cyprideis|Cypridopsis", occup.melt$variable), "order"] = "Oligochaeta"
+occup.melt[grep("Limnocythere", occup.melt$variable), "order"] = "Ostracoda"
+occup.melt[grep("Stenostomum|Stempellinella", occup.melt$variable), "order"] = "Platyhelminthes"
+occup.melt[grep("Polyarthra|Asplanchna|Brachionus|Euchlanis|Keratella|Philodina", occup.melt$variable), "order"] = "Rotifera"
+occup.melt[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", occup.melt$variable), "order"] = "Trichoptera"
+occup.melt[grep("Coenagrionidae|Erythromma", occup.melt$variable), "order"] = "Zygoptera"
+occup.melt[grep("Liposcelis", occup.melt$variable), "order"] = "Psocoptera"
+
+cols_barplot = c("darkorange", "cyan3", "gold4", "plum2", "red", "gray25", "yellow", "sandybrown",  "springgreen","tomato","palevioletred","darkcyan","khaki4","darkorchid3","gainsboro","tan4", "brown","grey48","black","darkgreen","khaki3","blue")
+
+png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units = "px", res = 300)
+ggplot(occup.melt, aes(sample_type, value)) +
+  geom_bar(stat="identity",position="fill", aes(fill=order)) +
+  scale_fill_manual(values = cols_barplot, name = "") +
+  theme_classic() +
+  labs(x="", y="Community composition (%)", title = "Taxa composition in samples (individual taxa grouped by high rank taxonomy)") +
+  theme(legend.position = "right")
 dev.off()
 ```
 
