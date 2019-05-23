@@ -1075,9 +1075,10 @@ ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
 fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
 
 png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(ord, display="species")
-plot(fit.oct, labels = list(rownames(ord$species)))
-ordiellipse(ord, group=rownames(ord$points), label=T, kind="ehull")
+plot(ord, type="n")#, display="species")
+plot(fit.oct, col="red")
+orditorp(ord, display="species")
+orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","green","green","green","green","green","green","orange","orange","orange","orange","orange","orange"))
 dev.off()
 ```
 
@@ -1136,7 +1137,8 @@ occup.melt[grep("Limnesia|Platynothrus", occup.melt$variable),"order"] = "Arachn
 occup.melt[grep("Chydoridae|Chydorus|Daphnia|Daphniidae|Diaphanosoma|Eubosmina|Eurycercus|Macrothrix|Polyphemus", occup.melt$variable),"order"] = "Cladocera"
 occup.melt[grep("Dytiscidae|Elmidae|Haliplidae|Limnius|Platambus", occup.melt$variable), "order"] = "Coleoptera"
 occup.melt[grep("Ploima|Xenylla|Podura", occup.melt$variable), "order"] = "Collembola"
-occup.melt[grep("Asellus|Corophium|Crangonyx|Dikerogammarus|Gammaridae|Gammarus", occup.melt$variable), "order"] = "Crustacea"
+occup.melt[grep("Asellus", occup.melt$variable), "order"] = "Isopoda"
+occup.melt[grep("Corophium|Crangonyx|Dikerogammarus|Gammaridae|Gammarus", occup.melt$variable), "order"] = "Amphipoda"
 occup.melt[grep("Acanthocyclops|Cyclops|Eucyclops|Eudiaptomus|Eurytemora|Mesocyclops", occup.melt$variable), "order"] = "Cyclopoida"
 occup.melt[grep("Polypedilum|Brachycera|Ceratopogonidae|Chironomidae|Chironomus|Cricotopus|Culicoides|Dolichopodidae|Nematocera|Polypedilum|Procladius|Tanytarsus|Psychodidae|Tipulidae", occup.melt$variable), "order"]= "Diptera"
 occup.melt[grep("Caenis|Cloeon", occup.melt$variable), "order"] = "Ephemeroptera"
@@ -1155,18 +1157,29 @@ occup.melt[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", occup.me
 occup.melt[grep("Coenagrionidae|Erythromma", occup.melt$variable), "order"] = "Zygoptera"
 occup.melt[grep("Liposcelis", occup.melt$variable), "order"] = "Psocoptera"
 
-cols_barplot = c("darkorange", "cyan3", "gold4", "plum2", "red", "gray25", "yellow", "sandybrown",  "springgreen","tomato","palevioletred","darkcyan","khaki4","darkorchid3","gainsboro","tan4", "brown","grey48","black","darkgreen","khaki3","blue")
+cols_barplot = c("red","darkorange", "cyan3", "gold4", "plum2", "gray25", "yellow", "sandybrown",  "springgreen","tomato","palevioletred","darkcyan","goldenrod","khaki4","darkorchid3","gainsboro","tan4", "brown","grey48","black","darkgreen","khaki3","blue")
 
 png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units = "px", res = 300)
 ggplot(occup.melt, aes(sample_type, value)) +
   geom_bar(stat="identity",position="fill", aes(fill=order)) +
   scale_fill_manual(values = cols_barplot, name = "") +
   scale_x_discrete(limits=c("eDNA","kick","guts")) +
-  theme_classic() +
-  facet_grid(.~site) +
+  theme_bw() +
+  facet_grid(time~site) +
   labs(x="", y="Community composition (%)", title = "Taxa composition in samples (individual taxa grouped by high rank taxonomy)") +
   theme(legend.position = "right")
 dev.off()
+
+col_crustacea = c("#00CC99","#006666","#3399CC","#0000FF","#9966FF","#9900FF","#660066","#CC00CC","#FF00FF","#FF66FF","#CCCCCC","#999999")
+
+ggplot(occup.melt[occup.melt$order == "Amphipoda",], aes(sample_type, value))+
+  geom_bar(stat="identity", position="stack", aes(fill=variable)) +
+  scale_fill_manual(values = col_crustacea, name = "") +
+  theme_bw() +
+  facet_grid(cols=vars(site), rows=vars(time)) +
+  labs(x="", y="Crustacea taxa occupancy (count)", title = "Crustacea composition in samples") +
+  theme(legend.position = "right")
+  
 ```
 
 
