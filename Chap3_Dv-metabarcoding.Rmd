@@ -1161,7 +1161,9 @@ png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units 
 ggplot(occup.melt, aes(sample_type, value)) +
   geom_bar(stat="identity",position="fill", aes(fill=order)) +
   scale_fill_manual(values = cols_barplot, name = "") +
+  scale_x_discrete(limits=c("eDNA","kick","guts")) +
   theme_classic() +
+  facet_grid(.~site) +
   labs(x="", y="Community composition (%)", title = "Taxa composition in samples (individual taxa grouped by high rank taxonomy)") +
   theme(legend.position = "right")
 dev.off()
