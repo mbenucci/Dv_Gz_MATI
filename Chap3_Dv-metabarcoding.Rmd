@@ -537,6 +537,10 @@ clean.edna[is.na(clean.edna)] <- 0
 ```
 
 ```{r removing empty taxa}
+# Removing D.villosus contaminations from Rockland Broad (max read = 36)
+clean.edna[grep("RB", clean.edna$site), grep("Dikerogammarus", colnames(clean.edna))] <- 0
+
+# Extracting metadata
 info.guts = clean.guts[,c(colnames(clean.guts) %in% c("time","site","sample_id","sample_type","predator_id"))]
 info.edna = clean.edna[,c(colnames(clean.edna) %in% c("time","site","sample_id","sample_type","predator_id"))]
 
@@ -1179,15 +1183,32 @@ dev.off()
 
 col_crustacea = c("#00CC99","#006666","#3399CC","#0000FF","#9966FF","#9900FF","#660066","#CC00CC","#FF00FF","#FF66FF","#CCCCCC","#999999")
 
-png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(occup.melt[occup.melt$order == "Amphipoda",], aes(sample_type, value))+
+#png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
+ag = ggplot(occup.melt[c(occup.melt$order == "Amphipoda" & occup.melt$site == "GW"),], aes(sample_id, value))+
   geom_bar(stat="identity", position="stack", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
-  facet_grid(cols=vars(site), rows=vars(time)) +
-  labs(x="", y="Crustacea taxa occupancy (count)", title = "Crustacea composition in samples") +
+  facet_grid(.~time) +
+  labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
   theme(legend.position = "right")
-dev.off()
+bw = ggplot(occup.melt[c(occup.melt$order == "Amphipoda" & occup.melt$site == "WB"),], aes(sample_id, value))+
+  geom_bar(stat="identity", position="stack", aes(fill=variable)) +
+  scale_fill_manual(values = col_crustacea, name = "") +
+  theme_bw() +
+  facet_grid(.~time) +
+  labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
+  theme(legend.position = "right")
+cr = ggplot(occup.melt[c(occup.melt$order == "Amphipoda" & occup.melt$site == "RB"),], aes(sample_id, value))+
+  geom_bar(stat="identity", position="stack", aes(fill=variable)) +
+  scale_fill_manual(values = col_crustacea, name = "") +
+  theme_bw() +
+  facet_grid(.~time) +
+  labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
+  theme(legend.position = "right")
+
+grid.arrange(ag, bw, cr, ncol=1, nrow=3)
+
+#dev.off()
 ```
 
 
