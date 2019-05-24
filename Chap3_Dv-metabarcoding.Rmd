@@ -1020,8 +1020,8 @@ png("R_images/kick-eDNA_NMDS_jaccard.png", width = 3000, height = 3000, units = 
 plot(meta.kick.edna, type="n", main="Community NMDS\neDNA and kick-samples by sample type", xlim=c(-1.5,1.5), ylim=c(-1,1.1))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=22)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=15)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=15)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
 orditorp(meta.kick.edna, display="species")
@@ -1073,13 +1073,21 @@ rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
 fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
+```
 
+```{r envfit plot}
 png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, units = "px", res = 300)
-plot(ord, type="n")#, display="species")
+plot(ord, type="n")
+points(ord, select=which(rownames(ord$points) == c("GW1","GW2","GW3","GW4","GW5","GW6")), col="blue", pch=22)
+points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="green", pch=1)
+points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="red", pch=24)
+orditorp(ord, display="sites", cex=1)
+orditorp(ord, display="species", type="n")
 plot(fit.oct, col="red")
-orditorp(ord, display="species")
-orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","green","green","green","green","green","green","orange","orange","orange","orange","orange","orange"))
 dev.off()
+
+#col=c("blue","blue","blue","blue","blue","blue","green","green","green","green","green","green","orange","orange","orange","orange","orange","orange"))
+#points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
 ```
 
 
