@@ -1080,13 +1080,12 @@ png("R_images/envift_on_October_communities.png", width = 3000, height = 3000, u
 plot(ord, type="n")
 points(ord, select=which(rownames(ord$points) == c("GW1","GW2","GW3","GW4","GW5","GW6")), col="blue", pch=22)
 points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="green", pch=1)
-points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="red", pch=24)
-orditorp(ord, display="sites", cex=1)
+points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="orange", pch=24)
+orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"))
 orditorp(ord, display="species", type="n")
-plot(fit.oct, col="red")
+plot(fit.oct, col="red", cex=1)
 dev.off()
 
-#col=c("blue","blue","blue","blue","blue","blue","green","green","green","green","green","green","orange","orange","orange","orange","orange","orange"))
 #points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
 ```
 
@@ -1180,6 +1179,7 @@ dev.off()
 
 col_crustacea = c("#00CC99","#006666","#3399CC","#0000FF","#9966FF","#9900FF","#660066","#CC00CC","#FF00FF","#FF66FF","#CCCCCC","#999999")
 
+png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
 ggplot(occup.melt[occup.melt$order == "Amphipoda",], aes(sample_type, value))+
   geom_bar(stat="identity", position="stack", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
@@ -1187,7 +1187,7 @@ ggplot(occup.melt[occup.melt$order == "Amphipoda",], aes(sample_type, value))+
   facet_grid(cols=vars(site), rows=vars(time)) +
   labs(x="", y="Crustacea taxa occupancy (count)", title = "Crustacea composition in samples") +
   theme(legend.position = "right")
-  
+dev.off()
 ```
 
 
