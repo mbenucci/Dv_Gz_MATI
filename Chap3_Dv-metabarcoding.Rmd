@@ -589,7 +589,7 @@ ggplot(melt.guts, aes(time, value)) +
 
 ```{r prey detection rarefaction curves}
 # removing `sample_type` and `sample_id` variables and transforming detections into abundances
-ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id"))][ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id"))] > 0] <- 1
+ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id","sample_type"))][ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id","sample_type"))] > 0] <- 1
 
 # rarefaction curves
 abund.guts = as.data.frame(ratio.guts)
@@ -1130,8 +1130,8 @@ points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="M
 points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=22)
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.full, group=fact_type.full[,1],col=c("black","gray60"),label=T)
-ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,4,3),label=F,lwd=1)
+ordispider(meta.full, group=fact_site.full[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=F,lwd=1)
 text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
 dev.off()
 ```
