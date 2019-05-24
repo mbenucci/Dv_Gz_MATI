@@ -1181,14 +1181,16 @@ ggplot(occup.melt, aes(sample_type, value)) +
   theme(legend.position = "right")
 dev.off()
 
+# NOTE!!! TO MOVE FROM OCCUPANCY TO ABUNDANCE FOR THE MICROSCOPY!!!
+
 col_crustacea = c("#00CC99","#006666","#3399CC","#0000FF","#9966FF","#9900FF","#660066","#CC00CC","#FF00FF","#FF66FF","#CCCCCC","#999999")
 
 png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(occup.melt[c(occup.melt$order == "Amphipoda" & occup.melt$sample_type == c("eDNA","kick")),], aes(sample_id, value))+
+ggplot(occup.melt[c(occup.melt$order == "Amphipoda" & occup.melt$sample_type == "kick"),], aes(sample_id, value, group=site))+
   geom_bar(stat="identity", position="stack", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
-  facet_grid(site~time) +
+  facet_grid(time~site, scales="free_x") +
   labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
   theme(legend.position = "right")
 dev.off()
