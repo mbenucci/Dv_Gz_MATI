@@ -1183,7 +1183,6 @@ dev.off()
 ```
 
 ```{r summary barplot of amphipod}
-# NOTE!!! TO MOVE FROM OCCUPANCY TO ABUNDANCE FOR THE MICROSCOPY!!!
 melt.kick = melt(abund.kick[,!c(colnames(abund.kick) %in% "REPLICATE")])
 
 melt.kick$order = "NA"
@@ -1211,12 +1210,13 @@ melt.kick[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", melt.kick
 melt.kick[grep("Coenagrionidae|Erythromma", melt.kick$variable), "order"] = "Zygoptera"
 melt.kick[grep("Liposcelis", melt.kick$variable), "order"] = "Psocoptera"
 
-melt.kick[is.na(melt.kick)] <- 0
+# Selecting only Grafham and Wroxham
+melt.dvil.kick = melt.kick[grep("Dikerogammarus_sp|Dikerogammarus_villosus|Gammarus_sp.|Gammarus_tigrinus", melt.kick$variable),]
 
-col_crustacea = c("#00CC99","#006666","#3399CC","#0000FF","#9966FF","#9900FF","#660066","#CC00CC","#FF00FF","#FF66FF","#CCCCCC","#999999")
+col_crustacea = c("#00CC99","#006666","#0000FF","#9966FF")
 
 png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(melt.kick[c(melt.kick$order == "Amphipoda" & melt.kick$sample_type == "kick"),], aes(sample_id, value, group=time))+
+ggplot(melt.dvil.kick[c(melt.dvil.kick$order == "Amphipoda" & melt.dvil.kick$site == c("GW","WB")),], aes(sample_id, value, group=time)) +
   geom_bar(stat="identity", position="dodge", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
