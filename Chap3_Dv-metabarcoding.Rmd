@@ -1168,7 +1168,7 @@ occup.melt[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", occup.me
 occup.melt[grep("Coenagrionidae|Erythromma", occup.melt$variable), "order"] = "Zygoptera"
 occup.melt[grep("Liposcelis", occup.melt$variable), "order"] = "Psocoptera"
 
-cols_barplot = c("red","darkorange", "cyan3", "gold4", "plum2", "gray25", "yellow", "sandybrown",  "springgreen","tomato","palevioletred","darkcyan","goldenrod","khaki4","darkorchid3","gainsboro","tan4", "brown","grey48","black","darkgreen","khaki3","blue")
+cols_barplot = c("red","darkorange", "cyan3", "greenyellow", "plum2", "deeppink", "yellow", "rosybrown",  "green","salmon","palevioletred","aquamarine","goldenrod","khaki4","darkorchid3","gainsboro","tan4", "brown","grey50","black","darkgreen","khaki3","blue")
 
 png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units = "px", res = 300)
 ggplot(occup.melt, aes(sample_type, value)) +
