@@ -1116,7 +1116,7 @@ adonis.guts.edna.kick = vegdist(as.matrix(adonis.guts.edna.kick))
 adonis(adonis.guts.edna.kick~fact_type.full, permutations = 9999, method = "jaccard")
 ```
 
-```{r}
+```{r permanova of guts, eDNA and kick-samples}
 meta.full = metaMDS(adonis.guts.edna.kick, trymax = 200, methods = "jaccard")
 ```
 
@@ -1136,6 +1136,7 @@ ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=
 text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
 dev.off()
 ```
+
 
 ```{r barplot of guts and community}
 occup.melt = melt(occup.gut.edna.kick)
