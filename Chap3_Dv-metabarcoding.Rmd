@@ -1073,7 +1073,7 @@ sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
 sum.comm = as.data.frame(t(sum.comm))
 colnames(sum.comm) = colnames(occup.oct)
 
-rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
+#rankindex(scale(test), sum.comm, c("euc","jac","man","bray","kul"))
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
 fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
@@ -1089,8 +1089,6 @@ orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","
 orditorp(ord, display="species", type="n")
 plot(fit.oct, col="red", cex=1)
 dev.off()
-
-#points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
 ```
 
 
