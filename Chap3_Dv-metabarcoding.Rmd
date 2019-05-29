@@ -1171,13 +1171,14 @@ occup.melt[grep("Liposcelis", occup.melt$variable), "order"] = "Psocoptera"
 cols_barplot = c("red","darkorange", "cyan3", "greenyellow", "plum2", "deeppink", "yellow", "rosybrown",  "green","salmon","palevioletred","aquamarine","goldenrod","khaki4","darkorchid3","gainsboro","tan4", "brown","grey50","black","darkgreen","khaki3","blue")
 
 png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(occup.melt, aes(sample_type, value)) +
+occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(sample_type, value)) +
   geom_bar(stat="identity",position="fill", aes(fill=order)) +
   scale_fill_manual(values = cols_barplot, name = "") +
   scale_x_discrete(limits=c("eDNA","kick","guts")) +
   theme_bw() +
   facet_grid(time~site) +
-  labs(x="", y="Community composition (%)", title = "Taxa composition in samples (individual taxa grouped by high rank taxonomy)") +
+  labs(x="", y="Community composition (%)", title = "Community composition (individual taxa grouped by high rank taxonomy)") +
   theme(legend.position = "right")
 dev.off()
 ```
@@ -1222,7 +1223,7 @@ melt.kick[melt.kick$order == "Amphipoda",] %>%
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
   facet_grid(.~site, scales="free") +
-  labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
+  labs(x="", y="Abundance (count)", title = "Amphipoda kick-samples composition") +
   theme(legend.position = "right")
 dev.off()
 ```
