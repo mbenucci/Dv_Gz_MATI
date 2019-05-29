@@ -1191,7 +1191,7 @@ melt.kick[grep("Chydoridae|Chydorus|Daphnia|Daphniidae|Diaphanosoma|Eubosmina|Eu
 melt.kick[grep("Dytiscidae|Elmidae|Haliplidae|Limnius|Platambus", melt.kick$variable), "order"] = "Coleoptera"
 melt.kick[grep("Ploima|Xenylla|Podura", melt.kick$variable), "order"] = "Collembola"
 melt.kick[grep("Asellus", melt.kick$variable), "order"] = "Isopoda"
-melt.kick[grep("Corophium|Crangonyx|Dikerogammarus|Gammaridae|Gammarus", melt.kick$variable), "order"] = "Amphipoda"
+melt.kick[grep("Corophium|Crangonyx|Dikerogammarus|Gammarus", melt.kick$variable), "order"] = "Amphipoda"
 melt.kick[grep("Acanthocyclops|Cyclops|Eucyclops|Eudiaptomus|Eurytemora|Mesocyclops", melt.kick$variable), "order"] = "Cyclopoida"
 melt.kick[grep("Polypedilum|Brachycera|Ceratopogonidae|Chironomidae|Chironomus|Cricotopus|Culicoides|Dolichopodidae|Nematocera|Polypedilum|Procladius|Tanytarsus|Psychodidae|Tipulidae", melt.kick$variable), "order"]= "Diptera"
 melt.kick[grep("Caenis|Cloeon", melt.kick$variable), "order"] = "Ephemeroptera"
@@ -1210,17 +1210,18 @@ melt.kick[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", melt.kick
 melt.kick[grep("Coenagrionidae|Erythromma", melt.kick$variable), "order"] = "Zygoptera"
 melt.kick[grep("Liposcelis", melt.kick$variable), "order"] = "Psocoptera"
 
-# Selecting only Grafham and Wroxham
-melt.dvil.kick = melt.kick[grep("Dikerogammarus_sp|Dikerogammarus_villosus|Gammarus_sp.|Gammarus_tigrinus", melt.kick$variable),]
-
-col_crustacea = c("#00CC99","#006666","#0000FF","#9966FF")
+col_crustacea = c("olivedrab","springgreen","darkblue","steelblue1","skyblue1","darkorchid2","plum","orchid1","tomato","tan1")
+#c("#00CC99","#006666","#3399CC","#0000FF","#000033","#9900FF","#660066","#CC00CC","#FF00FF","#9966FF","#808080")
 
 png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
-ggplot(melt.dvil.kick[c(melt.dvil.kick$order == "Amphipoda" & melt.dvil.kick$site == c("GW","WB")),], aes(sample_id, value, group=time)) +
+melt.kick[melt.kick$order == "Amphipoda",] %>% 
+  mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
+  mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(sample_id, value, group=time)) +
   geom_bar(stat="identity", position="dodge", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
-  facet_grid(.~site, scales="free_x") +
+  facet_grid(.~site, scales="free") +
   labs(x="", y="Crustacea taxa occupancy (count)") + #, title = "Crustacea composition in samples") +
   theme(legend.position = "right")
 dev.off()
