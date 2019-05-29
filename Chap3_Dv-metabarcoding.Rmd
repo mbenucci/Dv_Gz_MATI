@@ -1113,7 +1113,7 @@ fact_type.full = matrix(c(occup.gut.edna.kick$sample_type), ncol=1)
 
 adonis.guts.edna.kick = vegdist(as.matrix(adonis.guts.edna.kick))
 
-adonis(adonis.guts.edna.kick~fact_type.full, permutations = 9999, method = "jaccard")
+adonis(adonis.guts.edna.kick~fact_type.full*fact_site.full*fact_time.full, permutations = 9999, method = "jaccard")
 ```
 
 ```{r permanova of guts, eDNA and kick-samples}
