@@ -1173,7 +1173,7 @@ cols_barplot = c("red","darkorange", "cyan3", "greenyellow", "plum2", "deeppink"
 png("R_images/barplot_summary_by_order.png", width = 3000, height = 3000, units = "px", res = 300)
 occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_type, value)) +
-  geom_bar(stat="identity",position="fill", aes(fill=order)) +
+  geom_bar(stat="identity", position="fill", aes(fill=order)) +
   scale_fill_manual(values = cols_barplot, name = "") +
   scale_x_discrete(limits=c("eDNA","kick","guts")) +
   theme_bw() +
@@ -1219,10 +1219,10 @@ melt.kick[melt.kick$order == "Amphipoda",] %>%
   mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
   mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_id, value, group=time)) +
-  geom_bar(stat="identity", position="dodge", aes(fill=variable)) +
+  geom_bar(stat="identity", position=position_dodge(1), aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
-  facet_grid(.~site, scales="free") +
+  facet_grid(time~site, scales="free") +
   labs(x="", y="Abundance (count)", title = "Amphipoda kick-samples composition") +
   theme(legend.position = "right")
 dev.off()
