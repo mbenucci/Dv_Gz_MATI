@@ -1,13 +1,13 @@
 TUBE ID	DATE	LOCATION	REPLICATE	ORDER	FAMILY	TAXA	NUMBERS
 GW101	16/05/2017	GW	1	Diptera	Chironomidae	Chironomidae	134
 GW102	16/05/2017	GW	1	Isopoda	Asellidae	Asellus_aquaticus	9
-GW103	16/05/2017	GW	1	Amphipoda	Gammaridae	Dikerogammarus_villosus	6
+GW103	16/05/2017	GW	1	Amphipoda	Gammaridae	Dikerogammarus_villosus	13
 GW106	16/05/2017	GW	1	Diptera	Nematocera	Nematocera	1
 GW107	16/05/2017	GW	1	Oligochaeta	Oligochaeta	Oligochaeta	16
 GW108	16/05/2017	GW	1	Diptera	Tipulidae	Tipulidae	1
 GW109	16/05/2017	GW	1	Amphipoda	Crangonydae	Crangonyx_pseudogracilis	2
 GW201	16/05/2017	GW	2	Diptera	Chironomidae	Chironomidae	43
-GW202	16/05/2017	GW	2	Amphipoda	Gammaridae	Dikerogammarus_villosus	3
+GW202	16/05/2017	GW	2	Amphipoda	Gammaridae	Dikerogammarus_villosus	43
 GW204	16/05/2017	GW	2	Mollusca	Valvatidae	Valvata_piscinalis	3
 GW205	16/05/2017	GW	2	Mollusca	Bithyniidae	Bithynia_tentaculata	1
 GW206	16/05/2017	GW	2	Mollusca	Planorbidae	Planorbis_vortex	1
@@ -36,7 +36,7 @@ GW313	16/05/2017	GW	3	Diptera	Tipulidae	Tipulidae	1
 GW314	16/05/2017	GW	3	Hirudinea	Glossiphonidae	Helobdella_sp.	1
 GW315	16/05/2017	GW	3	Amphipoda	Gammaridae	Gammarus_tigrinus	2
 GW316	16/05/2017	GW	3	Amphipoda	Gammaridae	Gammarus_sp.	1
-GW401	16/05/2017	GW	4	Amphipoda	Gammaridae	Dikerogammarus_villosus	1
+GW401	16/05/2017	GW	4	Amphipoda	Gammaridae	Dikerogammarus_villosus	6
 GW402	16/05/2017	GW	4	Diptera	Chironomidae	Chironomidae	101
 GW403	16/05/2017	GW	4	Oligochaeta	Tubificidae	Tubificidae	10
 GW404	16/05/2017	GW	4	Diptera	Nematocera	Nematocera	3

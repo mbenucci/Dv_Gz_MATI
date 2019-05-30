@@ -13,9 +13,9 @@ WB201	04/10/2017	WB	2	Diptera	Chironomidae	Chironomidae	2
 WB203	04/10/2017	WB	2	Mollusca	Valvatidae	Segmentina_sp.	1
 WB207	04/10/2017	WB	2	Oligochaeta	Oligochaeta	Oligochaeta	1
 WB208	04/10/2017	WB	2	Crustacea	Crangonyctidae	Crangonyx_sp.	1
-WB209	04/10/2017	WB	2	Crustacea	Gammaridae	Dikerogammarus_villosus	3
+WB209	04/10/2017	WB	2	Crustacea	Gammaridae	Dikerogammarus_villosus	4
 WB301	04/10/2017	WB	3	Crustacea	Corophiidae	Corophium_sp.	27
-WB302	04/10/2017	WB	3	Crustacea	Gammaridae	Dikerogammarus_villosus	15
+WB302	04/10/2017	WB	3	Crustacea	Gammaridae	Dikerogammarus_villosus	30
 WB303	04/10/2017	WB	3	Mollusca	Lymnaeidae	Lymnaea_truncatula	1
 WB305	04/10/2017	WB	3	Megaloptera	Sialidae	Sialidae	1
 WB310	04/10/2017	WB	3	Mollusca	Dreissenidae	Dreissena_polymorpha	1
@@ -27,7 +27,7 @@ WB405	04/10/2017	WB	4	Zygoptera	Coenagrionidae	Coenagrionidae	6
 WB406	04/10/2017	WB	4	Hirudinea	Glossiphonidae	Helobdella_stagnalis	1
 WB407	04/10/2017	WB	4	Mollusca	Dreissenidae	Dreissena_polymorpha	7
 WB408	04/10/2017	WB	4	Crustacea	Corophiidae	Corophium_sp.	52
-WB409	04/10/2017	WB	4	Crustacea	Gammaridae	Dikerogammarus_villosus	16
+WB409	04/10/2017	WB	4	Crustacea	Gammaridae	Dikerogammarus_villosus	17
 WB410	04/10/2017	WB	4	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	23
 WB411	04/10/2017	WB	4	Mollusca	Lymnaeidae	Lymnaea_stagnalis	3
 WB412	04/10/2017	WB	4	Mollusca	Neritidae	Theodoxus_fluviatilis	3
@@ -41,14 +41,14 @@ WB502	04/10/2017	WB	5	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	4
 WB505	04/10/2017	WB	5	Mollusca	Dreissenidae	Dreissena_polymorpha	2
 WB506	04/10/2017	WB	5	Crustacea	Corophiidae	Corophium_sp.	49
 WB507	04/10/2017	WB	5	Diptera	Chironomidae	Chironomidae	1
-WB510	04/10/2017	WB	5	Crustacea	Gammaridae	Dikerogammarus_villosus	13
+WB510	04/10/2017	WB	5	Crustacea	Gammaridae	Dikerogammarus_villosus	17
 WB512	04/10/2017	WB	5	Mollusca	Lymnaeidae	Lymnaeidae	1
 WB602	04/10/2017	WB	6	Mollusca	Hydrobiidae	Bithynia_sp.	5
 WB603	04/10/2017	WB	6	Mollusca	Hydrobiidae	Potamopyrgus_antipodarum	5
 WB604	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus_villosus	14
 WB605	04/10/2017	WB	6	Diptera	Chironomidae	Chironomidae	3
 WB606	04/10/2017	WB	6	Crustacea	Corophiidae	Corophium_sp.	48
-WB607	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus_villosus	12
+WB607	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus_villosus	39
 WB608	04/10/2017	WB	6	Crustacea	Gammaridae	Dikerogammarus_villosus	60
 WB611	04/10/2017	WB	6	Mollusca	Sphaeriidae	Pisidium_sp.	1
 WB613	04/10/2017	WB	6	Mollusca	Dreissenidae	Dreissena_polymorpha	6

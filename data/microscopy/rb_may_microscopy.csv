@@ -39,7 +39,7 @@ RB316	18/05/2017	RB	3	Mollusca	Neritidae	Theodoxus_fluviatilis	13
 RB317	18/05/2017	RB	3	Mollusca	Bithyniidae	Bithynia_tentaculata	6
 RB318	18/05/2017	RB	3	Mollusca	Sphaeridae	Pisidium_sp.	10
 RB401	18/05/2017	RB	4	Crustacea	Asellidae	Asellus_aquaticus	3
-RB402	18/05/2017	RB	4	Crustacea	Gammaridae	Gammarus_zaddachi	2
+RB402	18/05/2017	RB	4	Crustacea	Gammaridae	Gammarus_zaddachi	4
 RB403	18/05/2017	RB	4	Zygoptera	Coenagrionidae	Coenagrionidae	2
 RB404	18/05/2017	RB	4	Mollusca	Sphaeridae	Pisidium_sp.	13
 RB405	18/05/2017	RB	4	Mollusca	Planorbidae	Planorbis_contortus	2
@@ -50,7 +50,7 @@ RB408	18/05/2017	RB	4	Hirudinea	Glossiphonidae	Glossiphonia_heteroclita	1
 RB409	18/05/2017	RB	4	Diptera	Chironomidae	Chironomidae	124
 RB410	18/05/2017	RB	4	Coleoptera	Elmidae	Limnius_sp.	1
 RB501	18/05/2017	RB	5	Crustacea	Corophidae	Corophium_sp.	1
-RB502	18/05/2017	RB	5	Crustacea	Gammaridae	Gammarus_zaddachi	16
+RB502	18/05/2017	RB	5	Crustacea	Gammaridae	Gammarus_zaddachi	51
 RB503	18/05/2017	RB	5	Crustacea	Corophidae	Corophium_curvispinum	1
 RB504	18/05/2017	RB	5	Crustacea	Asellidae	Asellus_aquaticus	1
 RB505	18/05/2017	RB	5	Mollusca	Valvatidae	Valvata_piscinalis	1
@@ -69,7 +69,7 @@ RB603	18/05/2017	RB	6	Coleoptera	Elmidae	Elmidae	1
 RB604	18/05/2017	RB	6	Zygoptera	Coenagrionidae	Coenagrionidae	1
 RB606	18/05/2017	RB	6	Diptera	Chironomidae	Chironomidae	1
 RB607	18/05/2017	RB	6	Crustacea	Asellidae	Asellus_aquaticus	3
-RB608	18/05/2017	RB	6	Crustacea	Gammaridae	Gammarus_zaddachi	10
+RB608	18/05/2017	RB	6	Crustacea	Gammaridae	Gammarus_zaddachi	23
 RB609	18/05/2017	RB	6	Crustacea	Corophidae	Corophium_curvispinum	15
 RB610	18/05/2017	RB	6	Zygoptera	Zygoptera	Zygoptera	1
 RB611	18/05/2017	RB	6	Hirudinea	Glossiphonidae	Placobdella_costata	1
