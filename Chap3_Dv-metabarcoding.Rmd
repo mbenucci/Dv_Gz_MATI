@@ -1221,7 +1221,7 @@ melt.kick[melt.kick$order == "Amphipoda",] %>%
   geom_bar(stat="identity", position=position_dodge(1), aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
-  facet_grid(time~site, scales="free") +
+  facet_grid(time~site) +
   labs(x="", y="Abundance (count)", title = "Amphipoda kick-samples composition") +
   theme(legend.position = "right")
 dev.off()
