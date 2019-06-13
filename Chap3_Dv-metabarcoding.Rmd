@@ -597,46 +597,47 @@ ggiNEXT(inext.edna) +
 dev.off()
 ```
 
-```{r shannon diversity in eDNA}
-edna_diversity = as.data.frame(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_type","site"))] %>% group_by(time,sample_id) %>% summarise_all(funs(sum)))
+Calculating the species richness in eDNA samples
 
-rownames(edna_diversity) = paste(edna_diversity$sample_id, edna_diversity$time, sep="_")
-sp_richness = rowSums(edna_diversity[,!c(colnames(edna_diversity) %in% c("sample_id","time"))])
+```{r species richness in eDNA}
+occupancy.edna = as.data.frame(occupancy.edna %>% group_by(site, sample_type, time,sample_id) %>% summarise_all(funs(sum)))
+
+rownames(occupancy.edna) = paste(occupancy.edna$sample_id, occupancy.edna$time, sep="_")
+richness.edna = rowSums(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
 
 # GW May
-gwmay_rich = sp_richness[grep("GW._May", names(sp_richness))]
+gwmay_rich = richness.edna[grep("GW._May", names(richness.edna))]
 mean(gwmay_rich)
 sd(gwmay_rich)/sqrt(length(gwmay_rich))
 
 # GW Oct
-gwoct_rich = sp_richness[grep("GW._Oct", names(sp_richness))]
+gwoct_rich = richness.edna[grep("GW._Oct", names(richness.edna))]
 mean(gwoct_rich)
 sd(gwoct_rich)/sqrt(length(gwoct_rich))
 
-# RB May
-rbmay_rich = sp_richness[grep("RB._May", names(sp_richness))]
-mean(rbmay_rich)
-sd(rbmay_rich)/sqrt(length(rbmay_rich))
-
-# RB Oct
-rboct_rich = sp_richness[grep("RB._Oct", names(sp_richness))]
-mean(rboct_rich)
-sd(rboct_rich)/sqrt(length(rboct_rich))
-
 # WB May
-wbmay_rich = sp_richness[grep("WB._May", names(sp_richness))]
+wbmay_rich = richness.edna[grep("WB._May", names(richness.edna))]
 mean(wbmay_rich)
 sd(wbmay_rich)/sqrt(length(wbmay_rich))
 
 # WB Oct
-wboct_rich = sp_richness[grep("WB._Oct", names(sp_richness))]
+wboct_rich = richness.edna[grep("WB._Oct", names(richness.edna))]
 mean(wboct_rich)
 sd(wboct_rich)/sqrt(length(wboct_rich))
+
+# RB May
+rbmay_rich = richness.edna[grep("RB._May", names(richness.edna))]
+mean(rbmay_rich)
+sd(rbmay_rich)/sqrt(length(rbmay_rich))
+
+# RB Oct
+rboct_rich = richness.edna[grep("RB._Oct", names(richness.edna))]
+mean(rboct_rich)
+sd(rboct_rich)/sqrt(length(rboct_rich))
 ```
 
 ```{r PERMANOVA eDNA}
 # eDNA PERMANOVA
-# occupancy.edna$sample_id
 rownames(occupancy.edna)=paste(occupancy.edna$sample_id, occupancy.edna$time, sep="_")
 
 adonis.edna = occupancy.edna[,!c(colnames(occupancy.edna) %in% c("time","site","sample_id","sample_type"))]
@@ -775,11 +776,13 @@ ggiNEXT(inext.kick) +
 dev.off()
 ```
 
-```{r species richness kick-samples}
+Calculating species richness for kick-samples
 
+```{r species richness kick-samples}
 occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLICATE"))] %>% group_by(time,site,sample_id,sample_type) %>% summarise_all(funs(sum)))
 
 rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
+
 occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))][occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 occupancy.kick[is.na(occupancy.kick)] <- 0
 
@@ -814,6 +817,21 @@ sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
 wboct_kickrich = richness.kick[grep("WB._Oct", names(richness.kick))]
 mean(wboct_kickrich)
 sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
+```
+
+```{r}
+richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","site","time"))])
+#richness.edna = cbind(richness.edna, occupancy.edna[,c(c)])
+  
+ggplot(richness.kick, aes(site, richness.kick)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.3) +
+  geom_jitter(aes(color=time)) +
+  facet_grid(.~site, scales = "free_x") +
+  theme_bw()
+```
+
+```{r}
+boxplot(c(gwmay_kickrich, gwoct_kickrich), c(gwmay_rich, gwoct_rich), c(wbmay_kickrich, wboct_kickrich), c(wbmay_rich, wboct_rich), c(rbmay_kickrich, rboct_kickrich), c(rbmay_rich, rboct_rich), ylab="Species richness", names=c("GW-kick","GW-eDNA","WB-kick","WB-eDNA","RB-kick","RB-eDNA"))
 ```
 
 
