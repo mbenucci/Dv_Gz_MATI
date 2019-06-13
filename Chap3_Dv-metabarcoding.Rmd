@@ -819,21 +819,24 @@ mean(wboct_kickrich)
 sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
 ```
 
-```{r}
-richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","site","time"))])
-#richness.edna = cbind(richness.edna, occupancy.edna[,c(c)])
-  
-ggplot(richness.kick, aes(site, richness.kick)) +
-  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.3) +
-  geom_jitter(aes(color=time)) +
-  facet_grid(.~site, scales = "free_x") +
-  theme_bw()
-```
 
 ```{r}
-boxplot(c(gwmay_kickrich, gwoct_kickrich), c(gwmay_rich, gwoct_rich), c(wbmay_kickrich, wboct_kickrich), c(wbmay_rich, wboct_rich), c(rbmay_kickrich, rboct_kickrich), c(rbmay_rich, rboct_rich), ylab="Species richness", names=c("GW-kick","GW-eDNA","WB-kick","WB-eDNA","RB-kick","RB-eDNA"))
-```
+richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","sample_type","site","time"))])
+colnames(richness.kick)[colnames(richness.kick) == "richness.kick"] <- "richness"
+richness.edna = cbind(richness.edna, occupancy.edna[,c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
+colnames(richness.edna)[colnames(richness.edna) == "richness.edna"] <- "richness"
 
+richness.full = full_join(richness.edna, richness.kick)
+
+png("R_images/species_richness_community_boxplot.png", width=3000, height=3000, units="px", res=300)
+ggplot(richness.full, aes(site, richness)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
+  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
+  facet_grid(.~sample_type, scales = "free_x") +
+  theme_bw() +
+  labs(y="Species richness", x="")
+dev.off()
+```
 
 ```{r PERMANOVA of kick-samples}
 adonis.kick = occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))]
