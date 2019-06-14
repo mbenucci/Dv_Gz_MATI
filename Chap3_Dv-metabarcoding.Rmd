@@ -136,7 +136,8 @@ full.read.depth = rbind(may.read.depth, oct.read.depth)
 ggplot(full.read.depth, aes(time, value)) +
   geom_boxplot(outlier.shape = NA) +
   geom_jitter(color=c("gray30"), alpha=0.5) +
-  theme_bw() + labs(x="Data sets", y="Sample read depth (N reads)")
+  theme_bw() + labs(x="Data sets", y="Sample read depth (N reads)") +
+  theme(axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold"))
 ```
 
 ```{r mean read depth + se}
@@ -781,89 +782,15 @@ ggiNEXT(inext.kick) +
 dev.off()
 ```
 
-Calculating species richness for kick-samples
+Calculating PERMANOVA of kick-samples
 
-```{r species richness kick-samples}
+```{r PERMANOVA of kick-samples}
 occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLICATE"))] %>% group_by(time,site,sample_id,sample_type) %>% summarise_all(funs(sum)))
 
 rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
 
-diversity.kick = occupancy.kick
-diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))][diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
-
-diversity.kick[grep("GW|WB", rownames(diversity.kick)), grep("Dikerogammarus", colnames(diversity.kick))] <- 0
-diversity.kick[grep("RB", rownames(diversity.kick)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(diversity.kick))] <- 0
-
-richness.kick = rowSums(diversity.kick[,!c(colnames(diversity.kick) %in% c("sample_id","site","time","sample_type"))])
-
-richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","sample_type","site","time"))])
-colnames(richness.kick)[colnames(richness.kick) == "richness.kick"] <- "richness"
-richness.edna = cbind(richness.edna, occupancy.edna[,c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
-colnames(richness.edna)[colnames(richness.edna) == "richness.edna"] <- "richness"
-
-richness.full = full_join(richness.edna, richness.kick)
-```
-
-```{r richness boxplots}
-png("R_images/species_richness_community_boxplot.png", width=3000, height=3000, units="px", res=300)
-richness.full %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
-  ggplot(aes(site, richness)) +
-  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
-  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
-  facet_grid(.~sample_type, scales = "free_x") +
-  theme_bw() +
-  labs(y="Species richness", x="")
-dev.off()
-
-shannon.kick = diversity(diversity.kick[,!c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))], index="shannon")
-shannon.kick = cbind(shannon.kick, diversity.kick[,c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))])
-colnames(shannon.kick)[colnames(shannon.kick) == "shannon.kick"] <- "diversity"
-
-png("R_images/shannon_kick-samples_boxplot.png", width=3000, height=3000, units="px", res=300)
-shannon.kick %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
-  ggplot(aes(site, diversity)) +
-  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
-  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
-  facet_grid(.~sample_type, scales = "free_x") +
-  theme_bw() +
-  labs(y="Shannon diversity", x="")
-dev.off()
-```
-
-```{r }
-# GW May
-gwmay_kickrich = richness.kick[grep("GW._May", names(richness.kick))]
-mean(gwmay_kickrich)
-sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
-
-# GW Oct
-gwoct_kickrich = richness.kick[grep("GW._Oct", names(richness.kick))]
-mean(gwoct_kickrich)
-sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
-
-# WB May
-wbmay_kickrich = richness.kick[grep("WB._May", names(richness.kick))]
-mean(wbmay_kickrich)
-sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
-
-# WB Oct
-wboct_kickrich = richness.kick[grep("WB._Oct", names(richness.kick))]
-mean(wboct_kickrich)
-sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
-
-# RB May
-rbmay_kickrich = richness.kick[grep("RB._May", names(richness.kick))]
-mean(rbmay_kickrich)
-sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
-
-# RB Oct
-rboct_kickrich = richness.kick[grep("RB._Oct", names(richness.kick))]
-mean(rboct_kickrich)
-sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
-```
-
-```{r PERMANOVA of kick-samples}
 adonis.kick = occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))]
+adonis.kick[,!c(colnames(adonis.kick) %in% c("time","sample_id","site","sample_type"))][adonis.kick[,!c(colnames(adonis.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
 fact_site.kick = matrix(c(occupancy.kick$site), ncol=1)
 fact_time.kick = matrix(c(occupancy.kick$time), ncol=1)
@@ -892,6 +819,84 @@ ordiellipse(meta.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=
 text(-0.5,-0.4, label=paste0("Stress: ", round(meta.kick$stress,6)))
 dev.off()
 ```
+
+Calculating species richness for kick-samples
+
+```{r diversity indices kick-samples}
+diversity.kick = occupancy.kick
+diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))][diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
+
+diversity.kick[grep("GW|WB", rownames(diversity.kick)), grep("Dikerogammarus", colnames(diversity.kick))] <- 0
+diversity.kick[grep("RB", rownames(diversity.kick)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(diversity.kick))] <- 0
+
+richness.kick = rowSums(diversity.kick[,!c(colnames(diversity.kick) %in% c("sample_id","site","time","sample_type"))])
+
+richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","sample_type","site","time"))])
+colnames(richness.kick)[colnames(richness.kick) == "richness.kick"] <- "richness"
+richness.edna = cbind(richness.edna, occupancy.edna[,c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
+colnames(richness.edna)[colnames(richness.edna) == "richness.edna"] <- "richness"
+
+richness.full = full_join(richness.edna, richness.kick)
+```
+
+```{r richness boxplots}
+png("R_images/species_richness_community_boxplot.png", width=3000, height=3000, units="px", res=300)
+richness.full %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(site, richness)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
+  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
+  facet_grid(.~sample_type, scales = "free_x") +
+  theme_bw() + labs(y="Species richness", x="") +
+  theme(axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold"))
+dev.off()
+
+shannon.kick = diversity(diversity.kick[,!c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))], index="shannon")
+shannon.kick = cbind(shannon.kick, diversity.kick[,c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))])
+colnames(shannon.kick)[colnames(shannon.kick) == "shannon.kick"] <- "diversity"
+
+png("R_images/shannon_kick-samples_boxplot.png", width=3000, height=3000, units="px", res=300)
+shannon.kick %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(site, diversity)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
+  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
+#  facet_grid(.~sample_type, scales = "free_x") +
+  theme_bw() + labs(y="Shannon diversity", x="") +
+  theme(axis.text=element_text(size=12), axis.title=element_text(size=14,face="bold"))
+dev.off()
+```
+
+```{r richness in kick samples}
+# GW May
+gwmay_kickrich = richness.kick[grep("GW._May", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(gwmay_kickrich)
+sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
+
+# GW Oct
+gwoct_kickrich = richness.kick[grep("GW._Oct", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(gwoct_kickrich)
+sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
+
+# WB May
+wbmay_kickrich = richness.kick[grep("WB._May", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(wbmay_kickrich)
+sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
+
+# WB Oct
+wboct_kickrich = richness.kick[grep("WB._Oct", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(wboct_kickrich)
+sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
+
+# RB May
+rbmay_kickrich = richness.kick[grep("RB._May", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(rbmay_kickrich)
+sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
+
+# RB Oct
+rboct_kickrich = richness.kick[grep("RB._Oct", rownames(richness.kick)),!c(colnames(richness.kick) %in% c("sample_id","sample_type","site","time"))]
+mean(rboct_kickrich)
+sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
+```
+
 
 # 6. Community composition of eDNA and kick-samples
 
@@ -993,9 +998,7 @@ plot(fit.oct, col="red", cex=1)
 dev.off()
 ```
 
-
-
-# 3. Detection of prey DNA in gut contents
+# 6. Detection of prey DNA in gut contents
 The predator DNA reads now are equal to 0 across all gut content samples. This allows for calculating the prey DNA ratio within each gut content sample, that will allow also for a niche overlap analysis.
 the prey species detected included also both _Crangonyx pseudogracilis_ and _C. floridanus_. Becuase _C.floridanus_ has been detected in the UK, but hasn't been confirmed in Rockland Broad, the decision was taken to be conservative and pull both Crangonyx species up to the genus level summing their DNA reads.
 Furthermore the taxa `Isopoda`, that should have been assigned to _Asellus aquaticus_, can't really be used for our purposes because of our detected contamination from _Porcellio scaber_. The 1217 read belonging to Isopoda will need to be removed from the gut contents dataset. 
@@ -1399,6 +1402,58 @@ final.data = t(final.data)
 write.csv(final.data, "R_outputs/Data_summary_table.csv")
 ```
 
+# 11. Generation of plots for publication
+
+```{r publication NMDS plot}
+png("R_images/NMDS_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
+par(mfrow=c(2,2))
+plot(meta.edna, type="n", xlim=c(-0.4,0.5), ylim=c(-0.5,0.4))
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=15)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=22)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+text(-0.3,-0.4, label=paste0("Stress: ", round(meta.edna$stress, 4)))
+text(-0.4,0.35, label="A", cex=3)
+
+plot(meta.kick, type="n", xlim=c(-0.6,0.6), ylim=c(-0.6,0.6))
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=15)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=22)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
+text(-0.5,-0.5, label=paste0("Stress: ", round(meta.kick$stress,6)))
+text(-0.55,0.53, label="B", cex=3)
+
+plot(meta.kick.edna, type="n", xlim=c(-0.8,0.8), ylim=c(-0.7,0.7))
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=15)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
+orditorp(meta.kick.edna, display="species")
+ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+text(-0.6,-0.7, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
+text(-0.75,0.63, label="C", cex=3)
+
+plot(ord, type="n", xlim=c(-1.5,1.3), ylim=c(-1.3,1.1))
+points(ord, select=which(rownames(ord$points) == c("GW1","GW2","GW3","GW4","GW5","GW6")), col="blue", pch=22)
+points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="green", pch=1)
+points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="orange", pch=24)
+orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"))
+orditorp(ord, display="species", type="n")
+plot(fit.oct, col="red", cex=1)
+text(-1.4,1, label="D", cex=3)
+dev.off()
+```
 
 ```{r log session info}
 sink("log_session_analysis.txt")
