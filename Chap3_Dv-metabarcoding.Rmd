@@ -601,8 +601,13 @@ Calculating the species richness in eDNA samples
 
 ```{r species richness in eDNA}
 occupancy.edna = as.data.frame(occupancy.edna %>% group_by(site, sample_type, time,sample_id) %>% summarise_all(funs(sum)))
-
 rownames(occupancy.edna) = paste(occupancy.edna$sample_id, occupancy.edna$time, sep="_")
+
+richness.edna = occupancy.edna
+
+richness.edna[grep("eGW|eWB", rownames(richness.edna)), grep("Dikerogammarus", colnames(richness.edna))] <- 0
+richness.edna[grep("eRB", rownames(richness.edna)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(richness.edna))] <- 0
+
 richness.edna = rowSums(occupancy.edna[,!c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
 
 # GW May
@@ -748,7 +753,6 @@ colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
 
 ```{r rarefaction curves on kick-samples}
 # removing high order taxa
-colnames(abund.kick)
 abund.kick = abund.kick[,!c(colnames(abund.kick) %in% c("Trichoptera","Diptera","Oligochaeta","Ostracoda","Araneae","Coleoptera","Mollusca","Zygoptera","Plecoptera","Nematoda"))]
 
 # setting rownames and removing extra variables
@@ -784,51 +788,23 @@ occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLI
 
 rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
 
-richness.kick = occupancy.kick
-richness.kick[,!c(colnames(richness.kick) %in% c("time","sample_id","site","sample_type"))][richness.kick[,!c(colnames(richness.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
+diversity.kick = occupancy.kick
+diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))][diversity.kick[,!c(colnames(diversity.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
-richness.kick = rowSums(richness.kick[,!c(colnames(richness.kick) %in% c("sample_id","site","time","sample_type"))])
+diversity.kick[grep("GW|WB", rownames(diversity.kick)), grep("Dikerogammarus", colnames(diversity.kick))] <- 0
+diversity.kick[grep("RB", rownames(diversity.kick)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(diversity.kick))] <- 0
 
-# GW May
-gwmay_kickrich = richness.kick[grep("GW._May", names(richness.kick))]
-mean(gwmay_kickrich)
-sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
+richness.kick = rowSums(diversity.kick[,!c(colnames(diversity.kick) %in% c("sample_id","site","time","sample_type"))])
 
-# GW Oct
-gwoct_kickrich = richness.kick[grep("GW._Oct", names(richness.kick))]
-mean(gwoct_kickrich)
-sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
-
-# RB May
-rbmay_kickrich = richness.kick[grep("RB._May", names(richness.kick))]
-mean(rbmay_kickrich)
-sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
-
-# RB Oct
-rboct_kickrich = richness.kick[grep("RB._Oct", names(richness.kick))]
-mean(rboct_kickrich)
-sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
-
-# WB May
-wbmay_kickrich = richness.kick[grep("WB._May", names(richness.kick))]
-mean(wbmay_kickrich)
-sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
-
-# WB Oct
-wboct_kickrich = richness.kick[grep("WB._Oct", names(richness.kick))]
-mean(wboct_kickrich)
-sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
-```
-
-
-```{r}
 richness.kick = cbind(richness.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("sample_id","sample_type","site","time"))])
 colnames(richness.kick)[colnames(richness.kick) == "richness.kick"] <- "richness"
 richness.edna = cbind(richness.edna, occupancy.edna[,c(colnames(occupancy.edna) %in% c("sample_id","sample_type","site","time"))])
 colnames(richness.edna)[colnames(richness.edna) == "richness.edna"] <- "richness"
 
 richness.full = full_join(richness.edna, richness.kick)
+```
 
+```{r richness boxplots}
 png("R_images/species_richness_community_boxplot.png", width=3000, height=3000, units="px", res=300)
 richness.full %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(site, richness)) +
@@ -839,8 +815,8 @@ richness.full %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>%
   labs(y="Species richness", x="")
 dev.off()
 
-shannon.kick = diversity(occupancy.kick[,!c(colnames(occupancy.kick) %in% c("site","sample_id","sample_type","time"))], index="shannon")
-shannon.kick = cbind(shannon.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("site","sample_id","sample_type","time"))])
+shannon.kick = diversity(diversity.kick[,!c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))], index="shannon")
+shannon.kick = cbind(shannon.kick, diversity.kick[,c(colnames(diversity.kick) %in% c("site","sample_id","sample_type","time"))])
 colnames(shannon.kick)[colnames(shannon.kick) == "shannon.kick"] <- "diversity"
 
 png("R_images/shannon_kick-samples_boxplot.png", width=3000, height=3000, units="px", res=300)
@@ -850,26 +826,40 @@ shannon.kick %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>%
   geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
   facet_grid(.~sample_type, scales = "free_x") +
   theme_bw() +
-  labs(y="Species richness", x="")
+  labs(y="Shannon diversity", x="")
 dev.off()
+```
 
-shannon.amphipod = occupancy.kick[,c(grep("Dikerogammarus|Gammarus|Crangonyx|Corophium|site|sample_type|sample_id|time", colnames(occupancy.kick)))]
-shannon.amphipod[grep("GW|WB", rownames(shannon.amphipod)), grep("Dikerogammarus", colnames(shannon.amphipod))] <- 0
-shannon.amphipod[grep("RB", rownames(shannon.amphipod)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(shannon.amphipod))] <- 0
+```{r }
+# GW May
+gwmay_kickrich = richness.kick[grep("GW._May", names(richness.kick))]
+mean(gwmay_kickrich)
+sd(gwmay_kickrich)/sqrt(length(gwmay_kickrich))
 
-test = diversity(shannon.amphipod[,!c(colnames(shannon.amphipod) %in% c("site","sample_id","sample_type","time"))], index="shannon")
-test = cbind(test,shannon.amphipod[,c(colnames(shannon.amphipod) %in% c("site","sample_id","sample_type","time"))])
-colnames(test)[colnames(test) == "test"] <- "diversity"
+# GW Oct
+gwoct_kickrich = richness.kick[grep("GW._Oct", names(richness.kick))]
+mean(gwoct_kickrich)
+sd(gwoct_kickrich)/sqrt(length(gwoct_kickrich))
 
-png("R_images/shannon_kick-amphipod_boxplot.png", width=3000, height=3000, units="px", res=300)
-test %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
-  ggplot(aes(site, diversity)) +
-  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
-  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
-  facet_grid(.~sample_type, scales = "free_x") +
-  theme_bw() +
-  labs(y="Species richness", x="", title="Shannon diversity of Amphipods")
-dev.off()
+# WB May
+wbmay_kickrich = richness.kick[grep("WB._May", names(richness.kick))]
+mean(wbmay_kickrich)
+sd(wbmay_kickrich)/sqrt(length(wbmay_kickrich))
+
+# WB Oct
+wboct_kickrich = richness.kick[grep("WB._Oct", names(richness.kick))]
+mean(wboct_kickrich)
+sd(wboct_kickrich)/sqrt(length(wboct_kickrich))
+
+# RB May
+rbmay_kickrich = richness.kick[grep("RB._May", names(richness.kick))]
+mean(rbmay_kickrich)
+sd(rbmay_kickrich)/sqrt(length(rbmay_kickrich))
+
+# RB Oct
+rboct_kickrich = richness.kick[grep("RB._Oct", names(richness.kick))]
+mean(rboct_kickrich)
+sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
 ```
 
 ```{r PERMANOVA of kick-samples}
