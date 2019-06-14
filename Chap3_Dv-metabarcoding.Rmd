@@ -741,6 +741,7 @@ rb.kick$sample_id = paste0(rb.kick$LOCATION, rb.kick$REPLICATE)
 ```{r joining frames}
 abund.kick = full_join(gw.kick, wb.kick)
 abund.kick = full_join(abund.kick, rb.kick)
+abund.kick[is.na(abund.kick)] <- 0
 
 colnames(abund.kick)[colnames(abund.kick) == "LOCATION"] <- "site"
 ```
@@ -783,10 +784,10 @@ occupancy.kick = as.data.frame(abund.kick[,!c(colnames(abund.kick) %in% c("REPLI
 
 rownames(occupancy.kick) = paste(occupancy.kick$sample_id, occupancy.kick$time, sep="_")
 
-occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))][occupancy.kick[,!c(colnames(occupancy.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
-occupancy.kick[is.na(occupancy.kick)] <- 0
+richness.kick = occupancy.kick
+richness.kick[,!c(colnames(richness.kick) %in% c("time","sample_id","site","sample_type"))][richness.kick[,!c(colnames(richness.kick) %in% c("time","sample_id","site","sample_type"))] > 0] <- 1
 
-richness.kick = rowSums(occupancy.kick[,!c(colnames(occupancy.kick) %in% c("sample_id","site","time","sample_type"))])
+richness.kick = rowSums(richness.kick[,!c(colnames(richness.kick) %in% c("sample_id","site","time","sample_type"))])
 
 # GW May
 gwmay_kickrich = richness.kick[grep("GW._May", names(richness.kick))]
@@ -829,12 +830,45 @@ colnames(richness.edna)[colnames(richness.edna) == "richness.edna"] <- "richness
 richness.full = full_join(richness.edna, richness.kick)
 
 png("R_images/species_richness_community_boxplot.png", width=3000, height=3000, units="px", res=300)
-ggplot(richness.full, aes(site, richness)) +
+richness.full %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(site, richness)) +
   geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
   geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
   facet_grid(.~sample_type, scales = "free_x") +
   theme_bw() +
   labs(y="Species richness", x="")
+dev.off()
+
+shannon.kick = diversity(occupancy.kick[,!c(colnames(occupancy.kick) %in% c("site","sample_id","sample_type","time"))], index="shannon")
+shannon.kick = cbind(shannon.kick, occupancy.kick[,c(colnames(occupancy.kick) %in% c("site","sample_id","sample_type","time"))])
+colnames(shannon.kick)[colnames(shannon.kick) == "shannon.kick"] <- "diversity"
+
+png("R_images/shannon_kick-samples_boxplot.png", width=3000, height=3000, units="px", res=300)
+shannon.kick %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(site, diversity)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
+  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
+  facet_grid(.~sample_type, scales = "free_x") +
+  theme_bw() +
+  labs(y="Species richness", x="")
+dev.off()
+
+shannon.amphipod = occupancy.kick[,c(grep("Dikerogammarus|Gammarus|Crangonyx|Corophium|site|sample_type|sample_id|time", colnames(occupancy.kick)))]
+shannon.amphipod[grep("GW|WB", rownames(shannon.amphipod)), grep("Dikerogammarus", colnames(shannon.amphipod))] <- 0
+shannon.amphipod[grep("RB", rownames(shannon.amphipod)), grep("Gammarus_zaddachi|Gammarus_sp.", colnames(shannon.amphipod))] <- 0
+
+test = diversity(shannon.amphipod[,!c(colnames(shannon.amphipod) %in% c("site","sample_id","sample_type","time"))], index="shannon")
+test = cbind(test,shannon.amphipod[,c(colnames(shannon.amphipod) %in% c("site","sample_id","sample_type","time"))])
+colnames(test)[colnames(test) == "test"] <- "diversity"
+
+png("R_images/shannon_kick-amphipod_boxplot.png", width=3000, height=3000, units="px", res=300)
+test %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(site, diversity)) +
+  geom_boxplot(aes(fill=time), outlier.shape = NA, alpha=0.9) +
+  geom_point(position=position_jitterdodge(dodge.width = 0.85), aes(fill=time), color="black", pch=21, size=2, alpha=0.5) +
+  facet_grid(.~sample_type, scales = "free_x") +
+  theme_bw() +
+  labs(y="Species richness", x="", title="Shannon diversity of Amphipods")
 dev.off()
 ```
 
