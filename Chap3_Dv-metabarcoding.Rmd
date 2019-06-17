@@ -1407,7 +1407,7 @@ write.csv(final.data, "R_outputs/Data_summary_table.csv")
 ```{r publication quality NMDS plot}
 png("R_images/NMDS_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
 lay.matrix = matrix(c(1,2,3,4,5,5), ncol=2, nrow=3, byrow=T)
-layout(lay.matrix, heights=c(2,2,0.5), widths=c(2,2))
+layout(lay.matrix, heights=c(2,2,1), widths=c(2,2))
 
 plot(meta.edna, type="n", xlim=c(-0.4,0.5), ylim=c(-0.5,0.4))
 points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
@@ -1458,7 +1458,7 @@ text(-1.4,1, label="D", cex=3)
 # NOTE: Legend to be sorted into a 2x2 format!!!
 
 plot.new()
-legend("top", legend=c("Grafham Water","Wroxham Broad","Rockand Broad"), text.width=max(sapply(c("Grafham Water","Wroxham Broad","Rockand Broad"), strwidth)), col=c("blue","green","orange"), lwd=5, cex=1, horiz = TRUE)
+legend("top", legend=c("Grafham Water (May)","Grafham Water (Oct)","Wroxham Broad (May)","Wroxham Broad (Oct)","Rockand Broad (May)","Rockand Broad (Oct)"), col=c("blue","blue","green","green","orange","orange"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
 dev.off()
 ```
 
