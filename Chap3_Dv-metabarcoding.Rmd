@@ -1419,7 +1419,7 @@ points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="O
 ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 text(-0.3,-0.4, label=paste0("Stress: ", round(meta.edna$stress, 4)))
-text(-0.4,0.35, label="A", cex=3)
+text(-0.55,0.35, label="A", cex=3)
 
 plot(meta.kick, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.6))
 points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
@@ -1431,7 +1431,7 @@ points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="O
 ordispider(meta.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 text(-0.5,-0.5, label=paste0("Stress: ", round(meta.kick$stress,6)))
-text(-0.55,0.53, label="B", cex=3)
+text(-0.8,0.53, label="B", cex=3)
 
 plot(meta.kick.edna, type="n", xlim=c(-0.8,0.8), ylim=c(-0.7,0.7))
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
@@ -1442,23 +1442,23 @@ points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1
 points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
 orditorp(meta.kick.edna, display="species")
 ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=F,lwd=1)
+ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=T,lwd=1)
 text(-0.6,-0.7, label=paste0("Stress: ",round(meta.kick.edna$stress, 6)))
-text(-0.75,0.63, label="C", cex=3)
+text(-0.5,0.65, label="eDNA", cex=2)
+text(0.6,0.53, label="kick", cex=2)
+text(-0.95,0.63, label="C", cex=3)
 
 plot(ord, type="n", xlim=c(-1.5,1.3), ylim=c(-1.3,1.1))
 points(ord, select=which(rownames(ord$points) == c("GW1","GW2","GW3","GW4","GW5","GW6")), col="blue", pch=22)
-points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="green", pch=1)
-points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="orange", pch=24)
+points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="black", pch=1)
+points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="red", pch=24)
 orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"))
 orditorp(ord, display="species", type="n")
 plot(fit.oct, col="red", cex=1)
-text(-1.4,1, label="D", cex=3)
-
-# NOTE: Legend to be sorted into a 2x2 format!!!
+text(-1.7,1, label="D", cex=3)
 
 plot.new()
-legend("top", legend=c("Grafham Water (May)","Grafham Water (Oct)","Wroxham Broad (May)","Wroxham Broad (Oct)","Rockand Broad (May)","Rockand Broad (Oct)"), col=c("blue","blue","green","green","orange","orange"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
+legend("top", legend=c("Grafham Water (May)","Grafham Water (Oct)","Wroxham Broad (May)","Wroxham Broad (Oct)","Rockand Broad (May)","Rockand Broad (Oct)"), col=c("blue","blue","black","black","red","red"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
 dev.off()
 ```
 
