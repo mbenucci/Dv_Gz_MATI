@@ -1230,6 +1230,8 @@ dev.off()
 ```{r summary barplot of amphipod}
 melt.kick = melt(abund.kick[,!c(colnames(abund.kick) %in% "REPLICATE")])
 
+melt.kick[grep("Dikerogammarus", melt.kick$variable),c("sample_id","time","value")]
+
 melt.kick$order = "NA"
 melt.kick[grep("Limnesia|Platynothrus", melt.kick$variable),"order"] = "Arachnida"
 melt.kick[grep("Chydoridae|Chydorus|Daphnia|Daphniidae|Diaphanosoma|Eubosmina|Eurycercus|Macrothrix|Polyphemus", melt.kick$variable),"order"] = "Cladocera"
@@ -1263,7 +1265,7 @@ melt.kick[melt.kick$order == "Amphipoda",] %>%
   mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
   mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_id, value, group=time)) +
-  geom_bar(stat="identity", position=position_dodge(1), aes(fill=variable)) +
+  geom_bar(stat="identity", aes(fill=variable)) +
   scale_fill_manual(values = col_crustacea, name = "") +
   theme_bw() +
   facet_grid(time~site, scales="free_x") +
