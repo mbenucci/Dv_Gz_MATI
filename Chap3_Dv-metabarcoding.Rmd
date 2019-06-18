@@ -1468,23 +1468,23 @@ dev.off()
 ```
 
 ```{r legend for multiplot}
-name.multi=c("Cladocera","Amphipoda","Chironomidae","Diptera","Hydrozoa","Mollusca","Oligochaeta","Platyhelminthes","Rotifera","Trichoptera")
+name.multi=c("Cladocera","Amphipoda","Diptera","Hydrozoa","Mollusca","Oligochaeta","Platyhelminthes","Rotifera","Trichoptera")
 col.multi=c("cyan3","red","yellow","darkcyan","darkorchid3","tan4","grey48","darkgreen","khaki3")
 ```
 
-
 ```{r publication quality Dv-Gz multiplot}
 png("R_images/Dv-Gz_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
-lay.matrix = matrix(c(1,1,2,3), ncol=2, nrow=2, byrow=T)
-layout(lay.matrix, heights=c(2,2), widths=c(3,1))
+lay.matrix = matrix(c(1,1,1,1,0,2,2,0,3,3,3,3), ncol=4, nrow=3, byrow=T)
+layout(lay.matrix, heights=c(2,2,1), widths=c(0.5,1,1,0.5))
 #layout.show(3)
 
 # Bipartite network
 plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=col.network, high.y=2, low.y=1)
-legend("bottom", legend=name.multi, fill=col.multi, border="black", bty="n", ncol=5, xpd=T, cex=2)
+text(0,3, label="A", cex=3)
+legend("bottom", legend=name.multi, fill=col.multi, border="black", bty="n", ncol=3, xpd=T, cex=1.7)
 
 # NMDS of gut contents Dv-Gz
-plot(meta.guts, type="n", xlim=c(-2,1.5), ylim=c(-1.5,1.2))
+plot(meta.guts, type="n", xlim=c(-1.5,1.5), ylim=c(-1.5,1.2))
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
 points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
 points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=15)
@@ -1493,12 +1493,14 @@ points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="M
 points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
 ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-text(-1.5,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
+text(-1,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
+text(-2, 1, label="B", cex=3)
 
 # NMDS legend
 plot.new()
-legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broad - May","Wroxham Broad - Oct","Rockand Broad - May","Rockand Broad - Oct"), col=c("blue","blue","black","black","red","red"), pch=c(15,22,19,1,17,24), cex=2, ncol=2)
+legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broad - May","Wroxham Broad - Oct","Rockand Broad - May","Rockand Broad - Oct"), col=c("blue","blue","black","black","red","red"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
 dev.off()
+#15,22,19,1,17,24
 ```
 
 
