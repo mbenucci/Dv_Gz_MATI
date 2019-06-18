@@ -1504,6 +1504,36 @@ dev.off()
 #15,22,19,1,17,24
 ```
 
+```{r multiplot for the summary barplots}
+png("R_images/Summary_barplot_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
+# barplot of communities
+a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(sample_type, value)) +
+  geom_bar(stat="identity", position="fill", aes(fill=order)) +
+  scale_fill_manual(values = cols_barplot, name = "") +
+  scale_x_discrete(limits=c("eDNA","kick","guts")) +
+  theme_bw() +
+  facet_grid(time~site) +
+  labs(x="", y="Community composition (%)") +
+  theme(legend.position = "right")
+
+# barplot of amphipod
+b = melt.kick[melt.kick$order == "Amphipoda",] %>% 
+  mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
+  mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
+  ggplot(aes(sample_id, value, group=time)) +
+  geom_bar(stat="identity", aes(fill=variable)) +
+  scale_fill_manual(values = col_crustacea, name = "") +
+  theme_bw() +
+  facet_grid(time~site, scales="free_x") +
+  labs(x="", y="Abundance (count)") +
+  theme(legend.position = "right")
+
+grid.arrange(a, b, nrow=2)
+
+dev.off()
+```
+
 
 ```{r log session info}
 sink("log_session_analysis.txt")
