@@ -1467,12 +1467,11 @@ legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broa
 dev.off()
 ```
 
-```{r legend for multiplot}
+```{r publication quality Dv-Gz multiplot}
+# legend for multiplot
 name.multi=c("Cladocera","Amphipoda","Diptera","Hydrozoa","Mollusca","Oligochaeta","Platyhelminthes","Rotifera","Trichoptera")
 col.multi=c("cyan3","red","yellow","darkcyan","darkorchid3","tan4","grey48","darkgreen","khaki3")
-```
 
-```{r publication quality Dv-Gz multiplot}
 png("R_images/Dv-Gz_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
 lay.matrix = matrix(c(1,1,1,1,0,2,2,0,3,3,3,3), ncol=4, nrow=3, byrow=T)
 layout(lay.matrix, heights=c(2,2,1), widths=c(0.5,1,1,0.5))
