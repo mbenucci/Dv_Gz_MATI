@@ -1475,14 +1475,22 @@ name.multi=c("Cladocera","Amphipoda","Diptera","Hydrozoa","Mollusca","Oligochaet
 col.multi=c("cyan3","red","yellow","darkcyan","darkorchid3","tan4","grey48","darkgreen","khaki3")
 
 png("R_images/Dv-Gz_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
-lay.matrix = matrix(c(1,1,1,1,0,2,2,0,3,3,3,3), ncol=4, nrow=3, byrow=T)
-layout(lay.matrix, heights=c(2,2,1), widths=c(0.5,1,1,0.5))
+lay.matrix = matrix(c(1,2,3,3,4,4), ncol=2, nrow=3, byrow=T)
+layout(lay.matrix, heights=c(2,1,3), widths=c(1,1))
 #layout.show(3)
 
-# Bipartite network
-plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=col.network, high.y=2, low.y=1)
-text(0,3, label="A", cex=3)
-legend("bottom", legend=name.multi, fill=col.multi, border="black", bty="n", ncol=3, xpd=T, cex=1.7)
+# NMDS of guts against eDNA and kick samples
+plot(meta.full, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.7))
+points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
+points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
+points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=15)
+points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=22)
+points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
+points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
+ordispider(meta.full, group=fact_site.full[,1],col=c("blue","orange","green"),label=T)
+ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=F,lwd=1)
+text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
+text(-1, 0.6, label="A", cex=3)
 
 # NMDS of gut contents Dv-Gz
 plot(meta.guts, type="n", xlim=c(-1.5,1.5), ylim=c(-1.5,1.2))
@@ -1500,9 +1508,17 @@ text(-2, 1, label="B", cex=3)
 # NMDS legend
 plot.new()
 legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broad - May","Wroxham Broad - Oct","Rockand Broad - May","Rockand Broad - Oct"), col=c("blue","blue","black","black","red","red"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
+
+# Bipartite network
+plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lablength=5, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=col.network, high.y=2, low.y=1)
+text(0,3, label="C", cex=3)
+legend("bottom", legend=name.multi, fill=col.multi, border="black", bty="n", ncol=3, xpd=T, cex=1.7)
 dev.off()
-#15,22,19,1,17,24
 ```
+```{r}
+
+```
+
 
 ```{r multiplot for the summary barplots}
 png("R_images/Summary_barplot_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
