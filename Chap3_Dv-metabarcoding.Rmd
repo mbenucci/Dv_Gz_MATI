@@ -31,7 +31,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_session_packages.txt`.
 
 ```{r packages loading, include=F}
-pack.list = c("aod","ape","bipartite","boot","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
+pack.list = c("aod","bipartite","boot","cowplot","devtools","dplyr","EcoSimR","ggplot2","ggsignif","gplots","grid","gridExtra","iNEXT","lattice","lme4","lmtest","MASS","mgcv","msa","network","plyr","reshape2","spaa","stringi","tidyr","UpSetR","vegan","zoo")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -1257,12 +1257,14 @@ melt.kick[grep("Ceraclea|Ecnomus|Leptoceridae|Lype|Oecetis|Oxyethira", melt.kick
 melt.kick[grep("Coenagrionidae|Erythromma", melt.kick$variable), "order"] = "Zygoptera"
 melt.kick[grep("Liposcelis", melt.kick$variable), "order"] = "Psocoptera"
 
+melt.kick$variable = gsub("_"," ", melt.kick$variable)
+
 col_crustacea = c("olivedrab","springgreen","darkblue","steelblue1","skyblue1","darkorchid2","plum","orchid1","tomato","tan1")
 #c("#00CC99","#006666","#3399CC","#0000FF","#000033","#9900FF","#660066","#CC00CC","#FF00FF","#9966FF","#808080")
 
 png("R_images/barplot_summary_amphipod.png", width = 3000, height = 3000, units = "px", res = 300)
 melt.kick[melt.kick$order == "Amphipoda",] %>% 
-  mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
+  mutate(variable = factor(variable, levels=c("Corophium sp.", "Corophium curvispinum", "Crangonyx sp.", "Crangonyx floridanus", "Crangonyx pseudogracilis", "Gammarus sp.", "Gammarus tigrinus", "Gammarus zaddachi", "Dikerogammarus sp.", "Dikerogammarus villosus"))) %>% 
   mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_id, value, group=time)) +
   geom_bar(stat="identity", aes(fill=variable)) +
@@ -1335,7 +1337,12 @@ For the bipartite network the gut contents data frame with the detections of pre
 ```{r food web network plus bipartite}
 # Summing prey DNA reads by predator ID, site and time.
 food.web = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_type","sample_id"))] %>% group_by(site, predator_id, time) %>% summarise_all(funs(sum)))
-rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time, sep="_")
+
+# Renaming for pubblication
+food.web[food.web$predator_id == "D.vil", "predator_id"] <- "Dv"
+food.web[food.web$predator_id == "G.zad", "predator_id"] <- "Gz"
+
+rownames(food.web) = paste(food.web$predator_id, food.web$site, food.web$time)
 
 # Removing metadata column and transposing to have predators in columns and prey in rows.
 food.web = food.web[,!c(colnames(food.web) %in% c("site","predator_id","time"))]
@@ -1349,7 +1356,7 @@ rownames(food.web) = gsub("[a-z]{3,12}_",".", rownames(food.web))
 Setting up the order of the top and bottom levels in the bipartite plot, this will allow to colour code the taxa. The taxa in this plot were organised by higher rank (e.g. Diptera, Amphipoda, Oligochaeta, etc.). While the order of the taxa in the plot is organised according to the interactions, in the legend the order was organised by high rank to make it more accessible and easy to read.
 
 ```{r plot order}
-seq.high=c("D.vil_GW_May","D.vil_GW_Oct","D.vil_WB_May","D.vil_WB_Oct","G.zad_RB_May","G.zad_RB_Oct")
+seq.high=c("Dv GW May","Dv GW Oct","Dv WB May","Dv WB Oct","Gz RB May","Gz RB Oct")
 
 seq.low=c("C.luridus","C.laricomalis","T.tubifex","A.chlorotica","P.acuta","D.polymorpha","G.tigrinus","Cricotopus","C.brevilabris","Daphnia","P.pediculus","G.zaddachi","P.moldaviensis","B.vejdovskyanum","L.hoffmeisteri","C.floridanus","C.pseudogracilis","C.multisetosum","C.sp._BOLD:AAI4299","Hydra","H.oligactis","C.diastrophus","S.lacustris","S.sthenum","A.sieboldi","E.dilatata","L.phaeopa","Chironomidae","T.medius","S.crystallina")
 
@@ -1457,9 +1464,6 @@ text(-0.95,0.63, label="C", cex=3)
 
 # envfit of community
 plot(ord, type="n", xlim=c(-1.5,1.3), ylim=c(-1.3,1.1), cex.axis=2, cex.lab=1.5)
-#points(ord, select=which(rownames(ord$points) == c("GW1","GW2","GW3","GW4","GW5","GW6")), col="blue", pch=22)
-#points(ord, select=which(rownames(ord$points) == c("WB1","WB2","WB3","WB4","WB5","WB6")), col="black", pch=1)
-#points(ord, select=which(rownames(ord$points) == c("RB1","RB2","RB3","RB4","RB5","RB6")), col="red", pch=24)
 orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"))
 orditorp(ord, display="species", type="n")
 plot(fit.oct, col="red", cex=1)
@@ -1472,14 +1476,29 @@ legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broa
 dev.off()
 ```
 
+
 ```{r publication quality Dv-Gz multiplot}
-png("R_images/Dv-Gz_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
+png("R_images/Dv-Gz_multiplot.png",width = 5000, height = 4000, units = "px", res = 300)
 lay.matrix = matrix(c(1,2,3,3), ncol=2, nrow=2, byrow=T)
-layout(lay.matrix, heights=c(2,1), widths=c(1,1))
-#layout.show(3)
+layout(lay.matrix, heights=c(2,1), widths=c(2,2))
+
+# NMDS of gut contents Dv-Gz
+plot(meta.guts, type="n", xlim=c(-1.5,1.5), ylim=c(-1.5,1.2), cex.axis=2, cex.lab=1.5)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=15)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=22)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
+text(1,-1.5,label=paste0("Stress: ",round(meta.guts$stress, 4)), cex=1.5)
+text(-1.45, 1.2, label="A", cex=3)
+text(-1, 0.7, label="D.villosus", cex=2.5)
+text(1, 1.1, label="G.zaddachi", cex=2.5)
 
 # NMDS of guts against eDNA and kick samples
-plot(meta.full, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.7), cex.axis=2, cex.lab=2)
+plot(meta.full, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.7), cex.axis=2, cex.lab=1.5)
 points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
 points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
 points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=15)
@@ -1488,21 +1507,11 @@ points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="M
 points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
 ordispider(meta.full, group=fact_site.full[,1],col=c("blue","orange","green"),label=T)
 ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=F,lwd=1)
-text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
-text(-1, 0.6, label="A", cex=3)
-
-# NMDS of gut contents Dv-Gz
-plot(meta.guts, type="n", xlim=c(-1.5,1.5), ylim=c(-1.5,1.2), cex.axis=2, cex.lab=2)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=15)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=22)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
-ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-text(-1,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 6)))
-text(-2, 1, label="B", cex=3)
+text(0.5, -0.5, label=paste0("Stress: ",round(meta.full$stress, 4)), cex=1.5)
+text(-0.6, 0.63, label="B", cex=3)
+text(-0.4, 0.4, label="eDNA", cex=2.5)
+text(0, 0.7, label="gut", cex=2.5)
+text(0.4, 0.4, label="kick", cex=2.5)
 
 # NMDS legend
 plot.new()
@@ -1519,12 +1528,10 @@ col.multi=c("cyan3","red","yellow","darkcyan","darkorchid3","tan4","grey48","dar
 plotweb(sortweb(food.web, sort.order="seq", sequence=list(seq.higher=seq.high, seq.lower=seq.low)), method = "normal", y.width.low=0.1, y.width.high=0.08,	y.lim=c(0,3), labsize=2, low.lab.dis=0.1, high.lab.dis=0.1, low.spacing=0.012, high.spacing = 0.07, text.rot=90, col.high="black", col.low=col.network, high.y=2, low.y=1)
 legend("bottom", legend=name.multi, fill=col.multi, border="black", bty="n", ncol=3, xpd=T, cex=1.7)
 dev.off()
-
-# NOTE expand species name
 ```
 
 ```{r multiplot for the summary barplots}
-png("R_images/Summary_barplot_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
+png("R_images/Summary_barplot_multiplot.png",width = 4000, height = 5000, units = "px", res = 300)
 # barplot of communities
 a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_type, value)) +
@@ -1534,11 +1541,13 @@ a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>%
   theme_bw() +
   facet_grid(time~site) +
   labs(x="", y="Community composition (%)") +
-  theme(legend.position = "right")
+  theme(legend.position = "right", axis.text = element_text(size = 15), 
+        strip.text = element_text(size=15), axis.title = element_text(size =15),
+        legend.text = element_text(size=15))
 
 # barplot of amphipod
 b = melt.kick[melt.kick$order == "Amphipoda",] %>% 
-  mutate(variable = factor(variable, levels=c("Corophium_sp.", "Corophium_curvispinum", "Crangonyx_sp.", "Crangonyx_floridanus", "Crangonyx_pseudogracilis", "Gammarus_sp.", "Gammarus_tigrinus", "Gammarus_zaddachi", "Dikerogammarus_sp.", "Dikerogammarus_villosus"))) %>% 
+  mutate(variable = factor(variable, levels=c("Corophium sp.", "Corophium curvispinum", "Crangonyx sp.", "Crangonyx floridanus", "Crangonyx pseudogracilis", "Gammarus sp.", "Gammarus tigrinus", "Gammarus zaddachi", "Dikerogammarus sp.", "Dikerogammarus villosus"))) %>% 
   mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_id, value, group=time)) +
   geom_bar(stat="identity", aes(fill=variable)) +
@@ -1546,9 +1555,11 @@ b = melt.kick[melt.kick$order == "Amphipoda",] %>%
   theme_bw() +
   facet_grid(time~site, scales="free_x") +
   labs(x="", y="Abundance (count)") +
-  theme(legend.position = "right")
+  theme(legend.position = "right", axis.text = element_text(size = 15), 
+        strip.text = element_text(size=15), axis.title = element_text(size =15),
+        legend.text = element_text(size=15))
 
-grid.arrange(a, b, nrow=2)
+plot_grid(a, b, labels=c("A","B"), nrow=2, label_size=25, label_fontface=1)
 
 dev.off()
 ```
