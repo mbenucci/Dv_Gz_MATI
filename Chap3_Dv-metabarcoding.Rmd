@@ -1541,6 +1541,7 @@ a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>%
   theme_bw() +
   facet_grid(time~site) +
   labs(x="", y="Community composition (%)") +
+  guides(fill=guide_legend(ncol=1)) +
   theme(legend.position = "right", axis.text = element_text(size = 15), 
         strip.text = element_text(size=15), axis.title = element_text(size =15),
         legend.text = element_text(size=15))
