@@ -949,18 +949,28 @@ dev.off()
 water.measure = read.csv("data/env_measures/water_measure.csv", sep=",", header=T, row.names = 1)
 occup.oct = occup.kick.edna[occup.kick.edna$time == "Oct",]
 
-rownames(occup.oct) = occup.oct$sample_id
-
-occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
-
-test = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp2+temp3)/3,
+env.measures = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp2+temp3)/3,
                             pH_mean = (pH1+pH2+pH3)/3,
                             cond_mean = (cond1.uS.+cond2.uS.+cond3.uS.)/3))
 
-rownames(test) = rownames(water.measure)
-test.comm = as.data.frame(t(occup.oct))
+rownames(env.measures) = rownames(water.measure)
+rownames(occup.oct) = occup.oct$sample_id
 
-sum.comm = as.data.frame(test.comm %>% transmute(GW1 = GW1+eGW1,
+#TO SORT COMMON COLUMN TO ADD Dv TO ENV VARIABLES!!!
+
+#env.measures = left_join(env.measures, occup.oct[grep("e", rownames(occup.oct), invert=T),c("Dikerogammarus_villosus", "Dikerogammarus_sp.")])
+
+
+
+
+occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
+
+
+
+
+envfit.comm = as.data.frame(t(occup.oct))
+
+sum.comm = as.data.frame(envfit.comm %>% transmute(GW1 = GW1+eGW1,
                         GW2 = GW2+eGW2,
                         GW3 = GW3+eGW3,
                         GW4 = GW4+eGW4,
@@ -983,7 +993,7 @@ sum.comm = as.data.frame(t(sum.comm))
 colnames(sum.comm) = colnames(occup.oct)
 
 ord = metaMDS(sum.comm, distance = "jaccard", trymax = 200)
-fit.oct = envfit(ord, test, permu = 9999, na.rm=T, labels=T)
+fit.oct = envfit(ord, env.measures, permu = 9999, na.rm=T, labels=T)
 ```
 
 ```{r envfit plot}
