@@ -955,18 +955,14 @@ env.measures = as.data.frame(water.measure %>% transmute(temp_mean = (temp1+temp
 
 rownames(env.measures) = rownames(water.measure)
 rownames(occup.oct) = occup.oct$sample_id
+env.measures$sample_id = rownames(water.measure)
 
-#TO SORT COMMON COLUMN TO ADD Dv TO ENV VARIABLES!!!
+env.measures = left_join(env.measures, occup.oct[grep("e", rownames(occup.oct), invert=T),c("Dikerogammarus_villosus", "Dikerogammarus_sp.","sample_id")])
 
-#env.measures = left_join(env.measures, occup.oct[grep("e", rownames(occup.oct), invert=T),c("Dikerogammarus_villosus", "Dikerogammarus_sp.")])
+env.measures$Dikerogammarus_villosus = env.measures$Dikerogammarus_sp. + env.measures$Dikerogammarus_villosus
 
-
-
-
-occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type"))]
-
-
-
+occup.oct = occup.oct[,!c(colnames(occup.oct) %in% c("time","sample_id","site","sample_type","Dikerogammarus_sp.","Dikerogammaus_villosus"))]
+env.measures = env.measures[,!c(colnames(env.measures) %in% c("sample_id", "Dikerogammarus_sp."))]
 
 envfit.comm = as.data.frame(t(occup.oct))
 
@@ -1421,7 +1417,7 @@ final.data = t(final.data)
 write.csv(final.data, "R_outputs/Data_summary_table.csv")
 ```
 
-# 11. Generation of plots for publication
+# 11. Producing plots for publication
 
 ```{r publication quality NMDS plot}
 png("R_images/NMDS_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
@@ -1550,7 +1546,7 @@ a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>%
   scale_x_discrete(limits=c("eDNA","kick","guts")) +
   theme_bw() +
   facet_grid(time~site) +
-  labs(x="", y="Community composition (%)") +
+  labs(x="", y="Composition (%)") +
   guides(fill=guide_legend(ncol=1)) +
   theme(legend.position = "right", axis.text = element_text(size = 15), 
         strip.text = element_text(size=15), axis.title = element_text(size =15),
@@ -1574,7 +1570,6 @@ plot_grid(a, b, labels=c("A","B"), nrow=2, label_size=25, label_fontface=1)
 
 dev.off()
 ```
-
 
 ```{r log session info}
 sink("log_session_analysis.txt")
