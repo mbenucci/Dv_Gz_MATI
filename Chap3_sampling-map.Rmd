@@ -9,18 +9,18 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r environment setup, include=F}
 ## R(v3.5.1 - Win)
-.libPaths(c("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win", .libPaths("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win")))
+#.libPaths(c("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win", .libPaths("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_win")))
 
 ## R(v3.5.1 - OSX)
 #.libPaths(c("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx", .libPaths("D:\\Dropbox\\PhD Hull\\PhD docs\\Thesis\\R_stats\\rlib3.5_osx")))
 
 ## R(v3.5.1 - Ubuntu)
-#.libPaths(c("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix", .libPaths("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix")))
+.libPaths(c("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix", .libPaths("/home/mb/Dropbox/PhD Hull/PhD docs/Thesis/R_stats/rlib3.5_unix")))
 ```
 
 ```{r directory setup, include=F}
 dir()
-#rm(list=ls())
+rm(list=ls())
 ls()
 ```
 
@@ -29,7 +29,7 @@ ls()
 The analysis was done in R (R Core Team, 2018) using the environment and packages as specified below, and in `log_map-creation.txt`.
 
 ```{r packages loading, include=T}
-pack.list = c("broom","devtools","dplyr","ggplot2","ggsn","leaflet","maps","maptools","mapview","raster","RColorBrewer","rgdal","rgeos","rworldmap","tmap")
+pack.list = c("broom","cowplot","devtools","dplyr","ggplot2","ggsn","leaflet","maps","maptools","mapview","raster","RColorBrewer","rgdal","rgeos","rworldmap","tmap")
 new.packages = pack.list[!(pack.list %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, repos="https://cran.rstudio.com")
 lapply(pack.list, require, character.only=T)
@@ -61,84 +61,129 @@ Adding the labels short name
 
 ```{r}
 lakes.coords$Short.Name = c("GW","WB","RB")
-```
-
-
-```{r map plot}
-uk_shape = readOGR("maps/shapefiles/GB_IRworld.shp")
-
-# Because we have coordinates in National Grid, we convert into WGS84
-wgs84 = '+proj=longlat +datum=WGS84'
-uk_shape_wgs = spTransform(uk_shape, CRS(wgs84))
-
-uk_map = fortify(uk_shape_wgs)
-
-# Saving map to file directly
-png("maps/Site_locations.png", width=600, height=820, units="px")
-ggplot(uk_map) +
-  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=lakes.coords, aes(Longitude,Latitude), color="black", cex=3) +
-  geom_text(data=lakes.coords, aes(Longitude,Latitude, label=Short.Name), nudge_x=-0.4, cex=4) +
-  coord_fixed(2) +
-  theme_void()
-dev.off()
-
-## FROM HERE!
+lakes.coords$Number = c("1","2","3")
 ```
 
 Importing the lakes shapefiles to plot the sampling points
 
-```{r wroxham shapefile}
-wroxham_shape = readOGR("maps/shapefiles/TG_SurfaceWater_Area.shp")
-
+```{r loading and converting shapefiles}
+uk_shape = readOGR("maps/shapefiles/GB_IRworld.shp")
 # Because we have coordinates in National Grid, we convert into WGS84
-wroxham_wgs = spTransform(wroxham_shape, CRS(wgs84))
-wb_map = fortify(wroxham_wgs)
+wgs84 = '+proj=longlat +datum=WGS84'
+uk_shape_wgs = spTransform(uk_shape, CRS(wgs84))
+uk_map = fortify(uk_shape_wgs)
 
-png("maps/Wroxham_sampling_locations.png", width=600, height=820, units="px")
-ggplot(wb_map) +
-  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=wb.sites, aes(Longitude, Latitude), color="red", cex=3) +
-  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.0001, cex=4) +
-  xlim(1.40,1.429) + ylim(52.694,52.705) +
-  coord_fixed(2) +
-  theme_void()
-dev.off()
-```
+broads_shape = readOGR("maps/shapefiles/TG_SurfaceWater_Area.shp")
+# Because we have coordinates in National Grid, we convert into WGS84
+broads_wgs = spTransform(broads_shape, CRS(wgs84))
+broads_map = fortify(broads_wgs)
 
-```{r grafham shapefile}
 grafham_shape = readOGR("maps/shapefiles/TL_SurfaceWater_Area.shp")
 gw.sites
 # Because we have coordinates in National Grid, we convert into WGS84
 grafham_wgs = spTransform(grafham_shape, CRS(wgs84))
 gw_map = fortify(grafham_wgs)
+```
 
-png("maps/Grafham_sampling_locations.png", width=820, height=600, units="px")
-ggplot(gw_map) +
+Plotting the UK map
+
+```{r map plot}
+# Saving map to file directly
+png("maps/Site_locations.png", width=3000, height=4000, units="px", res=300)
+ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=gw.sites, aes(Longitude, Latitude), color="red", cex=3) +
-  geom_text(data=gw.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.001, cex=4) +
-  xlim(-0.35,-0.28) + ylim(52.278,52.315) +
+  geom_point(data=lakes.coords, aes(Longitude,Latitude), shape=c(21,22,24), fill=c("black","blue","red"), cex=3) +
+  geom_text(data=lakes.coords, aes(Longitude,Latitude, label=Number), nudge_x=-0.6, cex=6) +
   coord_fixed(2) +
+  theme_void() +
+  north(uk_map, symbol=12, location="topleft")
+dev.off()
+```
+
+
+
+Plotting Grafham Water
+
+```{r grafham individual map}
+png("maps/Grafham_sampling_locations.png", width=4000, height=4000, units="px", res=300)
+ggplot(gw_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=gw.sites, aes(Longitude, Latitude), shape=21, fill="black", cex=4) +
+  geom_text(data=gw.sites, aes(Longitude, Latitude, label=Title), nudge_x=0.001, nudge_y=0.0008, cex=7, angle=45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("GW", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("GW", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("GW", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(-0.343,-0.285), ylim=c(52.285,52.312)) +
   theme_void()
 dev.off()
 ```
 
-```{r rockland shapefile}
-rockland_shape = readOGR("maps/shapefiles/TG_SurfaceWater_Area.shp")
+```{r}
+gw.sites
+```
 
-# Because we have coordinates in National Grid, we convert into WGS84
-rockland_wgs = spTransform(rockland_shape, CRS(wgs84))
-rb_map = fortify(rockland_wgs)
 
-png("maps/Rockland_sampling_locations.png", width=820, height=600, units="px")
-ggplot(rb_map) +
-  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
-  geom_point(data=rb.sites, aes(Longitude, Latitude), color="red", cex=3) +
-  geom_text(data=rb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.001, nudge_y=0.0001, cex=4) +
-  xlim(1.4364,1.4470) + ylim(52.5914,52.5972) +
-  coord_fixed(2) +
+Plotting Wroxham Broad
+
+```{r wroxham individual map}
+png("maps/Wroxham_sampling_locations.png", width=4000, height=4000, units="px", res=300)
+ggplot(broads_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=wb.sites, aes(Longitude, Latitude), shape=22, fill="blue", cex=4) +
+  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=0.0003, nudge_y=-0.0002, cex=7, angle=-45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("WB", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("WB", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("WB", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(1.409,1.423), ylim=c(52.695,52.704)) +
   theme_void()
+dev.off()
+```
+
+Plotting Rockland Broad
+
+```{r rockland individual map}
+png("maps/Rockland_sampling_locations.png", width=4000, height=4000, units="px", res=300)
+ggplot(broads_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=rb.sites, aes(Longitude, Latitude),shape=24, fill="red", cex=4) +
+  geom_text(data=rb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.00025, nudge_y=-0.0001, cex=6, angle=45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("RB", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("RB", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("RB", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(1.4368,1.4467), ylim=c(52.5915,52.5966)) +
+  theme_void()
+dev.off()
+```
+
+```{r maps multiplot for publication}
+png("maps/map_multiplot.png", width=6000, height=6000, units="px", res=300)
+uk = ggplot(uk_map) +
+  geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
+  geom_point(data=lakes.coords, aes(Longitude,Latitude), shape=c(21,22,24), fill=c("black","blue","red"), cex=3) +
+  geom_text(data=lakes.coords, aes(Longitude,Latitude, label=Number), nudge_x=-0.6, cex=6) +
+  coord_fixed(2) +
+  theme_void() +
+  north(uk_map, symbol=12, location="topleft")
+
+gw = ggplot(gw_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=gw.sites, aes(Longitude, Latitude), shape=21, fill="black", cex=4) +
+  geom_text(data=gw.sites, aes(Longitude, Latitude, label=Title), nudge_x=0.001, nudge_y=0.0008, cex=7, angle=45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("GW", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("GW", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("GW", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(-0.343,-0.285), ylim=c(52.285,52.312)) +
+  theme_void()
+
+wb = ggplot(broads_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=wb.sites, aes(Longitude, Latitude), shape=22, fill="blue", cex=4) +
+  geom_text(data=wb.sites, aes(Longitude, Latitude, label=Title), nudge_x=0.0003, nudge_y=-0.0002, cex=7, angle=-45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("WB", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("WB", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("WB", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(1.409,1.423), ylim=c(52.695,52.704)) +
+  theme_void()
+
+rb = ggplot(broads_map) +
+  geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
+  geom_point(data=rb.sites, aes(Longitude, Latitude),shape=24, fill="red", cex=4) +
+  geom_text(data=rb.sites, aes(Longitude, Latitude, label=Title), nudge_x=-0.00025, nudge_y=-0.0001, cex=6, angle=45, check_overlap=T) +
+  geom_text(data=lakes.coords[grep("RB", lakes.coords$Short.Name),], aes(Longitude,Latitude, label=paste(lakes.coords[grep("RB", lakes.coords$Short.Name),"Number"],"\n",lakes.coords[grep("RB", lakes.coords$Short.Name),"ID"])), color="black", cex=15) +
+  coord_cartesian(xlim=c(1.4368,1.4467), ylim=c(52.5915,52.5966)) +
+  theme_void()
+
+plot_grid(uk, gw, wb, rb, labels=c("","","",""), nrow=2, ncol=2)
 dev.off()
 ```
 
@@ -150,5 +195,5 @@ sessionInfo()
 citation()
 sink()
 
-print("END")
+print("end")
 ```
