@@ -93,14 +93,14 @@ Plotting the UK map
 
 ```{r map plot}
 # Saving map to file directly
-png("maps/Site_locations.png", width=3000, height=4000, units="px", res=300)
+png("maps/UK_map.png", width=3000, height=4000, units="px", res=300)
 ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
   geom_point(data=lakes.coords, aes(Longitude,Latitude), shape=c(21,22,24), fill=c("black","blue","red"), cex=3) +
   geom_text(data=lakes.coords, aes(Longitude,Latitude, label=Number), nudge_x=-0.3, cex=6) +
   coord_fixed(2) +
   theme_void() +
-  north(uk_map, symbol=12, location="topleft")
+  north(uk_map, symbol=12, location="bottomleft")
 dev.off()
 ```
 
@@ -153,7 +153,7 @@ dev.off()
 ```
 
 ```{r maps multiplot for publication}
-png("maps/map_multiplot.png", width=6000, height=6000, units="px", res=300)
+png("maps/Sites_locations.png", width=6000, height=6000, units="px", res=300)
 uk = ggplot(uk_map) +
   geom_polygon(aes(long,lat,group = group), fill="white", color="black") +
   geom_point(data=lakes.coords, aes(Longitude,Latitude), shape=c(21,22,24), fill=c("black","blue","red"), cex=6) +
@@ -171,7 +171,7 @@ gw = ggplot(gw_map) +
   coord_cartesian(xlim=c(-0.343,-0.285), ylim=c(52.285,52.312)) +
   theme_void() +
   blank() +
-  ggsn::scalebar(location="bottomleft", x.min=-0.342, x.max=-0.33, y.min=52.286, y.max=52.289, dist=600, dist_unit="m", st.dist=0.2, height=0.15, transform=T) +
+  ggsn::scalebar(location="bottomleft", x.min=-0.3425, x.max=-0.33, y.min=52.286, y.max=52.289, dist=600, dist_unit="m", st.dist=0.2, height=0.15, transform=T) +
   theme(panel.border=element_rect(color="black", fill=NA, size=2), plot.margin=unit(c(0,0,0.25,0.25), "cm"))
 
 wb = ggplot(broads_map) +
@@ -184,8 +184,8 @@ wb = ggplot(broads_map) +
   blank() +
   theme_void() +
   blank() +
-  ggsn::scalebar(location="topleft", x.min=1.409, x.max=1.41, y.min=52.701, y.max=52.7039, dist=200, dist_unit="m", st.dist=0.05, height=0.05, transform=T) +
-  theme(panel.border=element_rect(color="black", fill=NA, size=2), plot.margin=unit(c(0.25,0.25,0,0), "cm"))
+  ggsn::scalebar(location="topleft", x.min=1.409, x.max=1.41, y.min=52.7015, y.max=52.704, dist=150, dist_unit="m", st.dist=0.05, height=0.06, transform=T) +
+  theme(panel.border=element_rect(color="black", fill=NA, size=2), plot.margin=unit(c(0.25,0,0,0.25), "cm"))
 
 rb = ggplot(broads_map) +
   geom_polygon(aes(long,lat,group = group), fill="grey60", color="black") +
@@ -196,7 +196,7 @@ rb = ggplot(broads_map) +
   theme_void() +
   blank() +
   ggsn::scalebar(location="topright", x.min=1.4457, x.max=1.4467, y.min=52.5960, y.max=52.5966, dist=100, dist_unit="m", st.dist=0.1, height=0.15, transform=T) +
-  theme(panel.border=element_rect(color="black", fill=NA, size=2), plot.margin=unit(c(0.25,0,0,0.25), "cm"))
+  theme(panel.border=element_rect(color="black", fill=NA, size=2), plot.margin=unit(c(0.25,0.25,0,0), "cm"))
 
 plot_grid(uk, gw, rb, wb, nrow=2)
 dev.off()
