@@ -1563,7 +1563,7 @@ b = melt.kick[melt.kick$order == "Amphipoda",] %>%
         strip.text = element_text(size=15), axis.title = element_text(size =15),
         legend.text = element_text(size=15))
 
-plot_grid(a, b, labels=c("A","B"), nrow=2, label_size=25, label_fontface=1)
+plot_grid(a, b, labels=c("a)","b)"), nrow=2, label_size=25, label_fontface=1)
 
 dev.off()
 ```
