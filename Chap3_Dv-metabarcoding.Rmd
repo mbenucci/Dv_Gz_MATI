@@ -194,7 +194,7 @@ disc.oct = c("Abramis_brama","Achlya","Actinopteri","Albugo_candida","Anatidae",
 clean.oct = reads.oct17[!(rownames(reads.oct17) %in% disc.oct),]
 ```
 
-The contamination control is based maninly on the `POSITIVE` samples. Those included single-specie tissue DNA of _Osmia bicornis_ (Megachilidae); and the proportion of other taxa detected in those single-specie samples will be the base on which the contamination threshold will be calculated.
+The contamination control is based maninly on the `POSITIVE` samples. Those included single-specie tissue DNA of _Osmia bicornis_ (Linnaeus, 1758); and the proportion of other taxa detected in those single-specie samples will be the base on which the contamination threshold will be calculated.
 
 ```{r contamination control}
 pos.may = clean.may[,grep("POS", colnames(clean.may))]
