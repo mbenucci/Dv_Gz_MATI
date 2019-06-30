@@ -516,6 +516,16 @@ for (i in o.row){
 filter.oct[o.row,unique(o.col)]
 ```
 
+Before preocessing the gut contents info, we calculate predator to prey DNA ratio.
+
+```{r prey-predator ratio}
+mean(c(rowSums(filter.may[filter.may$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100))
+sd(c(rowSums(filter.may[filter.may$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100))/sqrt(length(c(rowSums(filter.may[filter.may$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Dikerogammarus_villosus", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100)))
+
+mean(c(rowSums(filter.may[filter.may$predator_id == "Gammarus_zaddachi", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Gammarus_zaddachi", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100))
+sd(c(rowSums(filter.may[filter.may$predator_id == "Gammarus_zaddachi", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Gammarus_zaddachi", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100))/sqrt(length(c(rowSums(filter.may[filter.may$predator_id == "Gammarus_zaddachi", !c(colnames(filter.may) %in% c("site","sample_id","time","sample_type","predator_id"))])*100,rowSums(filter.oct[filter.oct$predator_id == "Gammarus_zaddachi", !c(colnames(filter.oct) %in% c("site","sample_id","time","sample_type","predator_id"))])*100)))
+```
+
 Now that predators DNA ratio have been removed, the focus can move towards the prey id. The current data are going to be saved into ".csv" files before continuing.
 
 ```{r saving files}
@@ -1040,10 +1050,10 @@ ggplot(melt.guts, aes(time, value)) +
 
 ```{r prey detection rarefaction curves}
 # removing `sample_type` and `sample_id` variables and transforming detections into abundances
-ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id","sample_type"))][ratio.guts[,!c(colnames(ratio.guts) %in% c("time","site","predator_id","sample_id","sample_type"))] > 0] <- 1
+abund.guts = as.data.frame(ratio.guts)
+abund.guts[,!c(colnames(abund.guts) %in% c("time","site","predator_id","sample_id","sample_type"))][abund.guts[,!c(colnames(abund.guts) %in% c("time","site","predator_id","sample_id","sample_type"))] > 0] <- 1
 
 # rarefaction curves
-abund.guts = as.data.frame(ratio.guts)
 abund.guts.site = as.data.frame(abund.guts[,!c(colnames(abund.guts) %in% c("sample_id","sample_type"))] %>% group_by(time, site, predator_id) %>% summarise_all(funs(sum)))
 
 # replacing predator id with initials
@@ -1417,19 +1427,19 @@ write.csv(final.data, "R_outputs/Data_summary_table.csv")
 # 11. Producing plots for publication
 
 ```{r publication quality NMDS plot}
-png("R_images/NMDS_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
-lay.matrix = matrix(c(1,2,3,0,4,4), ncol=2, nrow=3, byrow=T)
+png("R_images/NMDS_multiplot.png",width = 4000, height = 4000, units = "px", res = 310)
+lay.matrix = matrix(c(1,2,3,4,5,5), ncol=2, nrow=3, byrow=T)
 layout(lay.matrix, heights=c(2,2,1), widths=c(2,2))
 
 # NMDS eDNA only
 plot(meta.edna, type="n", xlim=c(-0.4,0.5), ylim=c(-0.5,0.4), cex.axis=2, cex.lab=1.5)
-points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20)
-points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1)
-points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=15)
-points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=22)
-points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17)
-points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T)
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="May"),col="black",pch=20, cex=2)
+points(meta.edna, select=which(fact_site.edna[,1]=="WB" & fact_time.edna[,1]=="Oct"),col="black",pch=1, cex=2)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="May"),col="blue",pch=15, cex=2)
+points(meta.edna, select=which(fact_site.edna[,1]=="GW" & fact_time.edna[,1]=="Oct"),col="blue",pch=22, cex=2)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="May"),col="red",pch=17, cex=2)
+points(meta.edna, select=which(fact_site.edna[,1]=="RB" & fact_time.edna[,1]=="Oct"),col="red",pch=24, cex=2)
+ordispider(meta.edna, group=fact_site.edna[,1],col=c("blue","orange","green"),label=T, cex=2)
 ordiellipse(meta.edna, group=fact_site.edna[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 text(0.4,-0.4, label=paste0("Stress: ", round(meta.edna$stress, 4)), cex=1.5)
 text(-0.55,0.35, label="a)", cex=3)
@@ -1437,24 +1447,40 @@ text(-0.5,-0.4,label="eDNA", cex=2.5)
 
 # NMDS kick-samples only
 plot(meta.kick, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.6), cex.axis=2, cex.lab=1.5)
-points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20)
-points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1)
-points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=15)
-points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=22)
-points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17)
-points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T)
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="May"),col="black",pch=20, cex=2)
+points(meta.kick, select=which(fact_site.kick[,1]=="WB" & fact_time.kick[,1]=="Oct"),col="black",pch=1, cex=2)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="May"),col="blue",pch=15, cex=2)
+points(meta.kick, select=which(fact_site.kick[,1]=="GW" & fact_time.kick[,1]=="Oct"),col="blue",pch=22, cex=2)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="May"),col="red",pch=17, cex=2)
+points(meta.kick, select=which(fact_site.kick[,1]=="RB" & fact_time.kick[,1]=="Oct"),col="red",pch=24, cex=2)
+ordispider(meta.kick, group=fact_site.kick[,1],col=c("blue","orange","green"),label=T, cex=2)
 ordiellipse(meta.kick, group=fact_site.kick[,1],kind="ehull",lty=c(1,3,5),label=F,lwd=1)
 text(0.6,-0.5, label=paste0("Stress: ", round(meta.kick$stress, 4)), cex=1.5)
 text(-0.8,0.53, label="b)", cex=3)
 text(-0.7,-0.5,label="kick", cex=2.5)
 
+# NMDS eDNA vs kick-samples
+plot(meta.kick.edna, type="n", xlim=c(-0.8,0.8), ylim=c(-0.7,0.7), cex.axis=2, cex.lab=1.5)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20, cex=2)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1, cex=2)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=15, cex=2)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22, cex=2)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17, cex=2)
+points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24, cex=2)
+orditorp(meta.kick.edna, display="species", type="n", cex=1.2)
+ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T, cex=2)
+ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=T,lwd=1)
+text(0.7,-0.6, label=paste0("Stress: ",round(meta.kick.edna$stress, 4)), cex=1.5)
+text(-0.65,0.7, label="eDNA", cex=2.5)
+text(0.75,0.57, label="kick", cex=2.5)
+text(-0.95,0.63, label="c)", cex=3)
+
 # envfit of community
 plot(ord, type="n", xlim=c(-1.5,1.3), ylim=c(-1.3,1.1), cex.axis=2, cex.lab=1.5)
-orditorp(ord, display="sites", cex=1, col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"))
-orditorp(ord, display="species", type="n")
+orditorp(ord, display="sites", col=c("blue","blue","blue","blue","blue","blue","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","darkgreen","orange","orange","orange","orange","orange","orange"), cex=2)
+orditorp(ord, display="species", type="n", cex=1.2)
 plot(fit.oct, col="red", cex=2, p.max=0.1)
-text(-1.7,1, label="c)", cex=3)
+text(-1.7,1, label="d)", cex=3)
 text(-1.5,-1.2,label="envfit", cex=2.5)
 
 # Common legend
@@ -1466,59 +1492,44 @@ dev.off()
 
 ```{r publication quality Dv-Gz multiplot}
 png("R_images/Dv-Gz_multiplot.png",width = 4000, height = 4000, units = "px", res = 300)
-lay.matrix = matrix(c(1,0,2,3,4,4), ncol=2, nrow=3, byrow=T)
-layout(lay.matrix, heights=c(2,2,1), widths=c(2,2))
+lay.matrix = matrix(c(1,2,3,3), ncol=2, nrow=2, byrow=T)
+layout(lay.matrix, heights=c(2,0.5), widths=c(2,2))
 
 # NMDS of gut contents Dv-Gz
 plot(meta.guts, type="n", xlim=c(-1.5,1.5), ylim=c(-1.2,1.5), cex.axis=2, cex.lab=1.5)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20)
-points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=15)
-points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=22)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17)
-points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="May"),col="black",pch=20, cex=2)
+points(meta.guts, select=which(fact_site.guts[,1]=="WB" & fact_time.guts[,1]=="Oct"),col="black",pch=1, cex=2)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="May"),col="blue",pch=15, cex=2)
+points(meta.guts, select=which(fact_site.guts[,1]=="GW" & fact_time.guts[,1]=="Oct"),col="blue",pch=22, cex=2)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="May"),col="red",pch=17, cex=2)
+points(meta.guts, select=which(fact_site.guts[,1]=="RB" & fact_time.guts[,1]=="Oct"),col="red",pch=24, cex=2)
 ordiellipse(meta.guts,group=fact_predator.guts[,1],kind="ehull",lty=c(1,5),label=F,lwd=1)
-ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T)
-text(1,-1.2,label=paste0("Stress: ",round(meta.guts$stress, 4)), cex=1.5)
-text(-1.8, 1.4, label="a)", cex=3)
-text(-1.1, 0.6, label="D.villosus", cex=2.5)
-text(1, 1.5, label="G.zaddachi", cex=2.5)
+ordispider(meta.guts,group=fact_predator.guts[,1],col=c("blue","orange"),label=T, cex=2)
+text(1,-1.6,label=paste0("Stress: ",round(meta.guts$stress, 4)), cex=1.5)
+text(-1.4, 2.5, label="a)", cex=3)
+text(-1.1, 0.8, label="D.villosus", cex=2.5)
+text(1, 1.1, label="G.zaddachi", cex=2.5)
 
 # NMDS of guts against eDNA and kick samples
 plot(meta.full, type="n", xlim=c(-0.5,0.5), ylim=c(-0.6,0.7), cex.axis=2, cex.lab=1.5)
-points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20)
-points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1)
-points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=15)
-points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=22)
-points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17)
-points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24)
-ordispider(meta.full, group=fact_site.full[,1],col=c("blue","orange","green"),label=T)
+points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="May"),col="black",pch=20, cex=2)
+points(meta.full, select=which(fact_site.full[,1]=="WB" & fact_time.full[,1]=="Oct"),col="black",pch=1, cex=2)
+points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="May"),col="blue",pch=15, cex=2)
+points(meta.full, select=which(fact_site.full[,1]=="GW" & fact_time.full[,1]=="Oct"),col="blue",pch=22, cex=2)
+points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="May"),col="red",pch=17, cex=2)
+points(meta.full, select=which(fact_site.full[,1]=="RB" & fact_time.full[,1]=="Oct"),col="red",pch=24, cex=2)
+ordispider(meta.full, group=fact_site.full[,1],col=c("blue","orange","green"),label=T, cex=2)
 ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=F,lwd=1)
-text(0.5, -0.5, label=paste0("Stress: ",round(meta.full$stress, 4)), cex=1.5)
-text(-0.9, 0.63, label="c)", cex=3)
+text(0.3, -0.55, label=paste0("Stress: ",round(meta.full$stress, 4)), cex=1.5)
+text(-0.45, 0.83, label="b)", cex=3)
 text(-0.4, 0.4, label="eDNA", cex=2.5)
 text(0, 0.7, label="gut", cex=2.5)
 text(0.4, 0.4, label="kick", cex=2.5)
 
-# NMDS eDNA vs kick-samples
-plot(meta.kick.edna, type="n", xlim=c(-0.8,0.8), ylim=c(-0.7,0.7), cex.axis=2, cex.lab=1.5)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="May"),col="black",pch=20)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="WB" & fact_time.edki[,1]=="Oct"),col="black",pch=1)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="May"),col="blue",pch=15)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="GW" & fact_time.edki[,1]=="Oct"),col="blue",pch=22)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="May"),col="red",pch=17)
-points(meta.kick.edna, select=which(fact_site.edki[,1]=="RB" & fact_time.edki[,1]=="Oct"),col="red",pch=24)
-orditorp(meta.kick.edna, display="species")
-ordispider(meta.kick.edna, group=fact_site.edki[,1],col=c("blue","orange","green"),label=T)
-ordiellipse(meta.kick.edna, group=fact_type.edki[,1],kind="ehull",lty=c(1,3),label=T,lwd=1)
-text(0.7,-0.6, label=paste0("Stress: ",round(meta.kick.edna$stress, 4)), cex=1.5)
-text(-0.65,0.7, label="eDNA", cex=2.5)
-text(0.75,0.57, label="kick", cex=2.5)
-text(-0.95,0.63, label="b)", cex=3)
-
 # NMDS legend
 plot.new()
 legend("top", legend=c("Grafham Water - May","Grafham Water - Oct","Wroxham Broad - May","Wroxham Broad - Oct","Rockand Broad - May","Rockand Broad - Oct"), col=c("blue","blue","black","black","red","red"), pch=c(15,22,19,1,17,24), cex=2, ncol=3)
+dev.off()
 ```
 
 ```{r bipartite publication}
@@ -1534,7 +1545,7 @@ dev.off()
 ```
 
 ```{r multiplot for the summary barplots}
-png("R_images/Summary_barplot_multiplot.png",width = 4000, height = 5000, units = "px", res = 300)
+png("R_images/Summary_barplot_multiplot.png", width = 4000, height = 5000, units = "px", res = 300)
 # barplot of communities
 a = occup.melt %>% mutate(site = factor(site, levels=c("GW","WB","RB"))) %>% 
   ggplot(aes(sample_type, value)) +
