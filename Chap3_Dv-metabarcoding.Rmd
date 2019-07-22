@@ -160,22 +160,28 @@ mean(colSums(dv.oct17))-sd(colSums(dv.oct17))
 shapiro.test(colSums(dv.may17))
 shapiro.test(colSums(dv.oct17))
 
-may.depth.thre = mean(log10(colSums(dv.may17)))-2*sd(log10(colSums(dv.may17)))
-oct.depth.thre = mean(log10(colSums(dv.oct17)))-2*sd(log10(colSums(dv.oct17)))
+may.depth.thre = 100#mean(log10(colSums(dv.may17)))-2*sd(log10(colSums(dv.may17)))
+oct.depth.thre = 100#mean(log10(colSums(dv.oct17)))-2*sd(log10(colSums(dv.oct17)))
 ```
 
-The filter coverage for all samples that are equal and greater than mean-2sd of the log10-transformed coverage per samples were retained. The survival of the N samples was quite high in both data sets, with respectivelty 202 samples (93.5%) passing the read depth filter in May data set; and 186 samples (93.9%) in October data set.
+The filter coverage for all samples that are equal and greater than 100 reads coverage per samples were retained. The survival of the N samples was quite high in both data sets, with respectivelty 192 (88.9%) and 190 (95.9%) 
+202 samples (93.5%) passing the read depth filter in May data set; and 186 samples (93.9%) in October data set.
 
 ```{r test_coverage, include=TRUE, echo=FALSE}
 # Applying the threshold
-reads.may17 = subset(dv.may17, select = log10(colSums(dv.may17)) >= may.depth.thre)
-reads.oct17 = subset(dv.oct17, select = log10(colSums(dv.oct17)) >= oct.depth.thre)
+reads.may17 = subset(dv.may17, select = colSums(dv.may17) >= may.depth.thre) #log10(colSums(dv.may17)) >= may.depth.thre)
+reads.oct17 = subset(dv.oct17, select = colSums(dv.oct17) >= oct.depth.thre) #log10(colSums(dv.oct17)) >= oct.depth.thre)
 
 # Checking N samples retained
-count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]
-count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]
-count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]/(count(log10(colSums(dv.may17)) > 0)[,2])
-count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]/(count(log10(colSums(dv.oct17)) > 0)[,2])
+count(colSums(dv.may17) <= may.depth.thre)[1,2]
+count(colSums(dv.oct17) <= oct.depth.thre)[1,2]
+count(colSums(dv.may17) <= may.depth.thre)[1,2]/(count(colSums(dv.may17) > 0)[,2])
+count(colSums(dv.oct17) <= oct.depth.thre)[1,2]/(count(colSums(dv.oct17) > 0)[,2])
+
+#count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]
+#count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]
+#count(log10(colSums(dv.may17)) <= may.depth.thre)[1,2]/(count(log10(colSums(dv.may17)) > 0)[,2])
+#count(log10(colSums(dv.oct17)) <= oct.depth.thre)[1,2]/(count(log10(colSums(dv.oct17)) > 0)[,2])
 ```
 
 Unwanted taxa will now need to be removed before the contamination control.
@@ -295,19 +301,19 @@ clean.may = clean.may[,!(colnames(clean.may) %in% "Harmonia_axyridis")]
 filter.may = filter.may[,!(colnames(filter.may) %in% "Harmonia_axyridis")]
 
 # Checking extra contamination sample(s) still present
-sum(clean.may["cont.13",])
-colnames(filter.may)[filter.may["cont.13",] > 0]
+#sum(clean.may["cont.13",])
+#colnames(filter.may)[filter.may["cont.13",] > 0]
 
 # Checking N reads of _D. villosus_ and _O. bicornis_ present in pcr contamination sample
-clean.may["cont.13","Dikerogammarus_villosus"]
-clean.may["cont.13","Osmia_bicornis"]
+#clean.may["cont.13","Dikerogammarus_villosus"]
+#clean.may["cont.13","Osmia_bicornis"]
 
 # Removing `cont.13` sample without need of further filtration
-clean.may = clean.may[!(rownames(clean.may) %in% "cont.13"),]
-filter.may = filter.may[!(rownames(filter.may) %in% "cont.13"),]
+#clean.may = clean.may[!(rownames(clean.may) %in% "cont.13"),]
+#filter.may = filter.may[!(rownames(filter.may) %in% "cont.13"),]
 
-clean.may = clean.may[-c(grep("BL", rownames(filter.may))),]
-filter.may = filter.may[-c(grep("BL", rownames(filter.may))),]
+#clean.may = clean.may[-c(grep("BL", rownames(filter.may))),]
+#filter.may = filter.may[-c(grep("BL", rownames(filter.may))),]
 ```
 
 In the samples from October, the contamination situation was less problematic. No _Harmonia axyridis_ remained after filter threshold; and _Osmia bicornis_ remained in only one samples (eGW4) with 28 reads (1.88%). In addition it was present contamination from _Porcellio scaber_ in two samples (RB409 and RB412), respectively at 2656 reads (5.6%), and 6234 reads (16.9%). Ultimately Psocoptera DNA was detected as contaminant in one sample (RB411), at 293 reads (0.9%).
