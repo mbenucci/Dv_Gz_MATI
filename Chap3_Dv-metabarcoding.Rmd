@@ -150,11 +150,7 @@ mean(oct.read.depth$value)
 sd(oct.read.depth$value)/sqrt(length(oct.read.depth$value))
 ```
 
-The sample N reads appear to be highly dispersed, this causes the mean-sd values to result negative. After checking for normality and log-transforming the data sets, the read depth threshold could be applied.
-```{r}
-quantile(colSums(dv.may17))
-quantile(colSums(dv.oct17))
-```
+The sample N reads appear to be highly dispersed, this causes the mean-sd values to result negative. After checking for normality the read depth threshold could be applied.
 
 
 ```{r mean and sd calculation}
@@ -168,7 +164,7 @@ may.depth.thre = 500
 oct.depth.thre = 500
 ```
 
-The filter coverage for all samples that are equal and greater than 100 reads coverage per samples were retained. The survival of the N samples was quite high in both data sets, with respectivelty 192 (88.9%) and 190 (95.9%) in May and October data sets.
+The filter coverage for all samples that are equal and greater than 500 reads coverage per samples were retained. The survival of the N samples was quite high in both data sets, with respectivelty 192 (88.9%) and 190 (95.9%) in May and October data sets.
 
 ```{r test_coverage, include=TRUE, echo=FALSE}
 # Applying the threshold
