@@ -243,7 +243,7 @@ colSums(pos.oct)-colSums(pos.oct[c("Osmia_bicornis","Hymenoptera"),])
 ```
 
 Three of the positive samples in the October data set contained high amount of contamination from _Crangonyx floridanus_, and _Dikerogammarus villosus_ DNA. 
-Specifically 648 reads (46.3%) belonging to _C. floridanus_ were present in a single positive sample; and 2106 reads (68.3%) and 2681 reads (71.6%) belonging to _D. villosus_ in two separate positive samples. In all these cases the proportion of reads was going to be too high to be used as threshold. The decision taken was then to exclude those three samples before calculating the contamination threshold for the October data set.
+Specifically 648 reads (49.5%) belonging to _C. floridanus_ were present in a single positive sample; and 2106 reads (68.3%) and 2681 reads (71.6%) belonging to _D. villosus_ in two separate positive samples. In all these cases the proportion of reads was going to be too high to be used as threshold. The decision taken was then to exclude those three samples before calculating the contamination threshold for the October data set.
 
 ```{r high levels taxa}
 pos.oct["Crangonyx_floridanus",]
