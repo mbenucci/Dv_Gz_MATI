@@ -1065,7 +1065,7 @@ adonis.kick = vegdist(as.matrix(adonis.kick))
 adonis(adonis.kick~fact_site.kick*fact_time.kick, permutations = 9999, method="jaccard")
 ```
 
-```{r}
+```{r NMDS of kick-samples}
 meta.kick = metaMDS(adonis.kick, trymax=200, distance="jaccard")
 ```
 
@@ -1165,7 +1165,7 @@ sd(rboct_kickrich)/sqrt(length(rboct_kickrich))
 
 # 8. Community composition of eDNA and kick-samples
 
-```{r merging kick-samples and eDNA frames}
+```{r merginand PERMANOVA of kick-samples and eDNA frames}
 occup.kick.edna = full_join(occupancy.edna, occupancy.kick)
 occup.kick.edna[is.na(occup.kick.edna)] <- 0
 
@@ -1178,7 +1178,7 @@ fact_type.edki = matrix(c(occup.kick.edna$sample_type), ncol=1)
 adonis(adonis.kick.edna~fact_site.edki*fact_time.edki*fact_type.edki, permutations = 9999, method = "jaccard")
 ```
 
-```{r}
+```{r NMDS of kick and eDNA}
 meta.kick.edna = metaMDS(adonis.kick.edna, trymax = 200, methods = "jaccard")
 ```
 
@@ -1310,7 +1310,6 @@ ordiellipse(meta.full, group=fact_type.full[,1],kind="ehull",lty=c(1,5,3),label=
 text(0, -0.5, label=paste0("Stress: ",round(meta.full$stress, 6)))
 dev.off()
 ```
-
 
 ```{r barplot of guts and community}
 occup.melt = melt(occup.gut.edna.kick)
